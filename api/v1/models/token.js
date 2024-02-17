@@ -14,7 +14,7 @@ const tokenSchema = new Schema({
     },
     expireAt: { 
         type: Date,
-        expires: 6 * 60 * 60,
+        expires: 24 * 60 * 60,
         index: true, 
         default: Date.now,
     }

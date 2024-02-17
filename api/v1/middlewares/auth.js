@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const User = require('../models/user');
 const Token = require("../models/token");
 const crypto = require("crypto");
-const { sendEmail } = require('../utils/email');
+const { sendEmail, emailVerificationTemplate } = require('../utils/email');
 
 
 // Function to check if a string is a valid MongoDB ObjectId
@@ -89,8 +89,7 @@ validateLogin: async (req, res, next) => {
         }).save()
         // Construct the verification URL
       const link = `${process.env.BASE_URL}/${user.id}/verify/${token.token}`;
-      const htmlContent = `<p>Click the following link to verify your email:</p><a href="${link}">${link}</a>`;
-
+      const htmlContent = emailVerificationTemplate(link);
       // Send the verification email
       await sendEmail(user.local.email, 'Verify Email', htmlContent); 
       }

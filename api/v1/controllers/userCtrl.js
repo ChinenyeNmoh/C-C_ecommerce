@@ -2,7 +2,7 @@ const User = require('../models/user');
 const Token = require("../models/token");
 const passwordResetToken = require("../models/password_reset");
 const crypto = require("crypto");
-const { sendEmail } = require('../utils/email');
+const { sendEmail, emailVerificationTemplate, passwordResetTemplate } = require('../utils/email');
 const bcrypt = require('bcrypt');
 
 
@@ -59,7 +59,7 @@ const createUser = async (req, res) => {
 
       // Construct the verification URL
       const link = `${process.env.BASE_URL}/${newUser.id}/verify/${token.token}`;
-      const htmlContent = `<p>Click the link below to verify your email:</p><a href="${link}">${link}</a>`;
+      const htmlContent = emailVerificationTemplate(link);
 
       // Send the verification email
       await sendEmail(newUser.local.email, 'Account verification',htmlContent);
@@ -101,7 +101,6 @@ const verifyToken = async (req, res) => {
       userId: user._id,
       token: token,
     });
-    console.log(userToken)
     if (!userToken) {
       return res.status(400).send({ message: "Invalid token" });
     }
@@ -186,7 +185,7 @@ const forgotPassword = async (req, res) => {
 
       // Construct the verification URL
       const link = `${process.env.BASE_URL}/${user.id}/resetpassword/${token.token}`;
-      const htmlContent = `<p>Click the following link to reset your password:</p><a href="${link}">${link}</a>`;
+      const htmlContent = passwordResetTemplate(link, user)
 
       // Send the verification email
       await sendEmail(user.local.email, 'Reset Password', htmlContent);
@@ -273,7 +272,7 @@ const updatePassword = async (req, res) => {
 
       // Construct the verification URL
       const link = `${process.env.BASE_URL}/${user.id}/resetpassword/${newToken.token}`;
-      const htmlContent = `<p>Click the following link to reset your password:</p><a href="${link}">${link}</a>`;
+      const htmlContent = passwordResetTemplate(link, user);
 
       // Send the verification email
       await sendEmail(user.local.email, 'Reset Password', htmlContent);
@@ -387,6 +386,7 @@ const updateUser = async (req, res) => {
     const newUser = {
       "local.firstname": req.body.firstname ? req.body.firstname : req.user.local.firstname,
       "local.lastname": req.body.lastname ? req.body.lastname : req.user.local.lastname,
+      "address": req.body.address ? req.body.address : req.user.address
     };
     
     const user = await User.findByIdAndUpdate(

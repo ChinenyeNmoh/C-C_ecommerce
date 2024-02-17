@@ -26,6 +26,50 @@ const sendEmail = async (email, subject, html) => {
 	}
 };
 
+const emailVerificationTemplate = (link) => {
+	return `<h3> Hello </h3>
+	<p>
+	Thank you for creating an account with C&C ecommerce.
+	please click the link below to verify your account within 24 hours:
+	</p>
+	<br/>
+	<br/>
+	<a href="${link}">Click Here</a><br/>
+	<br/>
+	<br/>
+	<p>If the button above isn’t working, paste the link below into your browser</p><br/>
+	${link}
+	<br/>
+	<br/>
+	<p>If you did not create an account with C&C ecommerce, just ignore this message.<br/>
+	<br/>
+	Thank you for choosing C&C ecommerce.
+	</p>
+	`
+}
+
+// password reset template
+const passwordResetTemplate = (link, user) => {
+	return `<p> Hi <strong>${user.local.firstname} ${user.local.lastname}</strong></p>,
+	<br/>
+	<p>
+	There was recently a request to change the password on your account.
+	If you requested this password change, please click the link below to set a new password within 24 hours:
+	</p>
+	<br/>
+	<a href="${link}">Click Here</a><br/>
+	<br/>
+	<p>If the button above isn’t working, paste the link below into your browser</p><br/>
+	${link}
+	<br/>
+	<br/>
+	<p>If you don't want to change your password, just ignore this message.<br/>
+	<br/>
+	Thank you for choosing C&C ecommerce.
+	</p>
+	`
+}
+
 const processOrderEmailTemplate = (myOrder, firstname, lastname, email, phoneNo) => {
 	return `<h1>Thanks for shopping with us</h1>
 	<p>
@@ -191,4 +235,4 @@ const deliveredOrderEmailTemplate = (myOrder, firstname, lastname, email, phoneN
 `;
 };        
 	
-module.exports = {processOrderEmailTemplate, sendEmail, deliveredOrderEmailTemplate}
+module.exports = {emailVerificationTemplate, passwordResetTemplate, processOrderEmailTemplate, sendEmail, deliveredOrderEmailTemplate}
