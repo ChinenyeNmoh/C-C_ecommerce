@@ -33,9 +33,7 @@ const emailVerificationTemplate = (link) => {
 	please click the link below to verify your account within 24 hours:
 	</p>
 	<br/>
-	<br/>
 	<a href="${link}">Click Here</a><br/>
-	<br/>
 	<br/>
 	<p>If the button above isn’t working, paste the link below into your browser</p><br/>
 	${link}
