@@ -5,6 +5,7 @@ const { createUser,
   successRoute,
   failed,
   wishList,
+  getWishList,
   getAllUsers,
   getUser,
   deleteUser,
@@ -51,6 +52,7 @@ router.get("/:id/resetpassword/:token/", ensureGuest, validateId, resetPassword)
 router.put("/:id/resetpassword/:token/", ensureGuest, validateId, updatePassword);
 router.get('/logout', ensureAuth, logOut)
 router.put("/wishlist", ensureAuth, wishList)
+router.get("/getwishlist", ensureAuth, getWishList)
 router.get("/:id", validateId, ensureAdmin, getUser);
 router.delete("/:id", validateId, deleteUser);
 router.put('/edituser', ensureAuth, updateUser)

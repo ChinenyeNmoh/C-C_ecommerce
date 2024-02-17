@@ -525,7 +525,7 @@ const wishList = async (req, res) => {
         ]);
         res.json({
           message: "product added to wishlist successfully",
-          data: updated_user
+          data: updated_user.wishlist
         });
       }   
     }else{
@@ -541,6 +541,31 @@ const wishList = async (req, res) => {
   }
 };
 
+// get user wishlist
+const getWishList = async(req, res) => {
+  const { _id } = req.user
+  try{
+    const findUser = await User.findById(_id)
+    if(!findUser){
+      return res.status(404).json({
+        message: "User not found"
+      })
+    }
+    const wish = await findUser.populate([
+      { path: 'wishlist', select: 'name  description price discountedPrice images.url' },
+    ])
+    res.json({
+      message: "wishlist retrieved successfully",
+      data: wish.wishlist
+    });
+  }catch(err) {
+    console.log(err);
+    return res.status(500).json({
+      message: err.message,
+    });
+  }
+}
+
 // Export the createUser function
 module.exports = {
   createUser, 
@@ -548,6 +573,7 @@ module.exports = {
   failed, getAllUsers,
   verifyToken,
   wishList,
+  getWishList,
   updatePassword,
   resetPassword,
   forgotPassword,
