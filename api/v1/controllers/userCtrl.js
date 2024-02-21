@@ -11,8 +11,11 @@ const createUser = async (req, res) => {
   try {
     const email = req.body.email;
     const findUser = await User.findOne({ "local.email": email });
+    const findPhoneNo = await User.findOne({ "local.mobile": req.body.mobile });
     const find_google_user = await User.findOne({ "google.email": email });
-
+    if(findPhoneNo) {
+      return res.status(400).json({ "message": "Phone number already exists!" });
+    }
     if (findUser) {
       return res.status(400).json({ "message": "User already exists!" });
     } else if(find_google_user){
@@ -70,17 +73,8 @@ const createUser = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-
-    if (err.name === 'ValidationError' && err.errors) {
-      const validationErrors = Object.values(err.errors).map((error) => error.message);
-      return res.status(400).json({
-        "message": "Validation failed",
-        "validationErrors": validationErrors
-      });
-    }
-
     return res.status(500).json({
-      "message": "Internal server error"
+      "message": err.message
     });
   }
 };

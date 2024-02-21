@@ -106,7 +106,7 @@ const checkOut = async (req, res) => {
     await myOrder.populate([
       { path: 'address', select: 'firstname lastname street city state landmark' },
       { path: 'user', select: 'local google address' },
-      { path: 'products.productId', select: 'title price category images' }
+      { path: 'products.productId', select: 'name price category images' }
     ]);
 
     const billingOwner = await User.findById(myOrder.user);
@@ -183,7 +183,7 @@ const getUserOrder = async (req, res) => {
     }
     await userOrder.populate([
       { path: 'address', select: 'firstname lastname street city state landmark' },
-      { path: 'products.productId', select: 'title price category images' }
+      { path: 'products.productId', select: 'name price category images' }
     ])
     res.status(200).json({
       message: "Order found",
@@ -211,7 +211,7 @@ const getAllOrders = async (req, res) => {
     await Promise.all(allOrders.map(async (order) => {
       await order.populate([
         { path: 'address', select: 'firstname lastname street city state landmark' },
-        { path: 'products.productId', select: 'title price category images' }
+        { path: 'products.productId', select: 'name price category images' }
       ]);
     }));
     res.status(200).json({
@@ -244,7 +244,7 @@ const confirmDelivery = async (req, res) => {
     await myOrder.populate([
       { path: 'address', select: 'firstname lastname street city state landmark' },
       { path: 'user', select: 'local google address' },
-      { path: 'products.productId', select: 'title price category images' }
+      { path: 'products.productId', select: 'name price category images' }
     ])
     const billingOwner = await User.findById(myOrder.user);
     firstname = billingOwner.local ? billingOwner.local.firstname : billingOwner.google.firstname;

@@ -1,11 +1,11 @@
 const nodemailer = require("nodemailer");
+
 const sendEmail = async (email, subject, html) => {
 	try {
 		const transporter = nodemailer.createTransport({
 			host: process.env.HOST,
 			service: process.env.SERVICE,
 			port: Number(process.env.EMAIL_PORT),
-			secure: Boolean(process.env.SECURE),
 			auth: {
 				user: process.env.USER,
 				pass: process.env.PASS,
@@ -86,7 +86,7 @@ const processOrderEmailTemplate = (myOrder, firstname, lastname, email, phoneNo)
 	  .map(
 	  (item) => `
 	  <tr>
-	  <td>${item.productId.title}</td>
+	  <td>${item.productId.name}</td>
 	  <td align="center">${item.quantity}</td>
 	  <td align="right"> $${item.price}</td>
 	  </tr>
@@ -166,7 +166,7 @@ const deliveredOrderEmailTemplate = (myOrder, firstname, lastname, email, phoneN
 		.map(
 		(item) => `
 		<tr>
-		<td>${item.productId.title}</td>
+		<td>${item.productId.name}</td>
 		<td align="center">${item.quantity}</td>
 		<td align="right"> $${item.price}</td>
 		</tr>
