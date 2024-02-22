@@ -105,6 +105,7 @@ const getProduct = async (req, res) => {
       if (products && products.length > 0) {
         return res.status(200).json({
           message: 'Products found',
+          count: productCount,
           data: products,
         });
       } else {
