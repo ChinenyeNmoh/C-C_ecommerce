@@ -214,8 +214,10 @@ const getAllOrders = async (req, res) => {
         { path: 'products.productId', select: 'name price category images' }
       ]);
     }));
+    const counter = await Order.countDocuments();
     res.status(200).json({
       message: "Orders found",
+      count: counter,
       data: allOrders
     });
   } catch (err) {

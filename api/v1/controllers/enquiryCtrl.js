@@ -101,8 +101,10 @@ const deleteEnquiry = async (req, res) => {
           message: "No Enquiry found",
         });
       } else {
+        const counter = await Enquiry.countDocuments();
         return res.status(200).json({
           message: "Success",
+          count: counter,
           data: all,
         });
       }

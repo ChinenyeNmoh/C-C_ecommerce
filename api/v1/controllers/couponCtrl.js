@@ -115,8 +115,10 @@ const getAllCoupon = async (req, res) => {
         message: "No Coupon found",
       });
     } else {
+      const counter = await Coupon.countDocuments();
       return res.status(200).json({
         message: "Success",
+        count: counter,
         data: all,
       });
     }

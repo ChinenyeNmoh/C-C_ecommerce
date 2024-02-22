@@ -311,9 +311,10 @@ const updatePassword = async (req, res) => {
 const getAllUsers = async (req, res) => {
   try {
     const getUsers = await User.find({});
-
+    const counter = await User.countDocuments();
     res.status(200).json({
       message: 'success',
+      count: counter,
       data: getUsers,
     });
   } catch (error) {

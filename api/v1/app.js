@@ -14,6 +14,7 @@ const cartRouter = require('./routes/cartRouter')
 const orderRouter = require('./routes/orderRouter')
 const uploadRouter = require('./routes/uploadRouter')
 const enquiryRouter = require('./routes/enquiryRouter')
+const typeRouter = require('./routes/productTypeRouter')
 const dbConnect = require("./config/db");
 
 
@@ -69,6 +70,7 @@ app.use('/api/cart', cartRouter)
 app.use('/api/order', orderRouter)
 app.use('/api/image', uploadRouter)
 app.use('/api/enquiry', enquiryRouter)
+app.use('/api/type', typeRouter)
 
 
 // Logging using morgan middleware only if we are in development
