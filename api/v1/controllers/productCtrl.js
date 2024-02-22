@@ -103,15 +103,14 @@ const getProduct = async (req, res) => {
       const products = await query.exec();
   
       if (products && products.length > 0) {
-        const counter = await Product.countDocuments();
         return res.status(200).json({
           message: 'Products found',
-          count: counter,
+          count: products.length,
           data: products,
         });
       } else {
         return res.status(404).json({
-          message: 'Sorry, could not retrieve products',
+          message: 'Sorry, could not retrieve products. No product found',
         });
       }
     } catch (err) {
