@@ -173,7 +173,8 @@ const deleteProduct = async(req, res) => {
 // ratings
 const productRating = async (req, res) => {
   const { _id } = req.user;
-  const { star, prodId, comment } = req.body;
+  const prodId = req.params.id;
+  const { star, comment } = req.body;
   try {
     const product = await Product.findById(prodId);
     let rateProduct;
@@ -200,7 +201,7 @@ const productRating = async (req, res) => {
         
         res.json({
           status: "success",
-          data: updatedProd,
+          data: alreadyRated,
         });
       } else {
         rateProduct = await Product.findByIdAndUpdate(

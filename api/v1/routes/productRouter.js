@@ -16,7 +16,7 @@ router.get('/:id', validateId, getProduct)
 router.get('/',  getAllProduct)
 router.put('/editproduct/:id', ensureAuth, ensureAdmin, validateId, updateProduct)
 router.delete('/:id', ensureAuth, ensureAdmin, validateId, deleteProduct)
-router.put("/rating", ensureAuth, productRating)
+router.put("/rating/:id", ensureAuth, productRating)
 router.post("/discountproduct/:id", validateId, ensureAuth, ensureAdmin, applyDiscount);
 router.post("/discountallproducts/", ensureAuth, ensureAdmin, applyAllDiscount);
 router.put("/removealldiscount", ensureAuth, ensureAdmin, removeAllDiscount);
