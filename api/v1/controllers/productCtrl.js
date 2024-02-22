@@ -103,9 +103,10 @@ const getProduct = async (req, res) => {
       const products = await query.exec();
   
       if (products && products.length > 0) {
+        const counter = await Product.countDocuments();
         return res.status(200).json({
           message: 'Products found',
-          count: productCount,
+          count: counter,
           data: products,
         });
       } else {
