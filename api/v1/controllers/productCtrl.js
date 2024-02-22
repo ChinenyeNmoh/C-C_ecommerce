@@ -201,7 +201,7 @@ const productRating = async (req, res) => {
         
         res.json({
           status: "success",
-          data: alreadyRated,
+          data: updatedProd,
         });
       } else {
         rateProduct = await Product.findByIdAndUpdate(
