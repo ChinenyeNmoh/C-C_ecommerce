@@ -223,7 +223,7 @@ const getAllOrders = async (req, res) => {
     }
     // Populate each order with address and product details
     await Promise.all(allOrders.map(async (order) => {
-      await allOrders.populate([
+      await order.populate([
         { path: 'address', select: 'firstname lastname street city state landmark' },
         { path: 'user', select: 'local google address' },
         { path: 'products.productId', select: 'name price images', 
