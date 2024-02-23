@@ -36,6 +36,7 @@ const createCart = async (req, res) => {
     for (const cartItem of uniqueCart) {
       // Create an object to represent a product in the cart
       let object = {};
+      const prod = await Product.findById(cartItem._id)
       object.productId = cartItem._id;
 
       // Retrieve the price of the product from the Product collection in the database
@@ -64,7 +65,12 @@ const createCart = async (req, res) => {
       cartTotal,
       orderedby: _id,
     }).save();
-
+    await newCart.populate([
+      { path: "products.productId", select: 'name images',
+      populate: { path: 'category', select: 'title' },
+      populate: { path: 'productType', select: 'title' }
+     }
+    ])
     res.json({
       message: "New cart created successfully",
       data: newCart,
