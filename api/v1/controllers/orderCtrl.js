@@ -106,7 +106,11 @@ const checkOut = async (req, res) => {
     await myOrder.populate([
       { path: 'address', select: 'firstname lastname street city state landmark' },
       { path: 'user', select: 'local google address' },
-      { path: 'products.productId', select: 'name price category images' }
+      { path: 'products.productId', select: 'name price images', 
+      populate: [
+        { path: 'category', select: 'title' },
+        { path: 'productType', select: 'title' }
+      ] }
     ]);
 
     const billingOwner = await User.findById(myOrder.user);
