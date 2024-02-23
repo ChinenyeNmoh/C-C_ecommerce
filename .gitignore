@@ -36,3 +36,24 @@ pnpm-debug.log*
 
 # Production build
 build/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Instance folder
+instance/
+
+# Logs
+*.log
+
+# Environment variables
+.env
+
+# Compiled Python files
+*.pyc
+
+# Virtual environment
+venv/
+
