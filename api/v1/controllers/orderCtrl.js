@@ -160,8 +160,13 @@ const getMyOrder = async (req, res) => {
     }
     await userOrder.populate([
       { path: 'address', select: 'firstname lastname street city state landmark' },
-      { path: 'products.productId', select: 'title price category images' }
-    ])
+      { path: 'user', select: 'local google address' },
+      { path: 'products.productId', select: 'name price images', 
+      populate: [
+        { path: 'category', select: 'title' },
+        { path: 'productType', select: 'title' }
+      ] }
+    ]);
     res.status(200).json({
       message: "Order found",
       data: userOrder
@@ -187,8 +192,13 @@ const getUserOrder = async (req, res) => {
     }
     await userOrder.populate([
       { path: 'address', select: 'firstname lastname street city state landmark' },
-      { path: 'products.productId', select: 'name price category images' }
-    ])
+      { path: 'user', select: 'local google address' },
+      { path: 'products.productId', select: 'name price images', 
+      populate: [
+        { path: 'category', select: 'title' },
+        { path: 'productType', select: 'title' }
+      ] }
+    ]);
     res.status(200).json({
       message: "Order found",
       data: userOrder
@@ -213,9 +223,14 @@ const getAllOrders = async (req, res) => {
     }
     // Populate each order with address and product details
     await Promise.all(allOrders.map(async (order) => {
-      await order.populate([
+      await allOrders.populate([
         { path: 'address', select: 'firstname lastname street city state landmark' },
-        { path: 'products.productId', select: 'name price category images' }
+        { path: 'user', select: 'local google address' },
+        { path: 'products.productId', select: 'name price images', 
+        populate: [
+          { path: 'category', select: 'title' },
+          { path: 'productType', select: 'title' }
+        ] }
       ]);
     }));
     const counter = await Order.countDocuments();
@@ -250,8 +265,12 @@ const confirmDelivery = async (req, res) => {
     await myOrder.populate([
       { path: 'address', select: 'firstname lastname street city state landmark' },
       { path: 'user', select: 'local google address' },
-      { path: 'products.productId', select: 'name price category images' }
-    ])
+      { path: 'products.productId', select: 'name price images', 
+      populate: [
+        { path: 'category', select: 'title' },
+        { path: 'productType', select: 'title' }
+      ] }
+    ]);
     const billingOwner = await User.findById(myOrder.user);
     firstname = billingOwner.local ? billingOwner.local.firstname : billingOwner.google.firstname;
     lastname = billingOwner.local ? billingOwner.local.lastname : billingOwner.google.lastname;
