@@ -1,7 +1,7 @@
 const Product = require('../models/product')
 const Coupon = require('../models/coupon')
 const User = require('../models/user');
-const slugify = require('slugify')
+const slugify = require('slugify');
 
 // Create new product
 const createProduct = async (req, res) => {
@@ -67,6 +67,10 @@ const getProduct = async (req, res) => {
       let queryStr = JSON.stringify(queryObj);
       queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
       const query = Product.find(JSON.parse(queryStr));
+      query.populate([
+        { path: 'category', select: 'title' },
+        { path: 'productType', select: 'title' }
+      ]);
   
       // Sorting
       if (req.query.sort) {
@@ -101,7 +105,7 @@ const getProduct = async (req, res) => {
       }
       // Execute query
       const products = await query.exec();
-  
+      
       if (products && products.length > 0) {
         return res.status(200).json({
           message: 'Products found',
@@ -146,6 +150,7 @@ const updateProduct = async(req, res) => {
     });
   }
 }
+
 
 //delete a product
 const deleteProduct = async(req, res) => {
