@@ -1,0 +1,23 @@
+{
+  "name": "web-static",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon ./bin/www",
+    "build:css": "tailwindcss -i ./public/stylesheets/input.css -o ./public/stylesheets/output.css --watch",
+    "browser-sync": "browser-sync start --proxy 'localhost:3000' --files 'views/**/*.ejs' 'routes/**/*.js' 'public/**/*.*' --no-open"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "ejs": "^3.1.9",
+    "ejs-locals": "^1.0.2",
+    "express": "^4.18.2",
+    "express-ejs-layouts": "^2.5.1",
+    "http-errors": "~1.6.3",
+    "morgan": "~1.9.1"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}

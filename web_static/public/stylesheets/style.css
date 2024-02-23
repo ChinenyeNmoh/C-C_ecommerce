@@ -1,0 +1,14 @@
+/* Add your custom styles here */
+
+body {
+  background: #F5F5F5;
+  font-size: 15px;
+}
+
+aside {
+  color: #3C3939;
+}
+
+.logo {
+    border-radius: 10px 10px 0 10px;
+}

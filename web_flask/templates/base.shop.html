@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <header class="fixed top-0 right-0 left-0 z-50">
+        <div class="contacts bg-black text-white text-xs p-2
+            flex justify-center items-center">
+            <p>
+                Need help? Contact us on 
+                <a href="#" class="underline underline-offset-auto">Whatsapp</a> or 
+                <a href="#" class="underline underline-offset-auto">Via Email</a>
+            </p>
+        </div>
+        <div class="mx-auto nav bg-stone-800 text-white h-12 md:h-14 flex items-center">
+            <div class="container mx-auto flex items-center justify-between 
+                px-4 xl:px-0 max-w-6xl">
+                <div class="md:hidden absolute flex items-center h-12">
+                    <i id="nav-btn" class="fa-solid fa-bars text-xl 
+                        cursor-pointer hover:text-stone-400"></i>
+                </div>
+                <div class="logo text-3xl md:border-r border-stone-500 h-14 flex 
+                    items-center pl-8 md:pl-0 pr-4 cursor-pointer hover:text-stone-400">
+                    <a href="{{ url_for('app_views.shop_index') }}">C&C</a>
+                </div>
+                <div class="hidden md:flex border-r border-stone-500 h-14
+                    flex items-center px-6 hover:bg-stone-500 cursor-pointer">
+                    men
+                </div>
+                <div class="hidden md:flex border-r border-stone-500 h-14 
+                    items-center px-4 hover:bg-stone-500 cursor-pointer">
+                    women
+                </div>
+                <div class="hidden h-14 md:flex items-center px-4 w-1/2 lg:w-2/3 relative">
+                    <label for="d-search"></label>
+                    <input id="d-search" class="bg-white border rounded-full px-2 py-1 
+                    text-black w-full" type="text" placeholder="Search for items">
+                    <i id="d-search-btn" class="fa-solid fa-magnifying-glass absolute 
+                        text-black right-7 cursor-pointer "></i>
+                </div>
+                <div class="h-14 pl-10 md:pl-1 lg:pl-2 xl:pl-4 w-48 md:flex-1 flex 
+                    items-center justify-end md:justify-between gap-8 md:gap-0">
+                    <a href="#" class="md:hidden hover:text-stone-400">
+                        <i id="m-search-btn" class="fa-solid fa-magnifying-glass text-xl"></i>
+                    </a>
+                    <a id="nav-profile-btn" href="{{ url_for('app_views.login') }}" 
+                        class="hover:text-stone-400">
+                        <i class="fa-regular fa-user text-xl"></i>
+                    </a>
+                    <a href="#" class="hidden md:inline hover:text-stone-400">
+                        <i class="fa-regular fa-heart text-xl"></i>
+                    </a>
+                    <a href="#" class="hidden md:inline hover:text-stone-400">
+                        <i class="fa-solid fa-bag-shopping text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div id="" class="container max-w-6xl mx-auto right-0 left-0 
+            absolute hidden md:flex justify-end">
+            <div class="profile-drop-down w-72 ">
+                <div class="flex items-center bg-stone-800 justify-between p-2">
+                    <div class="flex gap-1 text-sm text-white">
+                        <h1 class="hidden">Hi {{ username }} |</h1>
+                        <a href="#" class="underline hover:text-gray-300">Sign In</a>
+                        |
+                        <a href="#" class="underline hover:text-gray-300">Register</a>
+                    </div>
+                    <div class="px-2 text-white">
+                        <a href="#" id="close-profile-drop-down">
+                            <i class="fa-solid fa-xmark"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="bg-stone-200 p-4">
+                    <div class="flex items-center space-x-4">
+                        <i class="fa-regular fa-user"></i>
+                        <a href="#" class="cursor-pointer transition duration-100 
+                        ease-out hover:ease-in hover:scale-105 text-sm">my account</a>
+                    </div>
+                    <div class="flex items-center space-x-2 mt-4">
+                        <i class="fa-solid fa-box-open"></i>
+                        <a href="#" class="cursor-pointer transition duration-100 
+                        ease-out hover:ease-in hover:scale-105 text-sm">orders</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hidden md:block bg-stone-500 text-white text-sm h-10">
+            <div class="container mx-auto space-x-6 py-2 px-12 h-full flex 
+                items-center max-w-6xl">
+                <div class="flex h-10 items-center px-6 hover:bg-white 
+                    hover:text-stone-900 cursor-pointer">
+                    clothings
+                </div>
+                <div class="flex h-10 items-center px-6 hover:bg-white 
+                    hover:text-stone-900 cursor-pointer">
+                    foot wears
+                </div>
+                <div class="flex h-10 items-center px-6 hover:bg-white 
+                    hover:text-stone-900 cursor-pointer">
+                    accessories
+                </div>
+            </div>
+        </div>
+        <div id="m-nav" class="h-fit w-1/2 bg-stone-500 z-50">
+            <div class="flex w-full justify-between border-b border-gray-300">
+                <div class="w-full text-center p-2 border-r border-gray-200 
+                    cursor-pointer hover:bg-stone-600">
+                    men
+                </div>
+                <div class="w-full text-center p-2 cursor-pointer hover:bg-stone-600">
+                    women
+                </div>
+            </div>
+            <div class="w-full mt-1 bg-stone-200 hover:bg-stone-300 
+                flex items-center p-4 cursor-pointer">
+                clothings
+            </div>
+            <div class="w-full mt-1 bg-stone-200 hover:bg-stone-300 
+                flex items-center p-4 cursor-pointer">
+                foot wears
+            </div>
+            <div class="w-full mt-1 bg-stone-200 hover:bg-stone-300 
+                flex items-center p-4 cursor-pointer">
+                accessories
+            </div>
+            <div class="px-4 mt-12 flex items-center space-x-4">
+                <i class="fa-regular fa-user text-lg"></i>
+                <a href="#" class="cursor-pointer transition duration-100 
+                ease-out hover:ease-in hover:scale-105">my account</a>
+            </div>
+            <div class="px-4 mt-4 flex items-center space-x-2">
+                <i class="fa-solid fa-box-open text-lg"></i>
+                <a href="#" class="cursor-pointer transition duration-100 
+                ease-out hover:ease-in hover:scale-105">orders</a>
+            </div>
+            <div class="px-4 mt-4 flex items-center space-x-2">
+                <i class="fa-regular fa-heart text-xl"></i>
+                <a href="#" class="cursor-pointer transition duration-100 
+                ease-out hover:ease-in hover:scale-105">saved items</a>
+            </div>
+            <div class="px-4 mt-4 flex items-center space-x-2">
+                <i class="fa-solid fa-bag-shopping text-xl"></i>
+                <a href="#" class="cursor-pointer transition duration-100 
+                ease-out hover:ease-in hover:scale-105">cart</a>
+            </div>
+            <div class="p-4 mt-4 flex items-center space-x-3 border-t 
+                border-gray-200 ">
+                <i class="fa-solid fa-arrow-right-from-bracket "></i>
+                <a href="#" class="cursor-pointer transition duration-100 
+                ease-out hover:ease-in hover:scale-105">logout</a>
+            </div>
+        </div>
+        <div id="m-search-div" class="bg-stone-500 p-4">
+            <label for="m-search"></label>
+            <input id="m-search" class="bg-white border rounded-full px-2 py-1 text-black w-full" 
+            type="text" placeholder="Search for items">
+        </div>
+    </header>
+{% endblock %}
+{% block content %}
+    <div class="container mx-auto max-w-6xl mt-[90px] md:mt-[140px]">
+        {% block extend_content %}
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='javascripts/shop.js') }}">
+    </script>
+    {% block extend_scripts %}{% endblock %} 
+{% endblock %}

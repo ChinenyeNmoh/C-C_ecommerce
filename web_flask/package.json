@@ -1,0 +1,12 @@
+{
+
+    "scripts": {
+        "dev": "python run.py",
+        "build:css": "tailwindcss -i ./static/styles/tailwind/input.css -o ./static/styles/tailwind/output.css --watch",
+        "browser-sync": "browser-sync start --proxy 'localhost:5000' --files 'views/**/*.py' 'templates/**/*.html' 'static/**/*.*' --no-open"
+    },
+
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}
