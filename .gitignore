@@ -21,7 +21,7 @@ Thumbs.db
 .idea/
 
 # Environment variables
-.env
+config.env
 .env.local
 .env.*.local
 
