@@ -1,12 +1,12 @@
-const Cart = require("../models/cart");
-const Product = require("../models/product");
-const Address = require("../models/address");
-const Order = require("../models/order");
-const User = require("../models/user");
-const opn = require("opn")
+const Cart = require('../models/cart');
+const Product = require('../models/product');
+const Address = require('../models/address');
+const Order = require('../models/order');
+const User = require('../models/user');
+const opn = require('opn');
 const Flutterwave = require('flutterwave-node-v3');
 const { sendEmail, processOrderEmailTemplate, deliveredOrderEmailTemplate } = require('../utils/email');
-const dotenv = require("dotenv")
+const dotenv = require('dotenv');
 dotenv.config({ path: './config/config.env' });
 
 const flw = new Flutterwave(process.env.PUBLIC_KEY, process.env.SECRET_KEY);
@@ -23,21 +23,21 @@ const checkOut = async (req, res) => {
 
     const userCart = await Cart.findOne({ orderedby: _id });
     if (!userCart) {
-      return res.status(404).json({ message: "Cart not found" });
+      return res.status(404).json({ message: 'Cart not found' });
     }
 
     if (!paymentMethod) {
-      return res.status(400).json({ message: "Please select a payment method" });
+      return res.status(400).json({ message: 'Please select a payment method' });
     }
 
-    let finalAmt = userCart.totalAfterDiscount || userCart.cartTotal;
+    const finalAmt = userCart.totalAfterDiscount || userCart.cartTotal;
     let newOrder = {};
 
-    if (paymentMethod === "cash on delivery") {
+    if (paymentMethod === 'cash on delivery') {
       const address = await Address.findOne({ user: _id });
 
       if (!address) {
-        return res.status(404).json({ message: "Address not found" });
+        return res.status(404).json({ message: 'Address not found' });
       }
 
       const shippingFee = 5000;
@@ -49,30 +49,30 @@ const checkOut = async (req, res) => {
         shippingFee,
         totalPrice: finalAmt + shippingFee,
         products: userCart.products,
-        paymentMethod,
+        paymentMethod
       };
     }
 
-    if (paymentMethod === "card") {
+    if (paymentMethod === 'card') {
       const response = await flw.Charge.card(payload);
       console.log(response);
 
       if (response.meta.authorization.mode === 'pin') {
-        let payload2 = payload;
+        const payload2 = payload;
         payload2.authorization = {
-          "mode": "pin",
-          "pin": 3310
+          mode: 'pin',
+          pin: 3310
         };
-        /*if (response.meta.authorization.mode === 'redirect') {
+        /* if (response.meta.authorization.mode === 'redirect') {
           let url = response.meta.authorization.redirect
           opn(url)
           console.log(url)
-      }*/
-        
+      } */
+
         const reCallCharge = await flw.Charge.card(payload2);
         const callValidate = await flw.Charge.validate({
-          "otp": "12345",
-          "flw_ref": reCallCharge.data.flw_ref
+          otp: '12345',
+          flw_ref: reCallCharge.data.flw_ref
         });
 
         console.log(callValidate);
@@ -81,7 +81,7 @@ const checkOut = async (req, res) => {
           const address = await Address.findOne({ user: _id });
 
           if (!address) {
-            return res.status(404).json({ message: "Address not found" });
+            return res.status(404).json({ message: 'Address not found' });
           }
 
           const shippingFee = 5000;
@@ -94,11 +94,11 @@ const checkOut = async (req, res) => {
             totalPrice: finalAmt + shippingFee,
             products: userCart.products,
             paymentMethod,
-            paymentStatus: "paid",
-            paidAt: Date.now(),
+            paymentStatus: 'paid',
+            paidAt: Date.now()
           };
         } else {
-          return res.status(400).json({ message: "Failed to process payment" });
+          return res.status(400).json({ message: 'Failed to process payment' });
         }
       }
     }
@@ -113,7 +113,7 @@ const checkOut = async (req, res) => {
     const firstname = billingOwner.local ? billingOwner.local.firstname : billingOwner.google.firstname;
     const lastname = billingOwner.local ? billingOwner.local.lastname : billingOwner.google.lastname;
     const email = billingOwner.local ? billingOwner.local.email : billingOwner.google.email;
-    const phoneNo = billingOwner.local ? billingOwner.local.mobile || "" : "";
+    const phoneNo = billingOwner.local ? billingOwner.local.mobile || '' : '';
     const htmlContent = processOrderEmailTemplate(myOrder, firstname, lastname, email, phoneNo);
     await sendEmail(email, 'Order confirmation', htmlContent);
 
@@ -121,8 +121,8 @@ const checkOut = async (req, res) => {
       return {
         updateOne: {
           filter: { _id: item.productId._id },
-          update: { $inc: { quantity: -item.quantity, sold: +item.quantity } },
-        },
+          update: { $inc: { quantity: -item.quantity, sold: +item.quantity } }
+        }
       };
     });
 
@@ -134,69 +134,68 @@ const checkOut = async (req, res) => {
     }
 
     return res.status(201).json({
-      message: "New Order Created. A confirmation email has been sent to your account",
+      message: 'New Order Created. A confirmation email has been sent to your account',
       data: myOrder
     });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: "Internal server error", error: err.message });
+    return res.status(500).json({ message: 'Internal server error', error: err.message });
   }
 };
 
-
 // get user order
 const getMyOrder = async (req, res) => {
-  const { _id } = req.user
+  const { _id } = req.user;
   try {
-    const userOrder = await Order.findOne({ user: _id })
+    const userOrder = await Order.findOne({ user: _id });
     if (!userOrder) {
       res.status(404).json({
-        message: "Order not found"
-      })
+        message: 'Order not found'
+      });
     }
     await userOrder.populate([
       { path: 'address', select: 'firstname lastname street city state landmark' },
       { path: 'products.productId', select: 'title price category images' }
-    ])
+    ]);
     res.status(200).json({
-      message: "Order found",
+      message: 'Order found',
       data: userOrder
-    })
+    });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(500).json({
-      message: "Internal server error",
-      error: err.message,
+      message: 'Internal server error',
+      error: err.message
     });
   }
-}
+};
 
 // get user order
 const getUserOrder = async (req, res) => {
   const { id } = req.params;
   try {
-    const userOrder = await Order.findOne({ user: id })
+    const userOrder = await Order.findOne({ user: id });
     if (!userOrder) {
       return res.status(404).json({
-        message: "Order not found"
-      })
+        message: 'Order not found'
+      });
     }
     await userOrder.populate([
       { path: 'address', select: 'firstname lastname street city state landmark' },
       { path: 'products.productId', select: 'name price category images' }
-    ])
+    ]);
     res.status(200).json({
-      message: "Order found",
+      message: 'Order found',
       data: userOrder
-    })
+    });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(500).json({
-      message: "Internal server error",
-      error: err.message,
+      message: 'Internal server error',
+      error: err.message
     });
   }
-}
+};
 
 // get all orders by admin
 const getAllOrders = async (req, res) => {
@@ -204,7 +203,7 @@ const getAllOrders = async (req, res) => {
     const allOrders = await Order.find();
     if (allOrders.length === 0) {
       return res.status(404).json({
-        message: "No orders found"
+        message: 'No orders found'
       });
     }
     // Populate each order with address and product details
@@ -216,14 +215,14 @@ const getAllOrders = async (req, res) => {
     }));
     const counter = await Order.countDocuments();
     res.status(200).json({
-      message: "Orders found",
+      message: 'Orders found',
       count: counter,
       data: allOrders
     });
   } catch (err) {
     console.error(err);
     res.status(500).json({
-      message: "Internal server error",
+      message: 'Internal server error',
       error: err.message
     });
   }
@@ -235,61 +234,61 @@ const confirmDelivery = async (req, res) => {
     const myOrder = await Order.findById(id);
     if (!myOrder) {
       return res.status(404).json({
-        message: "Order not found"
+        message: 'Order not found'
       });
     }
 
-    myOrder.orderStatus = "delivered";
+    myOrder.orderStatus = 'delivered';
     myOrder.deliveredAt = Date.now();
-    myOrder.paymentStatus = "paid"
+    myOrder.paymentStatus = 'paid';
     await myOrder.save();
     await myOrder.populate([
       { path: 'address', select: 'firstname lastname street city state landmark' },
       { path: 'user', select: 'local google address' },
       { path: 'products.productId', select: 'name price category images' }
-    ])
+    ]);
     const billingOwner = await User.findById(myOrder.user);
     firstname = billingOwner.local ? billingOwner.local.firstname : billingOwner.google.firstname;
     lastname = billingOwner.local ? billingOwner.local.lastname : billingOwner.google.lastname;
     email = billingOwner.local ? billingOwner.local.email : billingOwner.google.email;
-    phoneNo = billingOwner.local ? billingOwner.local.mobile || "" : "";
+    phoneNo = billingOwner.local ? billingOwner.local.mobile || '' : '';
     const htmlContent = deliveredOrderEmailTemplate(myOrder, firstname, lastname, email, phoneNo);
     await sendEmail(email, 'Order delivery confirmation', htmlContent);
     // Send a success response with the updated order
     return res.status(200).json({
-      message: "Order delivered successfully",
+      message: 'Order delivered successfully',
       data: myOrder
     });
   } catch (err) {
     console.error(err);
     return res.status(500).json({
-      message: "Internal server error",
+      message: 'Internal server error',
       error: err.message
     });
   }
 };
 
 // delete order
-const deleteOrder = async(req, res) => {
+const deleteOrder = async (req, res) => {
   const { id } = req.params;
-    try{
-      const alreadyExistOrder = await Order.findOne({ user: id });
-      if (alreadyExistOrder) {
-        await Order.findByIdAndDelete(alreadyExistOrder._id)
-        return res.status(200).json({
-          message: "Order deleted successfully",
-        });
-      }else{
-        res.status(404).json({
-          message: "User has not Order",
-        });
-      }
-    }catch (err) {
-      console.error(err);
-      res.status(500).json({
-        message: "Internal server error",
-        error: err.message,
+  try {
+    const alreadyExistOrder = await Order.findOne({ user: id });
+    if (alreadyExistOrder) {
+      await Order.findByIdAndDelete(alreadyExistOrder._id);
+      return res.status(200).json({
+        message: 'Order deleted successfully'
+      });
+    } else {
+      res.status(404).json({
+        message: 'User has not Order'
       });
     }
-}
-module.exports = { getMyOrder, checkOut, getUserOrder, getAllOrders, confirmDelivery, deleteOrder }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: 'Internal server error',
+      error: err.message
+    });
+  }
+};
+module.exports = { getMyOrder, checkOut, getUserOrder, getAllOrders, confirmDelivery, deleteOrder };

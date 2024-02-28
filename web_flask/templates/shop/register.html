@@ -20,7 +20,8 @@
             <div class="max-w-sm mx-auto">
                 <div class="mt-10 text-center">
                     <h1 class="font-semibold">Sign Up With...</h1>
-                    <div class="flex mt-4 justify-center items-center gap-4 cursor-pointer
+                    <div id="google-register" 
+                        class="flex mt-4 justify-center items-center gap-4 cursor-pointer
                         border-2 border-gray-400 p-2">
                         <i class="fa-brands fa-google"></i>
                         <p>Google</p>
@@ -53,17 +54,17 @@
                         <label for="register-lastName" class="text-gray-600">
                             Last Name <span class="text-red-700">*</span>
                         </label>
-                        <input id="register-LastName" class="border p-2 border-gray-600" 
+                        <input id="register-lastName" class="border p-2 border-gray-600" 
                         type="email">
                         <div id="email-error" class="text-red-500 text-sm hidden">
                             Please enter a valid Last Name.
                         </div>
                     </div>
                     <div class="flex flex-col gap-2 mt-6">
-                        <label for="login-password" class="text-gray-600">
+                        <label for="register-password" class="text-gray-600">
                             Password <span class="text-red-700">*</span>
                         </label>
-                        <input id="login-password" class="border p-2 border-gray-600" 
+                        <input id="register-password" class="border p-2 border-gray-600" 
                         type="password">
                         <div id="password-error" class="text-red-500 text-sm hidden">
                             Password must be at least 8 characters long and contain at least 
@@ -72,12 +73,12 @@
                         </div>
                     </div>
                     <div class="flex flex-col gap-2 mt-6">
-                        <label for="login-password" class="text-gray-600">
+                        <label for="confirm-password" class="text-gray-600">
                             Confirm Password <span class="text-red-700">*</span>
                         </label>
-                        <input id="login-password" class="border p-2 border-gray-600" 
+                        <input id="confirm-password" class="border p-2 border-gray-600" 
                         type="password">
-                        <div id="password-error" class="text-red-500 text-sm hidden">
+                        <div id="confirm-password-error" class="text-red-500 text-sm hidden">
                             Passwords do not match.
                         </div>
                     </div>
@@ -87,24 +88,21 @@
                         </label>
 
                         <div class="flex gap-4">
-                            <label for="register-day" class="hidden"></label>
-                            <select id="register-day" name="day" 
+                            <label for="register-year" class="hidden"></label>
+                            <select id="register-year" name="year"
                                 class="border border-black p-3 bg-transparent
-                                w-3/12">
-                                <option value="" disabled selected>Day</option>
+                                w-4/12">
                             </select>
                             <label for="register-month" class="hidden"></label>
                             <select id="register-month" name="month"
                                 class="bg-transparent border border-black p-3
                                 w-6/12">
-                                <option value="1" disabled selected>Month</option>
-                                <option value="1">January</option>
-                                <option value="2">February</option>
                             </select>
-                            <label for="register-year" class="hidden"></label>
-                            <select id="register-year" name="year"
+                            <label for="register-day" class="hidden"></label>
+                            <select id="register-day" name="day" 
                                 class="border border-black p-3 bg-transparent
-                                w-4/12">
+                                w-3/12">
+                                <option value="" disabled selected>Day</option>
                             </select>
                         </div>
 
@@ -112,7 +110,8 @@
                             Please enter a valid date of birth.
                         </div>
                     </div>
-                    <button class="my-6 p-2 text-center text-white bg-black w-full">
+                    <button id="submit-register-form" 
+                        class="my-6 p-2 text-center text-white bg-black w-full">
                         Register
                     </button>
                 </form>
@@ -126,5 +125,7 @@
 
 {% block scripts %}
     <script src="{{ url_for('static', filename='javascripts/shop.register.js') }}">
+    </script>
+    <script src="{{ url_for('static', filename='javascripts/shop.google.auth.js') }}" type="module">
     </script>
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-    <header class="fixed top-0 right-0 left-0 z-50">
+    <div class="fixed top-0 right-0 left-0 z-50">
         <div class="contacts bg-black text-white text-xs p-2
             flex justify-center items-center">
             <p>
@@ -60,9 +60,15 @@
                 <div class="flex items-center bg-stone-800 justify-between p-2">
                     <div class="flex gap-1 text-sm text-white">
                         <h1 class="hidden">Hi {{ username }} |</h1>
-                        <a href="#" class="underline hover:text-gray-300">Sign In</a>
+                        <a href="{{ url_for('app_views.login') }}" 
+                            class="underline hover:text-gray-300">
+                            Sign In
+                        </a>
                         |
-                        <a href="#" class="underline hover:text-gray-300">Register</a>
+                        <a href="{{ url_for('app_views.register') }}" 
+                            class="underline hover:text-gray-300">
+                            Register
+                        </a>
                     </div>
                     <div class="px-2 text-white">
                         <a href="#" id="close-profile-drop-down">
@@ -155,10 +161,10 @@
             <input id="m-search" class="bg-white border rounded-full px-2 py-1 text-black w-full" 
             type="text" placeholder="Search for items">
         </div>
-    </header>
+    </div>
 {% endblock %}
 {% block content %}
-    <div class="container mx-auto max-w-6xl mt-[90px] md:mt-[140px]">
+    <div class="container mx-auto max-w-6xl mt-[80px] md:mt-[120px] relative">
         {% block extend_content %}
         {% endblock %}
     </div>

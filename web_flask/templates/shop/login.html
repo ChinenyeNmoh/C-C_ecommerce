@@ -47,7 +47,8 @@
                 </div>
                 <div class="my-12 text-center">
                     <h1 class="font-semibold">Or Sign In With...</h1>
-                    <div class="flex mt-10 justify-center items-center gap-4 cursor-pointer
+                    <div id="google-login" 
+                        class="flex mt-10 justify-center items-center gap-4 cursor-pointer
                         border-2 border-gray-400 p-2">
                         <i class="fa-brands fa-google"></i>
                         <p>Google</p>
@@ -63,5 +64,7 @@
 
 {% block scripts %}
     <script src="{{ url_for('static', filename='javascripts/shop.login.js') }}">
+    </script>
+    <script src="{{ url_for('static', filename='javascripts/shop.google.auth.js') }}" type="module">
     </script>
 {% endblock %}

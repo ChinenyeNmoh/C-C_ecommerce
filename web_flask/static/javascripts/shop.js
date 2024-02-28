@@ -1,5 +1,6 @@
 $(() => {
-  console.log('hello');
+  $('#success-message').hide();
+  $('#failure-message').hide();
   $('#m-nav').hide();
   $('#m-search-div').hide();
   $('.profile-drop-down').hide();
