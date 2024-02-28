@@ -21,17 +21,55 @@ def register():
         headers = {'Content-Type': 'application/json'}
         response = requests.post(url, headers=headers, json=data)
 
+        print('status_code: ', response.status_code)
         if response.status_code == 201:
             user_data = response.json()
-            user_id = user_data.get('userId')
-            session['user_id'] = user_id
+            email = user_data.get('email')
+            print('email: ', email)
+            session['username'] = email
+            print('register email: ', session.get('username'))
             return jsonify({ 'status': 'success' }), 200
+        return jsonify({ 'error': 'failed' }), response.status_code
 
     return render_template('shop/register.html')
 
-@app_views.route('/verify-email', strict_slashes=False)
+@app_views.route('/verify-email', strict_slashes=False, methods=['GET', 'POST'])
 def verify_email():
     """ verify email """
+    email = session.get('username')
+    if request.method == 'POST':
+        if not email:
+            return jsonify({ 'error': 'User ID not found in session' }), 400
+
+        url = 'http://localhost:5001/api/v2/users/verify'
+        otp = request.get_json()
+        data = {'email': email, 'otp': otp}
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(url, headers=headers, json=data)
+
+        if response.status_code == 200:
+            return jsonify({ 'status': 'success' }), 200
+        return jsonify({ 'error': 'Invalid OTP' }), response.status_code
+
+    return render_template('shop/verify-email.html', email=email)
+
+@app_views.route('/verify-email/resend', methods=['POST'])
+def resend_otp():
+    """ resend otp for email verification """
+    email = session.get('username')
+    if request.method == 'POST':
+        if not email:
+            return jsonify({ 'error': 'User ID not found in session' }), 400
+
+        url = 'http://localhost:5001/api/v2/users/resend-otp'
+        data = {'email': email}
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(url, headers=headers, json=data)
+
+        if response.status_code == 200:
+            return jsonify({ 'status': 'success' }), 200
+        return jsonify({ 'error': 'unable to resend OTP' }), response.status_code
+
     return render_template('shop/verify-email.html')
 
 @app_views.route('/reset-password', strict_slashes=False)

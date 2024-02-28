@@ -24,9 +24,7 @@ const UsersController = {
 
     const savedUser = await newUser.save();
 
-    console.log(savedUser);
-
-    return res.status(201).json({ status: 'succesful', userId: savedUser._id });
+    return res.status(201).json({ status: 'succesful', email: savedUser.email });
   },
 
   async getMe (req, res) {
@@ -46,12 +44,17 @@ const UsersController = {
   },
 
   async verifyOtp (req, res) {
+    console.log('in here');
     const { email, otp } = req.body;
     const key = `otp_${email}`;
 
+    console.log(otp);
+
     const storedOtp = await redisClient.get(key);
-    if (storedOtp !== otp) {
-      return res.status(400).json({ error: 'Invalid OTP' });
+
+    console.log(storedOtp);
+    if (storedOtp !== String(otp)) {
+      return res.status(401).json({ error: 'Invalid OTP' });
     }
 
     await redisClient.del(key);
@@ -59,6 +62,25 @@ const UsersController = {
     await User.updateOne({ email }, { $set: { verified: true } });
 
     return res.status(200).json({ status: 'success', message: 'OTP verified successfully' });
+  },
+
+  async resendOtp (req, res) {
+    const { email } = req.body;
+    const user = await User.find({ email });
+    if (!user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const key = `otp_${email}`;
+
+    const otp = generateOTP();
+    const expirationTimeInSeconds = 300;
+
+    await redisClient.set(key, otp, expirationTimeInSeconds);
+
+    sendOtpEmail(email, `${user.firstName} ${user.lastName}`, otp);
+
+    return res.status(200).json({ status: 'success', message: 'OTP resent' });
   }
 
 };

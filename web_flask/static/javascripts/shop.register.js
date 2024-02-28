@@ -187,9 +187,12 @@ $(() => {
           $('#success-message').text('Created successfully').removeClass('hidden');
           $('#success-message').slideDown();
           setTimeout(function () {
-            $('#success-message').slideUp().addClass('hidden');
+            $('#success-message').slideUp();
             window.location.href = '/verify-email';
           }, 3000);
+          setTimeout(function () {
+            $('#success-message').addClass('hidden');
+          }, 4000);
         },
         error: function (xhr, status, error) {
           if (xhr.status === 400) {
