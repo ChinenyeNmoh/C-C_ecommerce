@@ -80,7 +80,7 @@ validateLogin: async (req, res, next) => {
     }
 
     if (!user.isVerified) {
-      const userToken = await Token.findById(user._id)
+      const userToken = await Token.findOne({userId: user._id})
       console.log(userToken)
       if(!userToken){
         const token = await new Token({
@@ -97,7 +97,6 @@ validateLogin: async (req, res, next) => {
         message: "An Email was sent to your account.Verify your account to login" 
       });
     }
-
     // If email and password match, and the account is verified, call next to proceed
     next();
   } catch (error) {
