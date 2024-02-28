@@ -22,7 +22,7 @@ $(() => {
     console.log(otp);
     $.ajax({
       type: 'POST',
-      url: '/verify-email',
+      url: 'http://localhost:5000/verify-email',
       data: otp,
       contentType: 'application/json',
       success: function (response) {
@@ -32,14 +32,14 @@ $(() => {
         $('#success-message').slideDown();
         setTimeout(function () {
           $('#success-message').slideUp();
-          // window.location.href = '/verify-email';
+          window.location.href = '/login';
         }, 3000);
         setTimeout(function () {
           $('#success-message').addClass('hidden');
         }, 4000);
       },
-      error: function () {
-        console.log('failed');
+      error: function (response) {
+        console.log('error', response);
         $('#failure-message')
           .text('Email verification failed')
           .removeClass('hidden');
@@ -60,13 +60,28 @@ $(() => {
       type: 'POST',
       url: '/verify-email/resend',
       success: function (response) {
-        // Handle success, e.g., display a message to the user
-        alert(response.message);
+        $('#success-message')
+          .text('OTP resent to your email')
+          .removeClass('hidden');
+        $('#success-message').slideDown();
+        setTimeout(function () {
+          $('#success-message').slideUp();
+        }, 3000);
+        setTimeout(function () {
+          $('#success-message').addClass('hidden');
+        }, 4000);
       },
       error: function (xhr, status, error) {
-        // Handle error, e.g., display an error message
-        const errorMessage = JSON.parse(xhr.responseText).error;
-        alert(errorMessage);
+        $('#failure-message')
+          .text('Failed to send OTP. Try again.')
+          .removeClass('hidden');
+        $('#failure-message').slideDown();
+        setTimeout(function () {
+          $('#failure-message').slideUp();
+        }, 3000);
+        setTimeout(function () {
+          $('#failure-message').addClass('hidden');
+        }, 4000);
       }
     });
   });

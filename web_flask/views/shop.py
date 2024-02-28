@@ -3,15 +3,16 @@
 shop views
 """
 from flask import render_template, request, session
-import requests
-import base64
 from . import app_views
 
 
 @app_views.route('/', strict_slashes=False)
 def shop_index():
     """ admin """
-    return render_template('shop/index.html')
+    user = session.get('user')
+    if user:
+        user = user.get('user')
+    return render_template('shop/index.html', user=user )
 
 @app_views.route('/products', strict_slashes=False)
 def products():

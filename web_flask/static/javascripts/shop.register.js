@@ -184,7 +184,9 @@ $(() => {
         }),
         contentType: 'application/json',
         success: function (response) {
-          $('#success-message').text('Created successfully').removeClass('hidden');
+          $('#success-message')
+            .text('Created successfully')
+            .removeClass('hidden');
           $('#success-message').slideDown();
           setTimeout(function () {
             $('#success-message').slideUp();
@@ -196,7 +198,9 @@ $(() => {
         },
         error: function (xhr, status, error) {
           if (xhr.status === 400) {
-            $('#failure-message').text('Email already exist').removeClass('hidden');
+            $('#failure-message')
+              .text('Email already exist')
+              .removeClass('hidden');
             $('#failure-message').slideDown();
             setTimeout(function () {
               $('#failure-message').slideUp();
@@ -205,7 +209,9 @@ $(() => {
               $('#failure-message').addClass('hidden');
             }, 4000);
           } else {
-            $('#failure-message').text('server error').removeClass('hidden');
+            $('#failure-message')
+              .text('server error')
+              .removeClass('hidden');
             $('#failure-message').slideDown();
             setTimeout(function () {
               $('#failure-message').slideUp();

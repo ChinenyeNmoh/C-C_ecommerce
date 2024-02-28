@@ -1,7 +1,7 @@
 const express = require('express');
 const passport = require('../passport');
 const { getConnect, getDisconnect } = require('../controllers/AuthController');
-const { postNew, getMe, verifyOtp } = require('../controllers/UsersController');
+const { postNew, getMe, verifyOtp, resendOtp } = require('../controllers/UsersController');
 
 const router = express.Router();
 

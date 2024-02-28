@@ -40,7 +40,7 @@ const UsersController = {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    return res.status(200).json({ email: user.email, id: user._id });
+    return res.status(200).json({ user });
   },
 
   async verifyOtp (req, res) {
@@ -59,7 +59,7 @@ const UsersController = {
 
     await redisClient.del(key);
 
-    await User.updateOne({ email }, { $set: { verified: true } });
+    await User.updateOne({ email }, { $set: { isVerified: true } });
 
     return res.status(200).json({ status: 'success', message: 'OTP verified successfully' });
   },

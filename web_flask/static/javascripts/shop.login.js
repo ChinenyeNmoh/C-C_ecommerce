@@ -25,13 +25,29 @@ $(() => {
   });
 
   function handleLogin (response) {
-    const token = response;
-    console.log(token);
-
-    // window.location.href = '/profile';
+    $('#success-message')
+      .text('Login successful')
+      .removeClass('hidden');
+    $('#success-message').slideDown();
+    setTimeout(function () {
+      $('#success-message').slideUp();
+      window.location.href = '/';
+    }, 3000);
+    setTimeout(function () {
+      $('#success-message').addClass('hidden');
+    }, 4000);
   }
 
   function handleLoginError (error) {
-    console.error('Login failed:', error);
+    $('#failure-message')
+      .text('email or password incorrect')
+      .removeClass('hidden');
+    $('#failure-message').slideDown();
+    setTimeout(function () {
+      $('#failure-message').slideUp();
+    }, 3000);
+    setTimeout(function () {
+      $('#failure-message').addClass('hidden');
+    }, 4000);
   }
 });

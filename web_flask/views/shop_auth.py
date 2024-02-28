@@ -27,13 +27,15 @@ def login():
 
         if response.status_code == 200:
             token = response.json().get('token')
-            session['session_id'] = token
+            session['token'] = token
+            print(session['token'])
             url = 'http://localhost:5001/api/v2/users/me'
             headers = {'X-Token': token}
             res = requests.get(url, headers=headers)
             session['user'] = res.json()
+            print(session.get('user'))
             return jsonify({'status': 'ok'}), 200
-        return jsonify({'error': 'unsuccessful'}), 400
+        return jsonify({'error': 'unsuccessful'}), response.status_code
 
     return render_template('shop/login.html')
 
@@ -42,9 +44,11 @@ def login():
 def logout():
     """ logout user """
     url = 'http://localhost:5001/api/v2/disconnect'
-    headers = {'X-Token': session['session_id']}
+    headers = {'X-Token': session['token']}
     response = requests.get(url, headers=headers)
-
+    print(headers)
+    print(response)
     if response.status_code == 204:
-        session.clear()
-    return redirect(url_for('shop_index'))
+        print('sucess')
+    session.clear()
+    return redirect(url_for('app_views.shop_index'))

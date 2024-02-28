@@ -59,7 +59,11 @@
             <div class="profile-drop-down w-72 ">
                 <div class="flex items-center bg-stone-800 justify-between p-2">
                     <div class="flex gap-1 text-sm text-white">
-                        <h1 class="hidden">Hi {{ username }} |</h1>
+                        {% if user %}
+                        <h1 class="">
+                            Welcome, {{ user.firstName }} {{ user.lastName }}
+                        </h1>
+                        {% else %}
                         <a href="{{ url_for('app_views.login') }}" 
                             class="underline hover:text-gray-300">
                             Sign In
@@ -69,6 +73,7 @@
                             class="underline hover:text-gray-300">
                             Register
                         </a>
+                        {% endif %}
                     </div>
                     <div class="px-2 text-white">
                         <a href="#" id="close-profile-drop-down">
@@ -87,6 +92,17 @@
                         <a href="#" class="cursor-pointer transition duration-100 
                         ease-out hover:ease-in hover:scale-105 text-sm">orders</a>
                     </div>
+                    {% if user %}
+                    <div class="mt-2 flex items-center space-x-2 border-t 
+                        border-gray-300">
+                        <div class="mt-2">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                            <a href="{{ url_for('app_views.logout') }}" 
+                                class="cursor-pointer transition duration-100 
+                            ease-out hover:ease-in hover:scale-105 text-sm">logout</a>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
