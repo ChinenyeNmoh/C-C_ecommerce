@@ -5,8 +5,8 @@
             <a href="#" class="card-link dis">
                 <div class="card">
                     <img src="{{product.images.[0].url}}" class="card-img-top" alt="{{product.name}}">
-                    <div class="adds d-flex justify-content-center">
-                    <a class="add-to-cart" href="/api/cart/{{product._id}}" >
+                    <div class="adds d-flex justify-content-center mt-3 mb-3 fw-bold ml-1">
+                        <a class="add-to-cart" href="/api/cart/{{product._id}}" >
                         <i class="fa fa-shopping-cart" aria-hidden="true"></i>
                              Add to Cart
                         </a>
@@ -15,36 +15,48 @@
                             <i class="fa-regular fa-heart" aria-hidden="true"></i>
                             Add to Wishlist
                         </a>
+                        {{#if admin}}
+                        <a class="add-to-wishlist" href="/api/product/delete/{{product._id}}">
+                            <i class="fa-solid fa-trash"></i>
+                            Delete
+                        </a>
+                        <a class="add-to-wishlist" href="/api/product/update/{{product._id}}">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            Update
+                        </a>
+                        {{/if}}
             </div>
                 </div>
             </a>
         </div>
         <div class="col-md-6 mb-4">
             <!-- Content column -->
-            <a href="#" class="card-link dis">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">{{product.name}}</h5>
-                        <p class="card-text">Price: ${{product.price}}</p>
-                        <p class="card-text">Description: {{product.description}}</p>
+                        <p class="card-text"><strong>Name :</strong>{{product.name}}</p>
+                        <p class="card-text"><strong>Price: N</strong>{{product.price}}</p>
+                        <p class="card-text"><strong>Description: </strong>{{product.description}}</p>
                         {{#if product.discountedPrice}}
-                        <p class="card-text">Discounted Price: ${{product.discountedPrice}}</p>
+                        <p class="card-text"><strong>Discounted Price: N</strong>{{product.discountedPrice}}</p>
                         {{/if}}
                         {{#if product.ratings}}
                             {{#each product.ratings}}
-                                <p class="card-text">Star: {{this.star}}</p>
-                                <p class="card-text">Comment: {{this.comment}}</p>
-                                <p class="card-text">Customer: {{this.postedby.local.firstname}} {{this.postedby.local.lastname}}</p>
+                                <p class="card-text"><strong>Star: </strong>{{this.star}}</p>
+                                <p class="card-text"><strong>Comment: </strong>{{this.comment}}</p>
+                                <p class="card-text"><strong>Customer: </strong>{{this.postedby.local.firstname}} {{this.postedby.local.lastname}}</p>
                             {{/each}}
+                            {{#if product.totalrating}}
+                                <p class="card-text"><strong>TotalRating: </strong>: {{product.totalrating}}</p>
+                                 {{/if}}
                         {{/if}}
                         <!-- Form for leaving a rating -->
                         <form action="/api/product/rating/{{product._id}}" method="POST">
                             <div class="form-group">
-                                <label for="star">Star:</label>
+                                <label for="star"><strong>Star:</strong></label>
                                 <input type="number" class="form-control" id="star" name="star" min="1" max="10" required>
                             </div>
                             <div class="form-group">
-                                <label for="comment">Comment:</label>
+                                <label for="comment"><strong>Comment:</strong></label>
                                 <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary">Submit Rating</button>
@@ -52,7 +64,6 @@
                         <!-- End of rating form -->
                     </div>
                 </div>
-            </a>
         </div>
     </div>
 </div>

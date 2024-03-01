@@ -8,6 +8,12 @@ var productSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+    },
     description: {
       type: String,
       required: true,

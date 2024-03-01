@@ -149,7 +149,7 @@ a{
     text-align: center;
     gap: 10px;
     padding-top: 10px;
-    margin-left: 300px;
+    margin-left: 200px;
     display: flex;
 }
 .user-bar .user-list a {
@@ -260,4 +260,24 @@ a{
 }
 .hidden-form {
   display: none;
+}
+
+.side-bar{
+  width: 10%;
+  color: white;
+  background-color: transparent!important;
+  border: 0px !important;
+  border-color: transparent !important;
+}
+.side-bar:hover{
+  background-color: transparent!important;
+  border: 0px !important;
+  border-color: transparent !important;
+}
+.btn-close {
+  color: #fff !important; /* Set the color to white */
+}
+#offcanvasExample{
+  background-color: #2b2a29;
+  width: 20%;
 }

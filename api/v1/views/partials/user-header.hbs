@@ -1,4 +1,7 @@
 <nav class="header_section_top d-flex justify-content-between flex-column flex-sm-row">
+  {{#if admin}}
+  {{>admin_sidebar}}
+  {{/if}}
   <a href="/"><button type="button" class="home mx-auto d-block">Home</button></a>
   <div class="btn-group">
     <button class="btn cat-btn1 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">

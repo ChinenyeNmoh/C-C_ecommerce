@@ -1,11 +1,15 @@
 const Product = require('../models/product')
 const Coupon = require('../models/coupon')
-const User = require('../models/user');
+const Cart = require('../models/cart');
+const slugify = require('slugify')
 
 
 // Create new product
 const createProduct = async (req, res) => {
   try {
+    if (req.body.name) {
+      req.body.slug = slugify(req.body.name);
+    }
     const imagesArray = [{ url: req.body.images }];
     req.body.images = imagesArray;
     const newProduct = await Product.create(req.body);
@@ -159,50 +163,46 @@ if (currentPage < totalPages) {
 const updateProduct = async(req, res) => {
   const {id} = req.params;
   try{
-    if (req.body.title) {
-      req.body.slug = slugify(req.body.title);
+    if (req.body.name) {
+      req.body.slug = slugify(req.body.name);
     }
     const product = await Product.findByIdAndUpdate(id, req.body,{new: true})
     if (product) {
-      return res.status(200).json({
-        message: "Product updated successfully",
-        data: product,
-      });
+      req.flash('success', "Product updated successfully");
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl)
+     
     } else {
-      return res.status(404).json({
-        message: "Product not found",
-      });
+      req.flash('error', "Product not found");
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl)
     }
   }catch(err){
-    return res.status(500).json({
-      message: err.message,
-    });
+    req.flash('error', err.message);
+    const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl)
   }
 }
 
 
-//delete a product
-const deleteProduct = async(req, res) => {
-  const {id} = req.params;
-  try{
-    const product = await Product.findByIdAndDelete(id)
+const deleteProduct = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const product = await Product.findByIdAndDelete(id);
+    const cart = await Cart.findOneAndDelete({ "products.productId": id });
     if (product) {
-      return res.status(200).json({
-        message: `Product with id ${id} deleted successfully`,
-        data: product,
-      });
+      req.flash('success', "Product deleted successfully");
+      return res.redirect('/api/product/');
     } else {
-      return res.status(404).json({
-        message: `Product with id ${id} not found`,
-      });
+      req.flash('error', "Product not found");
+      return res.redirect('/');
     }
-  }catch(err){
-    return res.status(500).json({
-      message: err.message,
-    });
+  } catch (err) {
+    console.error("Error deleting product:", err);
+    req.flash('error', "An error occurred while deleting the product");
+    return res.redirect('/');
   }
-}
-
+};
 
 // ratings
 const productRating = async (req, res) => {
