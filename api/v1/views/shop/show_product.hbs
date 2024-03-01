@@ -1,0 +1,58 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <!-- Image column -->
+            <a href="#" class="card-link dis">
+                <div class="card">
+                    <img src="{{product.images.[0].url}}" class="card-img-top" alt="{{product.name}}">
+                    <div class="adds d-flex justify-content-center">
+                    <a class="add-to-cart" href="/api/cart/{{product._id}}" >
+                        <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                             Add to Cart
+                        </a>
+
+                        <a class="add-to-wishlist" href="/api/user/wishlist/{{product._id}}">
+                            <i class="fa-regular fa-heart" aria-hidden="true"></i>
+                            Add to Wishlist
+                        </a>
+            </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 mb-4">
+            <!-- Content column -->
+            <a href="#" class="card-link dis">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{product.name}}</h5>
+                        <p class="card-text">Price: ${{product.price}}</p>
+                        <p class="card-text">Description: {{product.description}}</p>
+                        {{#if product.discountedPrice}}
+                        <p class="card-text">Discounted Price: ${{product.discountedPrice}}</p>
+                        {{/if}}
+                        {{#if product.ratings}}
+                            {{#each product.ratings}}
+                                <p class="card-text">Star: {{this.star}}</p>
+                                <p class="card-text">Comment: {{this.comment}}</p>
+                                <p class="card-text">Customer: {{this.postedby.local.firstname}} {{this.postedby.local.lastname}}</p>
+                            {{/each}}
+                        {{/if}}
+                        <!-- Form for leaving a rating -->
+                        <form action="/api/product/rating/{{product._id}}" method="POST">
+                            <div class="form-group">
+                                <label for="star">Star:</label>
+                                <input type="number" class="form-control" id="star" name="star" min="1" max="10" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="comment">Comment:</label>
+                                <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Rating</button>
+                        </form>
+                        <!-- End of rating form -->
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>

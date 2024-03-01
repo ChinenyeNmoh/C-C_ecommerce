@@ -1,0 +1,69 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card existed">
+                <div class="card-body">
+                    <h3 class="card-title">My Information</h3>
+                    {{#if user.google}}
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">First Name:</span> {{user.google.firstname}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">Last Name:</span> {{user.google.lastname}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">Email:</span> {{user.google.email}}</p>
+                    </div>
+                    {{else}}
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">First Name:</span> {{user.local.firstname}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">Last Name:</span> {{user.local.lastname}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">Email:</span> {{user.local.email}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">Phone No:</span> {{user.local.mobile}}</p>
+                    </div>
+                    {{/if}}
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">Address:</span> {{user.address}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3 class="text-decoration-underline mt-3 mb-3 ml-10">Update your Information</h3>
+<div class="container-fluid mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <form action="/api/user/update" method="POST" id="address-form">
+                        <div class="mb-3">
+                            <label for="firstname" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="firstname" name="firstname">
+                        </div>
+                        <div class="mb-3">
+                            <label for="lastname" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="lastname" name="lastname">
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="address" name="address">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Update Information</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

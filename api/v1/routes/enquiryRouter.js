@@ -14,8 +14,8 @@ const { ensureAuth,
     validateId,
   validateLogin} = require('../middlewares/auth')
 
-router.post('/', ensureAuth, ensureAdmin, createEnquiry)
-router.put('/:id', validateId, ensureAuth, ensureAdmin, updateEnquiry)
+router.post('/', ensureAuth, createEnquiry)
+router.put('/:id', validateId, ensureAuth,  updateEnquiry)
 router.delete('/:id', validateId, ensureAuth, ensureAdmin, deleteEnquiry)
 router.get("/:id", ensureAdmin, getEnquiry);
 router.get("/", ensureAdmin, getAllEnquiry);

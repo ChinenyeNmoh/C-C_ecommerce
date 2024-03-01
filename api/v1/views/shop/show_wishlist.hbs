@@ -1,0 +1,36 @@
+<div class="container-fluid">
+    <div class="row">
+        {{#each product}}
+        <div class="col-md-3 mb-4"> <!-- Use col-md-3 to have 4 columns on medium screens -->
+            <!-- Image column -->
+            <a href="#" class="card-link dis">
+                <div class="card">
+                    {{#each images}}
+                        <img src="{{this.url}}" class="card-img-top" alt="{{../../name}}">
+                    {{/each}}
+                   
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">{{name}}</h5>
+                        <p class="card-text">Price: ${{price}}</p>
+                        <p class="card-text">Description: {{description}}</p>
+                        {{#if discountedPrice}}
+                            <p class="card-text">Discounted Price: ${{discountedPrice}}</p>
+                        {{/if}}
+                              <div class="adds d-flex justify-content-center">
+                    <a class="add-to-cart" href="/api/cart/{{this._id}}" >
+                        <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                             Add to Cart
+                        </a>
+
+                        <a class="add-to-wishlist" href="/api/user/wishlist/{{this._id}}">
+                            <i class="fa-regular fa-heart" aria-hidden="true"></i>
+                            remove
+                        </a>
+                    </div>
+                    </div>
+                </div>
+        </div>
+        {{/each}}
+    </div>
+</div>

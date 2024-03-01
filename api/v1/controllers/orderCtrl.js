@@ -13,34 +13,33 @@ const flw = new Flutterwave(process.env.PUBLIC_KEY, process.env.SECRET_KEY);
 
 const checkOut = async (req, res) => {
   const { _id } = req.user;
-  const { paymentMethod, payload } = req.body;
-
+  const paymentMethod = req.body.paymentMethod;
+  const payload = {}
   try {
-    const alreadyOrdered = await Order.findOne({ user: _id });
-    if (alreadyOrdered) {
-      await Order.findByIdAndDelete(alreadyOrdered._id);
-    }
-
     const userCart = await Cart.findOne({ orderedby: _id });
     if (!userCart) {
-      return res.status(404).json({ message: "Cart not found" });
+      req.flash('error', "Cart not found")
+      const previousUrl = req.headers.referer || '/';
+        res.redirect(previousUrl);
     }
 
     if (!paymentMethod) {
-      return res.status(400).json({ message: "Please select a payment method" });
+    req.flash('error', "Please select a payment Method")
+    const previousUrl = req.headers.referer || '/';
+        res.redirect(previousUrl);
     }
 
     let finalAmt = userCart.totalAfterDiscount || userCart.cartTotal;
     let newOrder = {};
+    const shippingFee = 5000;
 
     if (paymentMethod === "cash on delivery") {
       const address = await Address.findOne({ user: _id });
 
       if (!address) {
-        return res.status(404).json({ message: "Address not found" });
+        res.flash('warning', "No shipping address found")
       }
 
-      const shippingFee = 5000;
       newOrder = {
         user: _id,
         address: address._id,
@@ -54,6 +53,19 @@ const checkOut = async (req, res) => {
     }
 
     if (paymentMethod === "card") {
+      const Total = finalAmt + shippingFee
+      payload.card_number = req.body.card_number;
+      payload.cvv = req.body.cvv;
+      payload.expiry_month = req.body.expiry_month;
+      payload.expiry_year = req.body.expiry_year;
+      payload.fullname = req.body.fullname;
+      payload.currency = 'NGN'
+      payload.amount = Total
+      payload.redirect_url = 'http://localhost:5000/api/order/getmyorder';
+      payload.email = req.user.google.email || req.user.local.email;
+      payload.phone_number = req.user.local?.mobile;
+      payload.enckey = process.env.ENCRYPTION_KEY;
+      payload.tx_ref = 'MC-32444ee--4eerye4euee3rerds4423e43e'
       const response = await flw.Charge.card(payload);
       console.log(response);
 
@@ -63,11 +75,11 @@ const checkOut = async (req, res) => {
           "mode": "pin",
           "pin": 3310
         };
-        /*if (response.meta.authorization.mode === 'redirect') {
+        if (response.meta.authorization.mode === 'redirect') {
           let url = response.meta.authorization.redirect
-          opn(url)
           console.log(url)
-      }*/
+          return res.redirect(url);
+      }
         
         const reCallCharge = await flw.Charge.card(payload2);
         const callValidate = await flw.Charge.validate({
@@ -104,7 +116,7 @@ const checkOut = async (req, res) => {
     }
     const myOrder = await Order.create(newOrder);
     await myOrder.populate([
-      { path: 'address', select: 'firstname lastname street city state landmark' },
+      { path: 'address', select: 'firstname lastname street city state landmark recipientPhoneNo' },
       { path: 'user', select: 'local google address' },
       { path: 'products.productId', select: 'name price images', 
       populate: [
@@ -114,10 +126,10 @@ const checkOut = async (req, res) => {
     ]);
 
     const billingOwner = await User.findById(myOrder.user);
-    const firstname = billingOwner.local ? billingOwner.local.firstname : billingOwner.google.firstname;
-    const lastname = billingOwner.local ? billingOwner.local.lastname : billingOwner.google.lastname;
-    const email = billingOwner.local ? billingOwner.local.email : billingOwner.google.email;
-    const phoneNo = billingOwner.local ? billingOwner.local.mobile || "" : "";
+    const firstname = billingOwner.local.firstname || billingOwner.google.firstname;
+    const lastname = billingOwner.local.lastname || billingOwner.google.lastname;
+    const email = billingOwner.local.email || billingOwner.google.email;
+    const phoneNo = billingOwner.local.mobile || "" 
     const htmlContent = processOrderEmailTemplate(myOrder, firstname, lastname, email, phoneNo);
     await sendEmail(email, 'Order confirmation', htmlContent);
 
@@ -133,52 +145,58 @@ const checkOut = async (req, res) => {
     const updated = await Product.bulkWrite(update, {});
     const delCart = await Cart.findOne({ orderedby: _id });
 
-    if (delCart) {
-      await Cart.findByIdAndDelete(delCart._id);
-    }
-
-    return res.status(201).json({
-      message: "New Order Created. A confirmation email has been sent to your account",
-      data: myOrder
-    });
+   if (delCart) {
+    await Cart.findByIdAndDelete(delCart._id);
+  }
+    req.flash('success', 'Order has been created')
+    res.render('shop/order', {layout: "main", 
+    title: 'Orders', 
+    myOrder, 
+    firstname, 
+    lastname, 
+    email, 
+    phoneNo,
+    isAuthenticated: req.user,
+    admin: req.user?.role,
+  })
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: "Internal server error", error: err.message });
+    res.render('error', {layout: "main", title: 'Error', err})
   }
 };
 
-
-// get user order
 const getMyOrder = async (req, res) => {
-  const { _id } = req.user
+  const { _id } = req.user;
   try {
-    const userOrder = await Order.findOne({ user: _id })
-    if (!userOrder) {
-      res.status(404).json({
-        message: "Order not found"
-      })
-    }
-    await userOrder.populate([
-      { path: 'address', select: 'firstname lastname street city state landmark' },
+    const myOrders = await Order.find({ user: _id }).populate([
+      { path: 'address', select: 'firstname lastname street city state landmark recipientPhoneNo' },
       { path: 'user', select: 'local google address' },
       { path: 'products.productId', select: 'name price images', 
-      populate: [
-        { path: 'category', select: 'title' },
-        { path: 'productType', select: 'title' }
-      ] }
+        populate: [
+          { path: 'category', select: 'title' },
+          { path: 'productType', select: 'title' }
+        ] 
+      }
     ]);
-    res.status(200).json({
-      message: "Order found",
-      data: userOrder
-    })
-  } catch (err) {
-    console.log(err)
-    res.status(500).json({
-      message: "Internal server error",
-      error: err.message,
+    
+    if (myOrders.length === 0) {
+      req.flash('error', "No Orders found");
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl);
+    }
+
+    res.render('shop/show_orders', {
+      layout: "main", 
+      title: 'Orders', 
+      myOrders, // Changed variable name to myOrders
+      isAuthenticated: req.user,
+      admin: req.user?.role,
     });
+  } catch (err) {
+    console.error(err);
+    res.render('error', { layout: "main", title: 'Error', err });
   }
-}
+};
 
 // get user order
 const getUserOrder = async (req, res) => {
@@ -205,10 +223,8 @@ const getUserOrder = async (req, res) => {
     })
   } catch (err) {
     console.log(err)
-    res.status(500).json({
-      message: "Internal server error",
-      error: err.message,
-    });
+    console.error(err);
+    res.flash('error', err.message)
   }
 }
 
@@ -224,7 +240,7 @@ const getAllOrders = async (req, res) => {
     // Populate each order with address and product details
     await Promise.all(allOrders.map(async (order) => {
       await order.populate([
-        { path: 'address', select: 'firstname lastname street city state landmark' },
+        { path: 'address', select: 'firstname lastname street city state landmark recipientPhoneNo' },
         { path: 'user', select: 'local google address' },
         { path: 'products.productId', select: 'name price images', 
         populate: [
@@ -241,10 +257,8 @@ const getAllOrders = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({
-      message: "Internal server error",
-      error: err.message
-    });
+    console.error(err);
+    res.render('error', {layout: "main", title: 'Error', err})
   }
 };
 
@@ -272,10 +286,10 @@ const confirmDelivery = async (req, res) => {
       ] }
     ]);
     const billingOwner = await User.findById(myOrder.user);
-    firstname = billingOwner.local ? billingOwner.local.firstname : billingOwner.google.firstname;
-    lastname = billingOwner.local ? billingOwner.local.lastname : billingOwner.google.lastname;
-    email = billingOwner.local ? billingOwner.local.email : billingOwner.google.email;
-    phoneNo = billingOwner.local ? billingOwner.local.mobile || "" : "";
+    firstname = billingOwner.local.firstname || billingOwner.google.firstname;
+    lastname = billingOwner.local.lastname || billingOwner.google.lastname;
+    email = billingOwner.local.email || billingOwner.google.email;
+    phoneNo = billingOwner.local.mobile ||  "";
     const htmlContent = deliveredOrderEmailTemplate(myOrder, firstname, lastname, email, phoneNo);
     await sendEmail(email, 'Order delivery confirmation', htmlContent);
     // Send a success response with the updated order
@@ -285,10 +299,7 @@ const confirmDelivery = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({
-      message: "Internal server error",
-      error: err.message
-    });
+    res.render('error', {layout: "main", title: 'Error', err})
   }
 };
 
@@ -309,10 +320,8 @@ const deleteOrder = async(req, res) => {
       }
     }catch (err) {
       console.error(err);
-      res.status(500).json({
-        message: "Internal server error",
-        error: err.message,
-      });
+      console.error(err);
+      res.render('error', {layout: "main", title: 'Error', err})
     }
 }
 module.exports = { getMyOrder, checkOut, getUserOrder, getAllOrders, confirmDelivery, deleteOrder }

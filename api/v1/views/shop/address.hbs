@@ -1,0 +1,134 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card existed ">
+                <div class="card-body">
+                    {{#if address}}
+                    <h3 class="card-title">Shipping Address</h3>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">First Name:</span> {{address.firstname}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">Last Name:</span> {{address.lastname}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">Street:</span> {{address.street}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">City:</span> {{address.city}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">State:</span> {{address.state}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">Landmark:</span> {{address.landmark}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">Phone No:</span> {{address.recipientPhoneNo}}</p>
+                    </div>
+                    {{else}}
+                    <h3 class="card-title"> No Shipping Address found.</h3>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<h3 class="text-decoration-underline mt-3">Create a new address or update your existing address</h3>
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <form action="/api/address/" method="POST" id="address-form">
+                        <div class="mb-3">
+                            <label for="firstname" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="firstname" name="firstname" required minlength="3" pattern=".{3,}" title="First name must be at least 3 characters long">>
+                             <div class="invalid-feedback">First name must be at least 3 characters long.</div>
+                            </div>
+                        <div class="mb-3">
+                            <label for="lastname" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="lastname" name="lastname" required minlength="3" pattern=".{3,}" title="Last name must be at least 3 characters long">
+                           <div class="invalid-feedback">Last name must be at least 3 characters long.</div>
+                            </div>
+
+                        <div class="mb-3">
+                            <label for="street" class="form-label">Street</label>
+                            <input type="text" class="form-control" id="street" name="street" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control" id="city" name="city" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="state" class="form-label">State</label>
+                            <input type="text" class="form-control" id="state" name="state" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="landmark" class="form-label">Landmark</label>
+                            <input type="text" class="form-control" id="landmark" placeholder="Ruby center" name="landmark">
+                        </div>
+                        <div class="mb-3">
+                            <label for="recipientPhoneNo" class="form-label">Recipient Phone Number</label>
+                            <input type="tel" class="form-control" placeholder="07038224367" name="recipientPhoneNo" pattern="[0-9]{11}" required>
+                            <small class="form-text text-muted">Enter 11-digit mobile number without spaces or special characters.</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save address</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<form id="payment-form" action="/api/order/" method="POST">
+    <div class="mb-3 payment">
+        <label for="paymentMethod" class="form-label">Payment Method</label>
+        <select class="form-select" id="paymentMethod" name="paymentMethod" required>
+            <option value="">Select Payment Mode</option>
+            <option value="card">Card</option>
+            <option value="cash on delivery">Cash on Delivery</option>
+        </select>
+    </div>
+    
+    <div id="card-details" style="display: none; width: 50%">
+        <div class="mb-3">
+            <label for="card_number" class="form-label">Card Number</label>
+            <input type="text" class="form-control" id="card_number" name="card_number">
+        </div>
+        <div class="mb-3">
+            <label for="cvv" class="form-label">CVV</label>
+            <input type="text" class="form-control" id="cvv" name="cvv">
+        </div>
+        <div class="mb-3">
+            <label for="expiry_month" class="form-label">Expiry Month</label>
+            <input type="text" class="form-control" id="expiry_month" name="expiry_month">
+        </div>
+        <div class="mb-3">
+            <label for="expiry_year" class="form-label">Expiry Year</label>
+            <input type="text" class="form-control" id="expiry_year" name="expiry_year">
+        </div>
+        <div class="mb-3">
+            <label for="fullname" class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="fullname" name="fullname">
+        </div>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<script>
+    const paymentMethodSelect = document.getElementById('paymentMethod');
+    const cardDetails = document.getElementById('card-details');
+
+    paymentMethodSelect.addEventListener('change', function() {
+        const selectedValue = paymentMethodSelect.value;
+        if (selectedValue === 'card') {
+            cardDetails.style.display = 'block';
+        } else {
+            cardDetails.style.display = 'none';
+        }
+    });
+</script>
+

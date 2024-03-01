@@ -1,0 +1,263 @@
+
+/*--------------------------------------------------------------------- import Files ---------------------------------------------------------------------*/
+
+
+/*--------------------------------------------------------------------- skeleton ---------------------------------------------------------------------*/
+
+* {
+    box-sizing: border-box !important;
+    transition: ease all 0.5s;
+}
+
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+body {
+    background-color: rgb(240, 237, 233);
+    font-size: 14px;
+    line-height: 1.80857;
+    font-weight: normal;
+    overflow-x: hidden;
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+}
+.carousel-container {
+  width: 50%; /* Set the width of the carousel container */
+  margin: 0 auto; /* Center the carousel container horizontally */
+}
+
+.carousel {
+  max-width: 100%; /* Ensure the carousel doesn't exceed its container */
+}
+.coupon {
+  height: 200px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  background-color: rgb(197, 126, 27);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+  width: 40%;
+}
+
+.coupon h2 {
+  margin-top: 0;
+  font-size: 24px;
+  color: #333;
+}
+
+.coupon p {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.coupon input {
+  width: 50%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+ul,
+li,
+ol {
+    margin: 0px;
+    padding: 0px;
+    color: white;
+    list-style: none;
+}
+a{
+  text-decoration: none;
+  color: #2b2a29;
+}
+
+
+.container-fluid {
+    width: 100%;
+  }
+  
+  @media (min-width: 640px) {
+    .container-fluid {
+      max-width: 640px;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .container-fluid {
+      max-width: 768px;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .container-fluid {
+      max-width: 1024px;
+    }
+  }
+  
+  @media (min-width: 1280px) {
+    .container-fluid {
+      max-width: 1280px;
+    }
+  }
+  
+  @media (min-width: 1536px) {
+    .container-fluid {
+      max-width: 1536px;
+    }
+}
+
+
+
+/* header top section start */
+
+.header_section_top {
+    width: 100%;
+    margin-bottom: 10px;
+    background-color: #2b2a29;
+    height: 40px;
+    gap: 10px;
+    
+}
+
+.card-img-top {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+.dis{
+  text-decoration: none;
+}
+
+.card-link {
+    text-decoration: none; /* Remove underline from links */
+    color: inherit; /* Inherit text color */
+}
+
+.mb-4 {
+    margin-bottom: 1rem; /* Add margin bottom for spacing between cards */
+}
+
+.footer_section{
+    background-color: #2b2a29;
+}
+
+
+.user-bar {
+    text-align: center;
+    gap: 10px;
+    padding-top: 10px;
+    margin-left: 300px;
+    display: flex;
+}
+.user-bar .user-list a {
+    color: white !important;
+    margin-right: 10px;
+}
+
+.cat-btn1{
+    background-color: transparent;
+    border: 0px;
+    color: white;
+    margin-bottom: 0px;
+    margin-left: 20px;
+    padding-top: 10px;
+    
+}
+.cat-btn{
+    background-color: transparent;
+    border: 0px;
+    color: white;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    padding-top: 10px;
+    
+}
+.pagination{
+  display: flex;
+}
+
+.pagination .page-item a {
+  color: black;
+  font-weight: bold;
+
+}
+
+.qty{
+  display: flex;
+  justify-content: space-between;
+}
+
+.adds{
+  justify-content:space-between;
+  gap: 3.5rem;
+}
+.adds2{
+  justify-content:space-between;
+  gap: 3rem;
+  margin-bottom: 5px;
+}
+
+#enquiryForm{
+  width: 50%;
+}
+.del-cart {
+  color: white;
+  width: 50%;
+  margin-left: auto; 
+  margin-right: auto;
+  border-radius: 10px;
+  padding-left: 10px;
+}
+
+.check-btn{
+  width: 40%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.title{
+  font-weight: bold;
+}
+
+.home{
+  background-color: transparent;
+  color: white;
+  padding-top: 10px;
+  font-weight: bold;
+  border: 0px;
+}
+.address {
+  display: none;
+  margin-right: auto; /* Push the form to the left */
+  margin-left: 0; /* Reset margin-left */
+  width: 80%;
+}
+
+.coupon-div{
+  width: 40%;
+  margin-bottom: 10px;
+  margin-right: 0px;
+}
+.existed{
+  width: 50%;
+}
+.payment{
+  width: 50%;
+}
+.enquiry {
+  color: white;
+  margin: auto;
+  text-align: center;
+}
+.enq-btn {
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block; /* Ensures the button is displayed as a block element */
+}
+.hidden-form {
+  display: none;
+}

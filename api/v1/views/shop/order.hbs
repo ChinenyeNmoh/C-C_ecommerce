@@ -1,0 +1,109 @@
+<div class="container-fluid">
+    <h3>Order created successfully</h3>
+    <div class="row">
+        {{#each myOrder.products}}
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <!-- Wrap only the image with the link -->
+                <a href="/api/product/{{{this.productId._id}}}" class="card-link dis">
+                    <img src="{{this.productId.images.[0].url}}" class="card-img-top" alt="{{this.productId.name}}">
+                </a>
+                <div class="card-body">
+                    <h5 class="card-title">{{this.productId.name}}</h5>
+                    <p class="card-text fw-bold">Price: N{{this.price}}</p>
+                    <p class="card-text fw-bold">Quantity: {{this.quantity}}</p>
+                    {{#if this.productId.discountPrice}}
+                    <p class="card-text">Discounted Price: N{{this.productId.discountedPrice}}</p>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card" style="width: 50%;">
+                <div class="card-body">
+                    <h5 class="card-title">New Order Details</h5>
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Subtotal</th>
+                                <td>N{{myOrder.subTotal}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Subtotal After Coupon</th>
+                                <td>N{{myOrder.subTotalAfterCoupon}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Shipping Fee</th>
+                                <td>N{{myOrder.shippingFee}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Total Price</th>
+                                <td>N{{myOrder.totalPrice}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Payment Method</th>
+                                <td>{{myOrder.paymentMethod}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Payment Status</th>
+                                <td>{{myOrder.paymentStatus}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Paid At</th>
+                                <td>{{myOrder.paidAt}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt-3 ">
+    <div class="row">
+        <div class="col-12">
+            <div class="card existed">
+                <div class="card-body">
+                    <h3 class="card-title">Billing Address</h3>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">First Name:</span> {{firstname}} {{lastname}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">Address:</span> {{myOrder.user.address}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">Email:</span> {{email}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">Phone no:</span> {{phoneNo}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col-12">
+            <div class="card existed">
+                <div class="card-body">
+                    <h3 class="card-title">Shipping Address</h3>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">Full Name:</span> {{myOrder.address.firstname}} {{myOrder.address.lastname}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">Address:</span> {{myOrder.address.street}}  {{myOrder.address.state}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">Recipient Phone:</span> {{myOrder.address.recipientPhoneNo}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

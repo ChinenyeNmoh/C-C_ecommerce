@@ -13,12 +13,16 @@ const createUser = async (req, res) => {
     const findUser = await User.findOne({ "local.email": email });
     const findPhoneNo = await User.findOne({ "local.mobile": req.body.mobile });
     const find_google_user = await User.findOne({ "google.email": email });
-    if(findPhoneNo) {
-      return res.status(400).json({ "message": "Phone number already exists!" });
-    }
     if (findUser) {
-      return res.status(400).json({ "message": "User already exists!" });
-    } else if(find_google_user){
+      req.flash('error', 'User already exist')
+      const previousUrl = req.headers.referer || '/';
+      res.redirect(previousUrl);
+
+    } else if(findPhoneNo) {
+       req.flash('error', "Phone number already exists!")
+       const previousUrl = req.headers.referer || '/';
+       res.redirect(previousUrl);
+    }else if(find_google_user){
       const salt = await bcrypt.genSalt(10);
       const hashPassword1 = await bcrypt.hash(req.body.password, salt);
       const hashPassword2 = await bcrypt.hash(req.body.confirm_password, salt);
@@ -38,11 +42,9 @@ const createUser = async (req, res) => {
         },
         { new: true }
       );
-      res.status(200).json({
-        message: "User created",
-        data: updateLocalUser
-      })
+      req.flash('success', 'User created successfully')
       console.log('Google user updated with Local info');
+      res.redirect('user/login')
     }else {
       const user = {
         "local.firstname": req.body.firstname,
@@ -67,15 +69,14 @@ const createUser = async (req, res) => {
       // Send the verification email
       await sendEmail(newUser.local.email, 'Account verification',htmlContent);
 
-      return res.status(201).send({ 
-        message: "An email has been sent to your account. Please verify your email address." 
-      });
+      req.flash('success', "An email has been sent to your account. Verify your email address to login.")
+      res.redirect('/')
+   
     }
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      "message": err.message
-    });
+    req.flash('error', err.message);
+    const previousUrl = req.headers.referer || '/';
+    res.redirect(previousUrl);
   }
 };
 
@@ -88,7 +89,8 @@ const verifyToken = async (req, res) => {
     const user = await User.findById(id);
 
     if (!user) {
-      return res.status(400).send({ message: "No user found with this id" });
+      req.flash('error', 'User not found')
+      res.redirect('/api/user/')
     }
 
     const userToken = await Token.findOne({
@@ -96,7 +98,8 @@ const verifyToken = async (req, res) => {
       token: token,
     });
     if (!userToken) {
-      return res.status(400).send({ message: "Invalid token" });
+      req.flash('error', 'invalid token')
+      res.redirect('/api/user/')
     }
     // Token is valid, update the user and delete the token
     await User.findByIdAndUpdate(
@@ -106,56 +109,52 @@ const verifyToken = async (req, res) => {
     );
 
     await Token.findByIdAndDelete(userToken._id);
-    res.status(200).send({ message: "Email verified successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: error.message
-    });
+   req.flash('success', 'Email verified. You can log in')
+   res.redirect('/api/user/login')
+  } catch (err) {
+    req.flash('error', err.message);
   }
 };
 
-// login success function
-const successRoute = (req, res) => {
-  // Access user information from req.user
-  const user = req.user;
 
-  try {
-    if (!user) {
-      // Handle the case where user information is not available
-      return res.status(401).json({ message: 'User not authenticated' });
-    }else{
-      return res.json({ message: 'Authentication successful', user: user });
-    }
-    
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ 
-      message: error.message 
-    });
-  }
+// get register page
+const signUp = (req, res) => {
+    res.render('user/signup', {
+       layout: 'main', 
+       title: 'User', 
+       isAuthenticated: req.user, 
+       admin: req.user?.role, });
+};
+// get login page
+const signIn = (req, res) => {
+  res.render('user/login', { 
+    layout: 'main', 
+    title: 'User', 
+    isAuthenticated: req.user, 
+    admin: req.user?.role, });
 };
 
-// login fail function
-const failed = (req, res) => {
-  res.status(400).json({ 
-    message: 'Login failed' 
-  });
+const getForgotPassword = (req, res) => {
+  res.render('user/forgot_password', { 
+    layout: 'main', 
+    title: 'User', 
+    isAuthenticated: req.user, 
+    admin: req.user?.role, });
 };
 
 // request password reset
 const forgotPassword = async (req, res) => {
   const email = req.body.email;
   if(!email){
-    return res.status(400).json({
-      message: "Provide your email address"
-    })
+    req.flash('error', "Provide your email address")
   }
   try {
     const user = await User.findOne({ "local.email": email });
 
     if (!user) {
-      return res.status(400).json({ message: "No user found with this email" });
+      req.flash('error', "No User found with this email address")
+      const previousUrl = req.headers.referer || '/';
+      res.redirect(previousUrl);
     }
 
     if (user.isPasswordModified === true) {
@@ -167,9 +166,7 @@ const forgotPassword = async (req, res) => {
     }
 
     if (user.isVerified === false) {
-      return res.status(400).json({
-        message: "An Email was sent to your account. Verify your account to login",
-      });
+      req.flash('error', "Check your email for verification link")
     } else {
       // Generate a token
       const token = await new passwordResetToken({
@@ -183,28 +180,25 @@ const forgotPassword = async (req, res) => {
 
       // Send the verification email
       await sendEmail(user.local.email, 'Reset Password', htmlContent);
-
-      return res.status(201).json({
-        message: "An email has been sent to your account. Click on it to reset your password.",
-      });
+      req.flash('success', "An email has been sent to your account. Click on it to reset your password.")
+      const previousUrl = req.headers.referer || '/';
+      res.redirect(previousUrl);
     }
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      message:err.message,
-    });
+    req.flash('error', err.message);
   }
 };
 
 // reset password
 const resetPassword = async (req, res) => {
   const { id, token } = req.params;
+  console
 
   try {
     const user = await User.findById(id);
 
     if (!user) {
-      return res.status(400).send({ message: "No user found with this id" });
+      req.flash('error', 'No User Found')
     }
 
     const userToken = await passwordResetToken.findOne({
@@ -213,7 +207,7 @@ const resetPassword = async (req, res) => {
     });
 
     if (!userToken) {
-      return res.status(400).send({ message: "Token is Invalid" });
+      req.flash('error', 'Invalid Token')
     }
 
     // Token is valid, update the user and delete the token
@@ -224,38 +218,43 @@ const resetPassword = async (req, res) => {
     );
 
     // The TTL index will automatically remove expired tokens
-    await passwordResetToken.findByIdAndDelete(userToken._id);
-    res.status(200).send({ message: "You are a verified user. You can update your password now" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ 
-      message: error.message
-    });
+   // await passwordResetToken.findByIdAndDelete(userToken._id);
+    req.flash('success', "You are a verified User. Update your account now")
+    res.render('user/reset_password', {
+      layout: 'main', 
+      title: 'Reset Password', 
+      id, 
+      token, 
+      isAuthenticated: req.user, 
+      admin: req.user?.role, })
+  } catch (err) {
+    req.flash('error', err.message);
   }
 };
 
 
 const updatePassword = async (req, res) => {
-  const { id, token } = req.params;
+  const id = req.params.id;
   const newPassword = req.body.newPassword;
   const confirmPassword = req.body.confirmNewPassword;
-
   try {
     // Check if the user exists
     const user = await User.findById(id);
+    console.log(user)
     if (!user) {
-      return res.status(400).send({ message: "No user found with this id" });
+      req.flash('error', 'User not found')
+      return res.redirect('/api/user/register');
     }
 
     // Check if the password has already been modified
     if (!user.isPasswordModified) {
       const existingToken = await passwordResetToken.findOne({ userId: user._id });
+      console.log(existingToken)
 
       if (existingToken) {
         // Re-send the existing token
-        return res.status(400).json({
-          message: "Check your mail for a password reset token",
-        });
+        res.flash('error', "Check your email for a reset link")
+        return res.redirect('/api/user/register');
       }
 
       //if the password reset token has expired, generate a new token
@@ -270,14 +269,14 @@ const updatePassword = async (req, res) => {
 
       // Send the verification email
       await sendEmail(user.local.email, 'Reset Password', htmlContent);
-
-      return res.status(201).json({
-        message: "An email has been sent to your account. Click on it to reset your password.",
-      });
+      req.flash('error', 'Check your mail for password reset token')
+      return res.redirect('/api/user/login')
     }else{
        // Validate and compare passwords
     if (newPassword !== confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match" });
+      req.flash('error', 'Password do not match')
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl);
     }
 
     // Hash the passwords
@@ -292,18 +291,12 @@ const updatePassword = async (req, res) => {
       { new: true }
     );
 
-    return res.status(200).json({
-      message: "Password reset successful",
-      data: updatedUser,
-    });
+    req.flash('success', "password updated.")
+    return res.redirect('/api/user/login')
     }
    
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      message: "Failed to reset password. Please try again later.",
-      message: err.message
-    });
+    req.flash('error', err.message);
   }
 };
 
@@ -318,10 +311,8 @@ const getAllUsers = async (req, res) => {
       data: getUsers,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: error.message,
-    });
+    req.flash('error', err.message);
+    res.render('error', { layout: 'main', err, title: 'User' });
   }
 };
 
@@ -342,9 +333,34 @@ const getUser = async (req, res) => {
     }
     } catch (error) {
     console.error(error);
-    return res.status(500).json({
-      message: error.message,
-    });
+    req.flash('error', err.message);
+    res.render('error', { layout: 'main', err, title: 'User' });
+  }
+};
+
+// get a user function
+const getMyUser = async (req, res) => {
+  const id = req.user._id;
+  console.log(id)
+  try {
+    const user = await User.findById(id);
+    const googleuser = user.google
+    if(!user){
+      return res.status(404).json({
+        message: 'User not found',
+      });
+    }else{
+      res.render('user/account', {
+        layout: 'main', 
+        title: "My Account", 
+        user,
+        googleuser,
+        isAuthenticated: req.user,
+         admin: req.user?.role,})
+    }
+    } catch (error) {
+    console.error(err);
+    req.flash('error', err.message);
   }
 };
 
@@ -365,10 +381,8 @@ const deleteUser = async(req, res) => {
       message: 'User deleted'
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      message: 'Internal server error',
-    });
+    req.flash('error', err.message);
+    res.render('error', { layout: 'main', err, title: 'User' });
   }
 };
 
@@ -391,42 +405,35 @@ const updateUser = async (req, res) => {
     );
 
     if (user) {
-      return res.status(200).json({
-        message: "User updated successfully",
-        data: user,
-      });
+      req.flash('success', 'Information updated')
+      const previousUrl = req.headers.referer || '/';
+      res.redirect(previousUrl);
     } else {
-      return res.status(404).json({
-        message: "User not found",
-      });
+      req.flash('error', 'User not found')
+      const previousUrl = req.headers.referer || '/';
+      res.redirect(previousUrl);
     }
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      message: error.message,
-    });
+    req.flash('error', err.message);
   }
 };
 
 const logOut = (req, res) => {
   try {
-    console.log('logging out', req.user ? req.user._id : 'No user');
     req.logout(function(err) {
       if (err) {
         console.error(err);
-        return res.status(500).json({
-          message: err.message,
-        });
+        req.flash('error', err.message)
+        const previousUrl = req.headers.referer || '/';
+        res.redirect(previousUrl);
       }
-      res.status(200).json({
-        message: "User logged out successfully"
-      });
+      req.flash('success', "User logged out")
+      res.redirect('/');
     });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      message: err.message,
-    });
+    req.flash('error', err.message);
+    const previousUrl = req.headers.referer || '/';
+    res.redirect(previousUrl);
   }
 };
 
@@ -450,10 +457,8 @@ const blockUser = async (req, res) => {
       message: 'User blocked',
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      message: 'Internal server error',
-    });
+    req.flash('error', err.message);
+    res.render('error', { layout: 'main', err, title: 'User' });
   }
 };
 
@@ -476,16 +481,14 @@ const unBlockUser = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({
-      message: err.message,
-    });
+    req.flash('error', err.message);
+    res.render('error', { layout: 'main', err, title: 'User' });
   }
 };
 
-// add product to wishlist
 const wishList = async (req, res) => {
   const { _id } = req.user;
-  const { prodId } = req.body;
+  const prodId = req.params.id;
   
   try {
     const user = await User.findById(_id);
@@ -501,10 +504,9 @@ const wishList = async (req, res) => {
             new: true,
           }
         );
-        res.json({
-          message: 'product removed successfully',
-          data: user
-        });
+        req.flash('success', 'Product removed successfully ');
+        const previousUrl = req.headers.referer || '/';
+        res.redirect(previousUrl);
       } else {
         let updated_user = await User.findByIdAndUpdate(
           _id,
@@ -516,25 +518,22 @@ const wishList = async (req, res) => {
           }
         );
         await updated_user.populate([
-          { path: 'wishlist', select: 'name  description price discountedPrice images.url' },
+          { path: 'wishlist', select: 'name description price discountedPrice images.url' },
         ]);
-        res.json({
-          message: "product added to wishlist successfully",
-          data: updated_user.wishlist
-        });
+        req.flash('success', 'Product added to wishlist');
+        // Redirect to the previous URL
+        const previousUrl = req.headers.referer || '/';
+        res.redirect(previousUrl);
       }   
     }else{
-      return res.status(404).json({
-        message: 'User not found',
-      });
+      req.flash('error', 'User not found');
     }
   } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      message: err.message,
-    });
+    req.flash('error', err.message);
+    res.render('error', { layout: 'main', err, title: 'User' });
   }
 };
+
 
 // get user wishlist
 const getWishList = async(req, res) => {
@@ -542,30 +541,41 @@ const getWishList = async(req, res) => {
   try{
     const findUser = await User.findById(_id)
     if(!findUser){
-      return res.status(404).json({
-        message: "User not found"
-      })
+      req.flash('error', "User not found");
+      const previousUrl = req.headers.referer || '/';
+      res.redirect(previousUrl);
     }
     const wish = await findUser.populate([
-      { path: 'wishlist', select: 'name  description price discountedPrice images.url' },
+      { path: 'wishlist' },
     ])
-    res.json({
-      message: "wishlist retrieved successfully",
-      data: wish.wishlist
-    });
+    const product = wish.wishlist
+    console.log(product)
+    if(!product.length){
+      req.flash('error', "WishList is empty");
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl);
+    }
+    return res.render('shop/show_wishlist', {
+       layout: 'main', 
+       title: "products", 
+       product, 
+       isAuthenticated: req.user, 
+       admin: req.user?.role,})
+
   }catch(err) {
-    console.log(err);
-    return res.status(500).json({
-      message: err.message,
-    });
+    req.flash('error', err.message);
+    res.render('error', { layout: 'main', err, title: 'User' });
   }
 }
 
 // Export the createUser function
 module.exports = {
   createUser, 
-  successRoute,
-  failed, getAllUsers,
+  signUp,
+  signIn,
+  getForgotPassword,
+  getAllUsers,
+  getMyUser,
   verifyToken,
   wishList,
   getWishList,

@@ -1,0 +1,42 @@
+<div class="container-fluid">
+    <div class="row">
+        {{#each products}}
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <!-- Wrap only the image with the link -->
+                <a href="/api/product/{{{this._id}}}" class="card-link dis">
+                    <img src="{{this.images.[0].url}}" class="card-img-top" alt="{{this.name}}">
+                </a>
+                <div class="card-body">
+                    <div class="adds d-flex justify-content-center">
+                        <!-- Modify the link to call JavaScript function when clicked -->
+                        <!-- Modify the link to call JavaScript function when clicked -->
+                    <a class="add-to-cart" href="/api/cart/{{this._id}}" >
+                        <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                             Add to Cart
+                        </a>
+
+                        <a class="add-to-wishlist" href="/api/user/wishlist/{{this._id}}">
+                            <i class="fa-regular fa-heart" aria-hidden="true"></i>
+                            Add to Wishlist
+                        </a>
+                    </div>
+                    <h5 class="card-title">{{this.name}}</h5>
+                    <p class="card-text fw-bold">Price: ${{this.price}}</p>
+                    {{#if this.discountPrice}}
+                    <p class="card-text">Discounted Price: ${{this.discountedPrice}}</p>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</div>
+
+
+<nav aria-label="Page navigation example" class="prod-cat d-flex justify-content-center">
+    <ul class="pagination">
+        <li class="page-item"><a class="page-link" href="{{{prevPage}}}">Previous</a></li>
+        <li class="page-item" style="margin-left: 15px;"><a class="page-link next" href="{{{nextPage}}}">Next</a></li>
+    </ul> <!-- close ul -->
+</nav>

@@ -1,90 +1,78 @@
 const Cart = require("../models/cart");
 const Coupon = require("../models/coupon");
 const Product = require("../models/product");
+const { ObjectId } = require('mongodb');
 
-// create cart
+
 const createCart = async (req, res) => {
-  const { cart } = req.body;
+  const cartItemId = req.params.id;
   const { _id } = req.user;
 
   try {
     let products = [];
+    let cartTotal = 0;
 
+    // Retrieve the product details
+    const product = await Product.findById(cartItemId);
+    
+    // Check if the product exists
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    const quantity = await Product.findById(cartItemId).select("quantity").exec();
+    const prodName = await Product.findById(cartItemId).select("name").exec();
+    if(quantity.quantity === 0){
+      req.flash('warning',`Sorry ${prodName.name} is out of stuck`)
+     
+    }
     // Check if there is already a cart associated with the user
-    const alreadyExistCart = await Cart.findOne({ orderedby: _id });
+    let alreadyExistCart = await Cart.findOne({ orderedby: _id });
 
-    // If a cart already exists, remove it
-    if (alreadyExistCart) {
-      await Cart.findByIdAndDelete(alreadyExistCart._id)
+    if (!alreadyExistCart) {
+      // If no cart exists, create a new one
+      products.push({
+        productId: product._id,
+        price: product.discountedPrice !== 0 ? product.discountedPrice : product.price
+      });
+      cartTotal += product.price;
+      
+      // Create a new Cart instance and save it to the database
+      alreadyExistCart = await new Cart({
+        products,
+        cartTotal,
+        orderedby: _id,
+      }).save();
+      req.flash('success', 'Product added to cart');
+      const previousUrl = req.headers.referer || '/';
+      res.redirect(previousUrl);
+    } else {
+      // If cart exists, check if the product is already added
+      const addedBefore = alreadyExistCart.products.some(prod => prod.productId.equals(product._id));
+
+      if (addedBefore) {
+        req.flash('warning', 'Product has already been added to the cart');
+         // Redirect to the previous URL after adding the product to the cart
+        const previousUrl = req.headers.referer || '/';
+        res.redirect(previousUrl);
+      } else {
+        // Add the product to the existing cart
+        alreadyExistCart.products.push({
+          productId: product._id,
+          price: product.discountedPrice !== 0 ? product.discountedPrice : product.price
+        });
+        cartTotal = alreadyExistCart.cartTotal + product.price;
+        alreadyExistCart.cartTotal = cartTotal;
+        await alreadyExistCart.save();
+        req.flash('success', 'Product added to cart');
+        // Redirect to the previous URL after adding the product to the cart
+    const previousUrl = req.headers.referer || '/';
+    res.redirect(previousUrl);
+      }
     }
-    // Use a Set to keep track of unique product IDs
-    const uniqueProductIds = new Set();
-
-    // Filter the cart array to keep only unique product IDs
-    const uniqueCart = cart.filter(item => {
-      const productId = item._id.toString();
-
-      if (!uniqueProductIds.has(productId)) {
-        uniqueProductIds.add(productId);
-        return true;
-      }
-      return false;
-    });
-
-
-    // Iterate through each item in the unique cart array
-    for (const cartItem of uniqueCart) {
-      // Create an object to represent a product in the cart
-      let object = {};
-      object.productId = cartItem._id;
-
-      // Retrieve the price of the product from the Product collection in the database
-      const originalPrice = await Product.findById(cartItem._id).select("price").exec();
-      const discountedPrice = await Product.findById(cartItem._id).select("discountedPrice").exec();
-      const quantity = await Product.findById(cartItem._id).select("quantity").exec();
-      const name = await Product.findById(cartItem._id).select("name").exec();
-      if(discountedPrice.discountedPrice !== 0){
-        object.price = discountedPrice.discountedPrice;
-      }else{
-        object.price = originalPrice.price
-      }
-      if(quantity.quantity === 0){
-        return res.status(400).json({
-          message: `Sorry ${name.name} is out of stuck`
-        })
-      }
-      products.push(object);
-    }
-    // Calculate the total price of the cart
-    let cartTotal = products.reduce((total, product) => total + product.price * 1, 0);
-
-    // Create a new Cart instance and save it to the database
-    let newCart = await new Cart({
-      products,
-      cartTotal,
-      orderedby: _id,
-    }).save();
-    await newCart.populate([
-      { 
-        path: "products.productId", 
-        select: 'name images',
-        populate: [
-          { path: 'category', select: 'title' },
-          { path: 'productType', select: 'title' }
-        ]
-      }
-    ]);    
-    res.json({
-      message: "New cart created successfully",
-      data: newCart,
-    });
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({
-      message: "Internal server error",
-      error: err.message,
-    });
+    req.flash('error', err.message);
   }
 };
 
@@ -97,9 +85,7 @@ const increaseQuantity = async (req, res) => {
       const productPrice = alreadyExistCart.products.find(product => product.productId == id)?.price;
 
       if (!productPrice) {
-        return res.status(404).json({
-          message: "Product not found in the cart",
-        });
+        req.flash('error', 'Product not found in cart')
       }
 
       const getQuantity = (await Product.findById(id)).quantity;
@@ -116,10 +102,11 @@ const increaseQuantity = async (req, res) => {
           { new: true }
         );
 
-        return res.status(400).json({
-          message: "Quantity cannot be increased further, maximum quantity reached",
-          data: updatedQty
-        });
+        req.flash('error', "Quantity cannot be increased further, maximum quantity reached")
+         // Redirect to the previous URL after adding the product to the cart
+        const previousUrl = req.headers.referer || '/';
+        res.redirect(previousUrl);
+        
       }
 
       const updatedQty = await Cart.findOneAndUpdate(
@@ -130,21 +117,19 @@ const increaseQuantity = async (req, res) => {
         { new: true }
       );
 
-      res.status(200).json({
-        message: "Quantity increased successfully",
-        data: updatedQty
-      });
+    req.flash('success', "Quantity increased successfully")
+      // Redirect to the previous URL after adding the product to the cart
+    const previousUrl = req.headers.referer || '/';
+      res.redirect(previousUrl);
     } else {
-      res.status(404).json({
-        message: "Cart not found",
-      });
+      req.flash('error', "Cart not found")
+       // Redirect to the previous URL after adding the product to the cart
+    const previousUrl = req.headers.referer || '/';
+    res.redirect(previousUrl);
     }
   } catch (err) {
     console.error(err);
-    res.status(500).json({
-      message: "Internal server error",
-      error: err.message,
-    });
+    res.render('error', { title: "Error"})
   }
 };
 
@@ -157,9 +142,10 @@ const decreaseQuantity = async (req, res) => {
       const product = alreadyExistCart.products.find(product => product.productId == id);
 
       if (!product) {
-        return res.status(404).json({
-          message: "Product not found in the cart",
-        });
+        req.flash('error', 'Product not found in cart')
+         // Redirect to the previous URL after adding the product to the cart
+    const previousUrl = req.headers.referer || '/';
+    res.redirect(previousUrl);
       }
 
       // Ensure quantity does not go below 1
@@ -177,10 +163,10 @@ const decreaseQuantity = async (req, res) => {
           { new: true }
         );
 
-        res.status(200).json({
-          message: "Quantity decreased successfully",
-          data: updatedQty
-        });
+        req.flash('success', "Quantity decreased successfully")
+      // Redirect to the previous URL after adding the product to the cart
+    const previousUrl = req.headers.referer || '/';
+      res.redirect(previousUrl)
       } else {
         // set quantity back to 1
         const updatedQty = await Cart.findOneAndUpdate(
@@ -193,54 +179,49 @@ const decreaseQuantity = async (req, res) => {
           },
           { new: true }
         );
-
-        res.status(200).json({
-          message: "Quantity set back to 1",
-          data: updatedQty
-        });
+        req.flash('error', "Quantity cannot be less than 1")
+        const previousUrl = req.headers.referer || '/';
+        res.redirect(previousUrl);
       }
     } else {
-      res.status(404).json({
-        message: "Cart not found",
-      });
+      req.flash('error', "Cart not found")
     }
   } catch (err) {
     console.error(err);
-    res.status(500).json({
-      message: "Internal server error",
-      error: err.message,
-    });
+    console.error(err);
+    res.render('error', { title: "Error"})
   }
 };
 
+const getCart = async (req, res) => {
+  const { _id } = req.user;
 
-// get users cart
-const getCart = async(req, res) => {
-  const { _id } = req.user
-  try{
-    //The populate method fetches the actual product details
-    // from the Product model and replaces the reference(_id) in 
-    // the products array with the actual product data.
-    const userCart = await Cart.findOne({orderedby: _id}).populate(
-      "products.productId"
-    )
-    if(!userCart){
-      res.status(404).json({
-        message: "Cart not found"
-      })
+  try {
+    const userCart = await Cart.findOne({ orderedby: _id }).populate([
+      {
+        path: "products",
+        select: "productId",
+        populate: [{ path: 'productId', select: "name images" }]
+      }
+    ]);
+    if (!userCart) {
+      req.flash('error', 'You have no item in your Cart');
+      const previousUrl = req.headers.referer || '/';
+      res.redirect(previousUrl);
     }
-    res.status(200).json({
-      message: "Cart found",
-      data: userCart
-    })
-  }catch(err){
-    console.log(err)
-    res.status(500).json({
-      message: "Internal server error",
-      error: err.message,
-    });
+    const cartQty = userCart?.products.length;
+    res.render('shop/cart', { layout: 'main', 
+    userCart, 
+    title: 'Cart', 
+    cartQty, 
+    isAuthenticated: req.user, 
+    admin: req.user?.role,});
+  } catch (err) {
+    console.error(err);
+    req.flash('error', err.message);
+    res.render('shop/cart', { layout: 'main', err, title: 'Cart' });
   }
-}
+};
 
 // delete an item in a cart
 const deleteItem = async (req, res) => {
@@ -262,30 +243,28 @@ try {
                   {cartTotal: cartTotal},
                   {new: true}
                   )
-                res.status(200).json({
-                    message: "Product deleted from cart",
-                });
+                req.flash('success', "product has been deleted")
+                const previousUrl = req.headers.referer || '/';
+                res.redirect(previousUrl);
+
             } else {
-                res.status(404).json({
-                    message: "Product not found in cart",
-                });
+              req.flash('error', "product not found in the cart")
+              const previousUrl = req.headers.referer || '/';
+              res.redirect(previousUrl);
             }
         } else {
-            res.status(404).json({
-                message: "Product not found in cart",
-            });
+          req.flash('error', "product not found in the cart")
+          const previousUrl = req.headers.referer || '/';
+          res.redirect(previousUrl);
         }
     } else {
-        res.status(404).json({
-            message: "Product not found",
-        });
+      req.flash('error', "product not found in the cart")
+      const previousUrl = req.headers.referer || '/';
+      res.redirect(previousUrl);
     }
 } catch (err) {
     console.log(err);
-    res.status(500).json({
-        message: "Internal server error",
-        error: err.message,
-    });
+    res.render('error', { title: "Error"})
 }
 };
  
@@ -295,41 +274,37 @@ const emptyCart = async(req, res) => {
 const { _id } = req.user;
 try{
   const alreadyExistCart = await Cart.findOne({ orderedby: _id });
+  console.log(alreadyExistCart)
   if (alreadyExistCart) {
     await Cart.findByIdAndDelete(alreadyExistCart._id)
-    return res.status(200).json({
-      message: "Cart emptied successfully",
-    });
+   req.flash('success', 'Cart has been emptied')
+   res.redirect('/api/product/')
   }else{
-    res.status(404).json({
-      message: "User has not Cart",
-    });
+    req.flash('error', 'Cart not found')
   }
 }catch (err) {
   console.error(err);
-  res.status(500).json({
-    message: "Internal server error",
-    error: err.message,
-  });
+  res.render('error', { title: "Error"})
 }
 }
 
 //apply coupon
 const applyCoupon = async(req, res) => {
   const coupon  = req.body.name
+  console.log(coupon)
   const { _id } = req.user
   try{
     const validCoupon = await Coupon.findOne({ name: coupon });
     if (!validCoupon) {
-      return res.status(400).json({
-        message: "invalid coupon",
-      });
+      req.flash('error', 'Invalid coupon')
+      const previousUrl = req.headers.referer || '/';
+      res.redirect(previousUrl);
     }else{
       let cartSum = await Cart.findOne({orderedby: _id,}).populate("products.productId")
       if(!cartSum){
-        return res.status(404).json({
-          message: "No cart found",
-        });
+        req.flash('error', 'No cart found')
+      const previousUrl = req.headers.referer || '/';
+      res.redirect(previousUrl);
       }
       let totalAfterDiscount = (cartSum.cartTotal - (cartSum.cartTotal * validCoupon.discount) / 100).toFixed(2); // round the calculated totalAfterDiscount to two decimal places
       const newCart = await Cart.findOneAndUpdate(
@@ -337,17 +312,13 @@ const applyCoupon = async(req, res) => {
       { totalAfterDiscount },
       { new: true }
       );
-      res.status(200).json({
-        message: "Coupon applied successfully",
-        data: newCart
-      });
+      req.flash('success', 'coupon applied')
+      const previousUrl = req.headers.referer || '/';
+      res.redirect(previousUrl);
     }
   }catch(err){
     console.log(err)
-    res.status(500).json({
-      message: "Internal server error",
-      error: err.message,
-    });
+    res.render('error', { layout: 'main', title: "Error"})
   }
 }
 

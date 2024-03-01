@@ -1,0 +1,99 @@
+<main class="container-fluid">
+    <!-- Banner section -->
+    <section class="banner">
+        <h1 class="title">C&C ecommerce</h1>
+    </section>
+
+    <!-- Carousel section -->
+    <div class="carousel-container">
+        <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+            <!-- Carousel Indicators -->
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
+            <!-- Carousel Inner -->
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="/images/products/main.avif" class="d-block w-100" alt="...">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>First slide label</h5>
+                        <p>Some representative placeholder content for the first slide.</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="/images/products/main3.avif" class="d-block w-100" alt="...">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>Second slide label</h5>
+                        <p>Some representative placeholder content for the second slide.</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="/images/products/main2.jpg" class="d-block w-100" alt="...">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>Third slide label</h5>
+                        <p>Some representative placeholder content for the third slide.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Carousel Controls -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+   
+    <div class="container-fluid">
+        <div class="row">
+            <div class=" col-mb-12 coupon">
+    <h2>Special Offer!</h2>
+    <p>Get <strong>{{discount}}% off</strong> on your first purchase! <br>Apply this coupon to your cart total to get a discount</p>
+    <input type="text" placeholder="copy coupon code" value="{{couponName}}">
+</div>
+        </div>
+    </div>
+    <!-- Featured products section -->
+     <section class="featured-products" style="margin-top: 20px;">
+       <div class="container-fluid">
+        <h1 class="text-center">Featured Products </h1>
+    <div class="row">
+        {{#each products}}
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <!-- Wrap only the image with the link -->
+                <a href="/api/product/{{{this._id}}}" class="card-link dis">
+                    <img src="{{this.images.[0].url}}" class="card-img-top" alt="{{this.name}}">
+                </a>
+                <div class="card-body">
+                    <div class="adds2 d-flex justify-content-center">
+                        <!-- Modify the link to call JavaScript function when clicked -->
+                        <!-- Modify the link to call JavaScript function when clicked -->
+                    <a class="add-to-cart" href="/api/cart/{{this._id}}" >
+                        <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                             Add to Cart
+                        </a>
+
+                        <a class="add-to-wishlist" href="/api/user/wishlist/{{this._id}}">
+                            <i class="fa-regular fa-heart" aria-hidden="true"></i>
+                            Add to Wishlist
+                        </a>
+                    </div>
+                    <h5 class="card-title">{{this.name}}</h5>
+                    <p class="card-text fw-bold">Price: ${{this.price}}</p>
+                    {{#if this.discountPrice}}
+                    <p class="card-text">Discounted Price: ${{this.discountedPrice}}</p>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</div>
+    </section>
+</main>

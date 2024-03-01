@@ -1,52 +1,51 @@
 const Product = require('../models/product')
 const Coupon = require('../models/coupon')
 const User = require('../models/user');
-const slugify = require('slugify');
+
 
 // Create new product
 const createProduct = async (req, res) => {
-    try {
-      if (req.body.name) {
-        req.body.slug = slugify(req.body.name);
-      }
-      const newProduct = await Product.create(req.body);
-  
-      return res.json({
-        message: `New product ${req.body?.name} created`,
-        data: newProduct,
-      });
-    } catch (err) {
-      if (err.name === 'ValidationError' && err.errors) {
-        const validationErrors = Object.values(err.errors).map((error) => error.message);
-  
-        return res.status(400).json({
-          message: 'Validation failed',
-          validationErrors: validationErrors,
-        });
-      }
-  
-      return res.status(500).json({
-        message: err.message,
-      });
-    }
-  };
-  
+  try {
+    const imagesArray = [{ url: req.body.images }];
+    req.body.images = imagesArray;
+    const newProduct = await Product.create(req.body);
+    req.flash('success', 'Product Created');
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl);
+  } catch (err) {
+    console.log(err.message);
+    req.flash('error', err.message);
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl);
+  }
+};
+
+const getCreate = async(req, res) => {
+  res.render('admin/create_product', {
+    layout: 'main',
+    title: "Create Product",
+    isAuthenticated: req.user,
+    admin: req.user?.role
+  })
+} 
 // get a product
 const getProduct = async (req, res) => {
+  console.log('getProduct was hit')
     const { id } = req.params;
-  
     try {
-      const product = await Product.findById(id);
-  
+      const product = await Product.findById(id).populate([
+        {path: "ratings.postedby", select: "local.firstname local.lastname"}
+      ]).select("name price description discountedPrice ratings images"); 
       if (product) {
-        return res.status(200).json({
-          message: 'Product found',
-          data: product,
-        });
+        return res.render('shop/show_product', { 
+          layout: 'main', 
+          title: "products",
+           product,
+           isAuthenticated: req.user,
+           admin: req.user?.role,
+          })
       } else {
-        return res.status(404).json({
-          message: `Product with id ${id} not found`,
-        });
+        return res.render('error', { layout: 'main', title: 'Products' });
       }
     } catch (err) {
       return res.status(500).json({
@@ -56,75 +55,105 @@ const getProduct = async (req, res) => {
   };
   
   // get all products
-  const getAllProduct = async (req, res) => {
-    try {
-      // Filtering
-      const queryObj = { ...req.query };
-      const excludeFields = ["page", "sort", "limit", "fields"];
-      excludeFields.forEach((el) => delete queryObj[el]);
-  
-      // Convert to string and back to JSON
-      let queryStr = JSON.stringify(queryObj);
-      queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-      const query = Product.find(JSON.parse(queryStr));
-      query.populate([
-        { path: 'category', select: 'title' },
-        { path: 'productType', select: 'title' }
-      ]);
-  
-      // Sorting
-      if (req.query.sort) {
-        const sortBy = req.query.sort.split(',').join(' ');
-        query.sort(sortBy);
-      } else {
-        query.sort("-createdAt");
-      }
-  
-      // Limit fields
-      if (req.query.fields) {
-        const fields = req.query.fields.split(",").join(" ");
-        query.select(fields);
-      } else {
-        query.select("-__v");
-      }
-  
-      // Pagination
-      const page = req.query.page || 1;
-      const limit = req.query.limit || 10;
-      const skip = (page - 1) * limit;
-      query.skip(skip).limit(limit);
-  
-  
-      if (req.query.page) {
-        const productCount = await Product.countDocuments();
-        if (skip >= productCount) {
-          return res.status(404).json({
-            message: 'Page not found',
-          });
-        }
-      }
-      // Execute query
-      const products = await query.exec();
+const getAllProduct = async (req, res) => {
+  try {
+    // Filtering
+    const queryObj = { ...req.query };
+    const excludeFields = ["page", "sort", "limit", "fields"];
+    excludeFields.forEach((el) => delete queryObj[el]);
+
+    // Convert to string and back to JSON
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    let query = Product.find(JSON.parse(queryStr));
+    query = query.populate([
+      { path: 'category', select: 'title' },
+      { path: 'productType', select: 'title' }
+    ]);
+
+    // Sorting
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(',').join(' ');
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort("-createdAt");
+    }
+
+    // Limit fields
+    if (req.query.fields) {
+      const fields = req.query.fields.split(",").join(" ");
+      query = query.select(fields);
+    } else {
+      query = query.select("-__v");
+    }
+
+    // Pagination
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 12;
+    const skip = (page - 1) * limit;
+
+    let nextPage = null;
+    let prevPage = null;
+    let productCount = null;
+    let currentPage;
+    let totalPages;
+
+    if (req.query.page) {
+      productCount = await Product.countDocuments(queryObj);
+      totalPages = Math.ceil(productCount / limit);
       
-      if (products && products.length > 0) {
-        return res.status(200).json({
-          message: 'Products found',
-          count: products.length,
-          data: products,
-        });
-      } else {
+      if (skip >= productCount) {
         return res.status(404).json({
-          message: 'Sorry, could not retrieve products. No product found',
+          message: 'Page not found',
         });
       }
-    } catch (err) {
-      console.log(err);
-      return res.status(500).json({
-        message: err.message,
+
+// Next page
+currentPage = page;
+if (currentPage < totalPages) {
+  nextPage = `/api/product/?page=${currentPage + 1}`;
+  if (req.query) {
+    nextPage = `${nextPage}&${new URLSearchParams(queryObj).toString()}`;
+  }
+} else {
+  nextPage = null; 
+}
+      // Previous page
+      if (currentPage > 1) {
+        prevPage = `/api/product/?page=${currentPage - 1}`;
+        if (req.query) {
+          prevPage = `${prevPage}&${new URLSearchParams(queryObj).toString()}`;
+        }
+      } else {
+        prevPage = null
+      }
+    }
+
+    // Execute query
+    const products = await query.skip(skip).limit(limit).exec();
+    if (products && products.length > 0) {
+      return res.render('shop/shopping_page', { 
+        layout: 'main', 
+        products, 
+        isAuthenticated: req.user, 
+        admin: req.user?.role, 
+        title: 'Products', 
+        currentPage, 
+        nextPage, 
+        prevPage 
+      });
+    } else {
+      return res.status(404).json({
+        message: 'Sorry, could not retrieve products. No product found',
       });
     }
-  };  
-
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message: err.message,
+    });
+  }
+};
 
   //update a product
 const updateProduct = async(req, res) => {
@@ -185,9 +214,8 @@ const productRating = async (req, res) => {
     let rateProduct;
 
     if (!product) {
-      return res.status(404).json({
-        message: `Product with id ${prodId} not found`,
-      });
+      req.flash('error', `Product with id ${prodId} not found`);
+      return res.redirect(`/api/product/${prodId}`);
     } else {
       let alreadyRated = product.ratings.find(
         (userId) => userId.postedby.toString() === _id.toString()
@@ -203,11 +231,8 @@ const productRating = async (req, res) => {
           },
           { new: true }
         );
-        
-        res.json({
-          status: "success",
-          data: updatedProd,
-        });
+        req.flash('success', 'product successfully rated');
+        return res.redirect(`/api/product/${prodId}`);
       } else {
         rateProduct = await Product.findByIdAndUpdate(
           prodId,
@@ -224,11 +249,7 @@ const productRating = async (req, res) => {
             new: true,
           }
         );
-
-        res.json({
-          status: "success",
-          data: rateProduct,
-        });
+        req.flash('success', 'Product successfully rated');
       }
     }
 
@@ -245,11 +266,12 @@ const productRating = async (req, res) => {
       },
       { new: true }
     );
+
+    return res.redirect(`/api/product/${prodId}`);
   } catch (err) {
     console.log(err);
-    return res.status(500).json({
-      message: err.message,
-    });
+    req.flash('error', err.message);
+    return res.redirect(`/api/product/${prodId}`);
   }
 };
 
@@ -388,4 +410,16 @@ const removeAllDiscount = async (req, res) => {
 };
 
 
-module.exports = { createProduct, applyDiscount, applyAllDiscount, removeAllDiscount, removeProductDiscount, getProduct, getAllProduct, updateProduct, deleteProduct, productRating}
+module.exports = { 
+  createProduct, 
+  applyDiscount, 
+  applyAllDiscount, 
+  removeAllDiscount, 
+  removeProductDiscount, 
+  getProduct, 
+  getAllProduct, 
+  updateProduct, 
+  deleteProduct, 
+  productRating,
+  getCreate
+}

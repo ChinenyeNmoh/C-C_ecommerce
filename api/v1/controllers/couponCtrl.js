@@ -1,7 +1,5 @@
-const Product = require('../models/product');
-const User = require('../models/user');
 const Coupon = require('../models/coupon');
-const Category = require('../models/category');
+
 
 // create coupon
 const createCoupon = async (req, res) => {

@@ -38,18 +38,25 @@ const uploadImages = async (req, res) => {
       });      
     }
     const images = urls.map((file) => file) 
-    res.status(200).json({
-      message: "Image uploaded successfully",
-      data: images,
-    });
+    req.flash('success', 'Upload successful')
+     // Redirect to the previous URL
+     const previousUrl = req.headers.referer || '/';
+     res.redirect(previousUrl);
   } catch (err) {
     console.log(err);
-    return res.status(500).json({
-      message: 'Internal server error',
-    });
+    req.flash('error', err.message)
   }
 };
 
+// get image 
+const getImage = async (req, res) => {
+  res.render('admin/upload', {
+    layout: 'main',
+    title: "Upload images",
+    isAuthenticated: req.user,
+    admin: req.user.role
+  })
+}
 // delete images
 const deleteImages = async (req, res) => {
   const { id } = req.params;
@@ -65,4 +72,4 @@ const deleteImages = async (req, res) => {
   }
 };
 
-module.exports = { uploadImages, deleteImages}
+module.exports = { uploadImages, deleteImages, getImage}

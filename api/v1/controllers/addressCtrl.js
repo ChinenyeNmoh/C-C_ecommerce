@@ -19,16 +19,20 @@ const addAddress = async (req, res) => {
                 city: req.body.city,
                 state: req.body.state,
                 landmark: req.body?.landmark,
-                alternatePhoneNo: req.body?.alternatePhoneNo,
+                recipientPhoneNo: req.body.recipientPhoneNo,
                 user: _id,
             };
 
-            const createdAddress = await Address.create(newAddress);
+            const address = await Address.create(newAddress);
 
-            return res.status(200).json({
-                message: "Address created",
-                data: createdAddress,
-            });
+            req.flash('success', 'Address created')
+            res.render('shop/address', {
+                layout: "main",
+                title: "Address",
+                isAuthenticated: req.user,
+                admin: req.user?.role,
+                address
+            })
         } else {
             const updatedAddress = {
                 firstname: req.body.firstname,
@@ -37,26 +41,27 @@ const addAddress = async (req, res) => {
                 city: req.body.city,
                 state: req.body.state,
                 landmark: req.body?.landmark,
-                recipientPhoneNo: req.body.alternatePhoneNo,
+                recipientPhoneNo: req.body.recipientPhoneNo,
             };
 
-            const updatedAddressResult = await Address.findOneAndUpdate(
+            const address = await Address.findOneAndUpdate(
                 { user: _id },
                 updatedAddress,
                 { new: true }
             );
 
-            return res.status(200).json({
-                message: "Address updated",
-                data: updatedAddressResult,
-            });
+            req.flash('success', 'Address created')
+            res.render('shop/address', {
+                layout: "main",
+                title: "Address",
+                isAuthenticated: req.user,
+                admin: req.user?.role,
+                address
+            })
         }
     } catch (err) {
         console.error(err);
-        return res.status(500).json({
-            error: "Internal Server Error",
-            message: err.message
-        });
+        res.render('error', {layout: "main"})
     }
 };
 
@@ -65,25 +70,28 @@ const addAddress = async (req, res) => {
 const getAddress = async (req, res) => {
     try {
         const address = await Address.findOne({ user: req.user._id });
+        console.log(address)
 
         if (address) {
-            return res.status(200).json({
-                message: "Address found",
-                data: address,
-            });
+            res.render('shop/address', {
+                layout: "main", 
+                title: 'Address', 
+                address,
+                isAuthenticated: req.user, 
+                admin: req.user?.role
+            })
         } else {
-            return res.status(404).json({
-                message: "Address not found",
-            });
+            res.render('shop/address', {
+                layout: "main", 
+                title: 'Address', 
+                address,
+                isAuthenticated: req.user, 
+                admin: req.user?.role
+            })
         }
     } catch (err) {
         console.error(err);
-        return res.status(500).json({
-            error: "Internal Server Error",
-            message: err.message,
-        });
+        res.render('error', {layout: 'main', title: 'error'})
     }
 };
-
-
 module.exports = {addAddress, getAddress};

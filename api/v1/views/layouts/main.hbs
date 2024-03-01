@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <!-- basic -->
+   <meta charset="utf-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <!-- site metas -->
+   <title>{{title}}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+   <link rel="stylesheet" type="text/css" href="/css/style.css">
+   <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+   <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+<body>
+   <div class="container-fluid " style="width: 100%">
+   <div class="flash-messages">
+   {{#if messages.error}}
+      <div id="error-message" class="alert alert-danger mt-3 text-center" role="alert" style="height: 40px width: 50%;">
+      {{messages.error}}
+      </div>
+   {{/if}}
+
+   {{#if messages.success}}
+      <div id="success-message" class="alert alert-success mt-3" role="alert" style="height: 40px;">
+         {{messages.success}}
+      </div>
+   {{/if}}
+   {{#if messages.warning}}
+   <div id="warning-message" class="alert alert-warning mt-3" role="alert" style="height: 40px;">
+      {{messages.warning}}
+   </div>
+{{/if}}
+   </div>
+
+   {{>user-header}}
+
+
+   {{{body}}}
+   </div>
+   <div class="footer_section layout_padding ">
+    <div class="container-fluid">
+        <h2 class="enquiry">Enquiry Form</h2>
+        <form id="enquiryForm" action="/api/enquiry/" method="POST">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" placeholder="Osinachi Nmoh" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" placeholder="Chinedu@gmail.com" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="phoneNo">Phone Number</label>
+                <input type="tel" class="form-control" id="phoneNo" name="phoneNo" placeholder="07067245637" pattern="\d{11}">
+                <small class="form-text text-muted">Please enter a valid 11-digit mobile number.</small>
+            </div>
+            <div class="form-group">
+                <label for="comment">Comment</label>
+                <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary enq-btn">Submit</button>
+        </form>
+    </div>
+</div>
+
+   <script src="https://kit.fontawesome.com/fa8ad50929.js" crossorigin="anonymous"></script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script>
+    setTimeout(function () {
+        var errorMessage = document.getElementById('error-message');
+        if (errorMessage) {
+            errorMessage.remove();
+        }
+    }, 5000);
+    setTimeout(function () {
+        var successMessage = document.getElementById('success-message');
+        if (successMessage) {
+            successMessage.remove();
+        }
+    }, 3000);
+    setTimeout(function () {
+    var errorMessage = document.querySelector('.alert.alert-warning');
+    if (errorMessage) {
+        errorMessage.remove();
+    }
+}, 3000);
+
+</script>
+
+</body>
+</html>

@@ -35,7 +35,7 @@ const uploadPhoto = multer({
 
 async function resizeFile(path) {
   let buffer = await sharp(path)
-    .resize(300, 300)
+    .resize(800, 800)
     .toFormat("jpeg")
     .jpeg({ quality: 90 })
     .toBuffer();

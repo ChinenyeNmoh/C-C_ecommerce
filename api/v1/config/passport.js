@@ -2,6 +2,9 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
 const mongoose = require('mongoose');
 const User = require('../models/user');
+const Token = require("../models/token");
+const crypto = require("crypto");
+const { sendEmail, emailVerificationTemplate } = require('../utils/email');
 
 module.exports = function (passport) {
   passport.use(
@@ -77,6 +80,25 @@ module.exports = function (passport) {
           console.log('Password does not match during local authentication');
           return done(null, false, { message: 'Password does not match' });
         }
+        if (!user.isVerified) {
+          const userToken = await Token.findOne({userId: user._id})
+          console.log(userToken)
+          if(!userToken){
+            const token = await new Token({
+              userId: user._id,
+              token: crypto.randomBytes(32).toString("hex"),
+            }).save()
+            // Construct the verification URL
+          const link = `${process.env.BASE_URL}/${user.id}/verify/${token.token}`;
+          const htmlContent = emailVerificationTemplate(link);
+          // Send the verification email
+          await sendEmail(user.local.email, 'Verify Email', htmlContent);
+          req.flash('success', "An Email was sent to your account. Verify your account to login");
+          }
+          req.flash('warning', 'Check your Email for Account Verification Link')
+          return done(null, false);
+        }
+        req.flash('success', "Login successful")
         console.log('Local authentication success:', `${user.firstname} has been logged in`);
         return done(null, user); // Only call done once, after successful authentication
       } catch (err) {

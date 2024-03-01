@@ -1,17 +1,15 @@
 const express = require('express')
 const router = express.Router()
 const { addAddress,
-    getAddress,
-
+    getAddress
 } =  require("../controllers/addressCtrl");
 
 const { ensureAuth,
     ensureGuest,
     ensureAdmin,
-    validateId,
-  validateLogin} = require('../middlewares/auth')
+    validateId,} = require('../middlewares/auth')
 
-router.post('/addaddress', ensureAuth, addAddress)
+router.post('/', ensureAuth, addAddress)
 router.get('/getaddress', ensureAuth, getAddress)
 
 module.exports = router;

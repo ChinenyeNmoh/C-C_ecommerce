@@ -1,0 +1,52 @@
+<nav class="header_section_top d-flex justify-content-between flex-column flex-sm-row">
+  <a href="/"><button type="button" class="home mx-auto d-block">Home</button></a>
+  <div class="btn-group">
+    <button class="btn cat-btn1 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Products
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <li><a class="dropdown-item men-all" href="/api/product/">All Products</a></li>
+      <li><a class="dropdown-item men-all" href="/api/product/getcreate">Create Products</a></li>
+      <li><a class="dropdown-item men-all" href="/api/product/">Update Products</a></li>
+      <li><a class="dropdown-item men-all" href="/api/product/">Delete Products</a></li>
+      <li><a class="dropdown-item men-all" href="/api/image/getimage">Upload Image</a></li>
+    </ul>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn cat-btn1 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Users
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <li><a class="dropdown-item men-all" href="/api/product/?category=65d8c77e3b4f0440c58043ef">All Users</a></li>
+      <li><a class="dropdown-item" href="/api/product/?category=65d8c77e3b4f0440c58043ef&productType=65d7a658b0a0a78e1f4d09dd">Clothings</a></li>
+      <li><a class="dropdown-item" href="/api/product/?category=65d8c77e3b4f0440c58043ef&productType=65d7a67db0a0a78e1f4d09e1">Footwears</a></li>
+      <li><a class="dropdown-item" href="/api/product/?category=65d8c77e3b4f0440c58043ef&productType=65d7a6d2b0a0a78e1f4d09e5">Accessories</a></li>
+    </ul>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn cat-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    All Orders
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <a class="dropdown-item women-all" href="/api/product/?category=65d8c75e3b4f0440c58043eb">All</a>
+      <a class="dropdown-item women-cloth" href="/api/product/?category=65d8c75e3b4f0440c58043eb&productType=65d7a658b0a0a78e1f4d09dd">Clothings</a>
+      <a class="dropdown-item women-footwear" href="/api/product/?category=65d8c75e3b4f0440c58043eb&productType=65d7a67db0a0a78e1f4d09e1">Footwears</a>
+      <a class="dropdown-item women-accessories" href="/api/product/?category=65d8c75e3b4f0440c58043eb&productType=65d7a6d2b0a0a78e1f4d09e5">Accessories</a>
+    </div>
+  </div>
+
+    <div class="btn-group d-flex flex-column flex-sm-row">
+    <ul class="user-bar">
+      {{#if isAuthenticated}}  
+            <li class="user-list"><a href="/api/user/myuser">{{isAuthenticated.local.firstname}} Account</a></li>
+            
+            <li class="user-list"><a href="/api/user/logout">Logout</a></li>
+            {{else}}
+            <li class="user-list"><a href="/api/user/">SignUp</a></li>
+            <li class="user-list"><a href="/api/user/login">SignIn</a></li>
+            {{/if}}
+    </ul>
+  </div>
+</nav>

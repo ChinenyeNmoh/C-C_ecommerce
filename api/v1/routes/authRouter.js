@@ -2,11 +2,13 @@ const express = require("express");
 const passport = require('passport')
 const router = express.Router()
 const { createUser,
-  successRoute,
-  failed,
+  signUp,
+  signIn,
+  getForgotPassword,
   wishList,
   getWishList,
   getAllUsers,
+  getMyUser,
   getUser,
   deleteUser,
   updateUser,
@@ -23,39 +25,40 @@ const { ensureAuth,
   ensureGuest,
   ensureAdmin,
   validateId,
-validateLogin} = require('../middlewares/auth')
+} = require('../middlewares/auth')
 
 
 router.post("/register", ensureGuest, createUser);
-router.get("/register", ensureGuest, createUser);
 router.get("/:id/verify/:token/", validateId, verifyToken);
-router.post('/login', validateLogin, (req, res, next) => {
+router.post('/login', (req, res, next) => {
   passport.authenticate('local', {
-    successRedirect: '/api/user/success',
-    failureRedirect: '/api/user/failurejson',
-    failureFlash: false
+    successRedirect: '/',
+    failureRedirect: '/api/user/login',
+    failureFlash: true
   })(req, res, next);
 });
 router.get('/googlelogin', passport.authenticate('google', { scope: ['profile', 'email'] }))
 router.get(
   '/google/callback',
-  passport.authenticate('google', { failureRedirect: '/api/user/failurejson' }),
+  passport.authenticate('google', { failureRedirect: '/api/user/register' }),
   (req, res) => {
-    res.redirect('/api/user/success')
+    res.redirect('/')
   }
 )
-router.get('/failurejson', failed);
+router.get('/', ensureGuest, signUp);
+router.get('/login', ensureGuest, signIn )
+router.get('/forgotpassword', ensureGuest, getForgotPassword )
 router.get("/allusers", ensureAuth, ensureAdmin, getAllUsers);
-router.get('/success', ensureAuth, successRoute);
 router.post('/forgotpassword', ensureGuest, forgotPassword)
-router.get("/:id/resetpassword/:token/", ensureGuest, validateId, resetPassword);
-router.put("/:id/resetpassword/:token/", ensureGuest, validateId, updatePassword);
+router.get("/:id/resetpassword/:token", ensureGuest, validateId, resetPassword);
+router.post("/:id/resetpassword/:token", ensureGuest, validateId, updatePassword);
 router.get('/logout', ensureAuth, logOut)
-router.put("/wishlist", ensureAuth, wishList)
+router.get('/myuser', ensureAuth, getMyUser)
+router.get("/wishlist/:id", ensureAuth, wishList)
 router.get("/getwishlist", ensureAuth, getWishList)
 router.get("/:id", validateId, ensureAdmin, getUser);
 router.delete("/:id", validateId, deleteUser);
-router.put('/edituser', ensureAuth, updateUser)
+router.post('/update', ensureAuth, updateUser)
 router.put('/blockuser/:id', ensureAuth, ensureAdmin, blockUser)
 router.put('/unblockuser/:id', ensureAuth, ensureAdmin, unBlockUser)
 

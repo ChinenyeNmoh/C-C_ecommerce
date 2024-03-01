@@ -1,0 +1,18 @@
+<div class="container-fluid mt-4 mb-4">
+    <div class="row">
+        <div class="col-md-6 ">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Upload Product Image</h5>
+                    <form action="/api/image/" method="POST" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="images">Image</label>
+                            <input type="file" class="form-control-file" id="images" name="images" accept="image/*" multiple>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">Upload</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -14,7 +14,7 @@ const passwordSchema = new Schema({
     },
 	expireAt: { 
         type: Date,
-		expires: 24 * 60 * 60,
+		expires: 30 * 60 * 60,
 		index: true, 
         default: Date.now,
 	}

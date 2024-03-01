@@ -4,14 +4,12 @@ const Enquiry = require('../models/enquiry')
 const createEnquiry = async(req, res) => {
   try{
     const newEnquiry = await Enquiry.create(req.body);
-    res.status(201).json({
-        message: "Enquiry created successfully",
-        data: newEnquiry});
+    req.flash('success', 'Enquiry created')
+    const previousUrl = req.headers.referer || '/';
+    res.redirect(previousUrl);
   }catch(err){
     console.error(err);
-    return res.status(500).json({
-        message: err.message,
-    });
+    res.render("error");
 }
 }
 

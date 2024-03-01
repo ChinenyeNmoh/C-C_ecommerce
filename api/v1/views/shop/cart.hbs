@@ -1,0 +1,61 @@
+<div class="container-fluid cart">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                {{#each userCart.products}}
+                <div class="col-md-3 mb-4">
+                    <div class="card">
+                        {{#each this.productId.images}}
+                        <img src="{{this.url}}" class="card-img-top" alt="{{this.name}}">
+                        {{/each}}
+                        <div class="card-body">
+                            <h5 class="card-title"> Name: {{this.productId.name}}</h5>
+                            <p class="card-title fw-bold">Price: N{{this.price}}</p>
+                            <p class="card-title fw-bold">Quantity: {{this.quantity}}</p>
+                            <div class="qty">
+                                <a href="/api/cart/increase/{{this.productId._id}}"><i class="fa-solid fa-plus bg-success"></i></a>
+                                <a href="/api/cart/decrease/{{this.productId._id}}"><i class="fa-solid fa-minus bg-warning"></i></a>
+                            </div>
+                            <div class="bg-danger del-cart">
+                                <a href="/api/cart/deleteitem/{{this.productId._id}}">
+                                Remove from cart
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+            <div class="row">
+                
+                <div class="col-md-6">
+                    <!-- First column for cart total -->
+                    <h3 class="card-title fw-bold">Cart Total: N{{userCart.cartTotal}}</h3>
+                    {{#if userCart.totalAfterDiscount}}
+                    <h3 class="card-title fw-bold">Discounted Total: N{{userCart.totalAfterDiscount}}</h3>
+                    {{/if}}
+                    <div class="check-btn">
+                       <a href="/api/cart/emptycart" class="btn btn-danger">Empty Cart</a>
+                       <a href="/api/address/getaddress" class="btn btn-success">Checkout</a>
+                    </div>
+                </div>
+                <div class="col-md-6 coupon-div">
+                    <!-- Second column for coupon form -->
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Apply Coupon</h5>
+                            <form action="/api/cart/applycoupon" method="POST">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Coupon Code</label>
+                                    <input type="text" class="form-control" id="name" name="name">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Apply</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
