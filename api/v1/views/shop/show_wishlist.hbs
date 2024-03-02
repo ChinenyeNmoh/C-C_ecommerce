@@ -12,10 +12,10 @@
                     </a>
                     <div class="card-body">
                         <h5 class="card-title">{{name}}</h5>
-                        <p class="card-text">Price: ${{price}}</p>
+                        <p class="card-text">Price: N{{price}}</p>
                         <p class="card-text">Description: {{description}}</p>
                         {{#if discountedPrice}}
-                            <p class="card-text">Discounted Price: ${{discountedPrice}}</p>
+                            <p class="card-text">Discounted Price: N{{discountedPrice}}</p>
                         {{/if}}
                               <div class="adds d-flex justify-content-center">
                     <a class="add-to-cart" href="/api/cart/{{this._id}}" >

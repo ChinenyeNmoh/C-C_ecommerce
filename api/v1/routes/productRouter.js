@@ -10,13 +10,15 @@ const {createProduct,
     removeAllDiscount,
     removeProductDiscount,
     getCreate,
+    getUpdate,
     deleteProduct} = require('../controllers/productCtrl');
 const { ensureAuth, ensureGuest,  ensureAdmin, validateId, validateQuery } = require('../middlewares/auth')
 router.post('/', ensureAuth, ensureAdmin, createProduct)
 router.get('/getcreate', ensureAuth, ensureAdmin, getCreate)
+router.get('/getupdate/:id', ensureAuth, ensureAdmin, getUpdate)
 router.get('/:id', validateId, getProduct)
 router.get('/', validateQuery, getAllProduct)
-router.put('/update/:id', ensureAuth, ensureAdmin, validateId, updateProduct)
+router.post('/update/:id', ensureAuth, ensureAdmin, validateId, updateProduct)
 router.get('/delete/:id', ensureAuth, ensureAdmin, validateId, deleteProduct)
 router.post("/rating/:id", ensureAuth, productRating)
 router.post("/discountproduct/:id", validateId, ensureAuth, ensureAdmin, applyDiscount);

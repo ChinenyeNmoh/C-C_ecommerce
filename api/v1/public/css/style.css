@@ -281,3 +281,7 @@ a{
   background-color: #2b2a29;
   width: 20%;
 }
+.create{
+  display: flex;
+  justify-content: space-between;
+}

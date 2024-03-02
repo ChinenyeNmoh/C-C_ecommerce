@@ -1,54 +1,103 @@
 <div class="container-fluid mt-5 mb-5">
     <div class="row">
+        <!-- Add Product Form -->
         <div class="col-md-6">
             <div class="card">
-  <div class="card-body">
-    <h5 class="card-title text-center fw-bold ">Add or Update Product</h5>
-    
-    <form action="/api/product/" method="POST">
-      <div class="mb-3">
-        <label for="name" class="form-label">Name:</label>
-        <input type="text" class="form-control" id="name" name="name" required>
-      </div>
-      <div class="mb-3">
-        <label for="description" class="form-label">Description:</label>
-        <textarea class="form-control" id="description" name="description" required></textarea>
-      </div>
-      <div class="mb-3">
-        <label for="price" class="form-label">Price:</label>
-        <input type="number" class="form-control" id="price" name="price" min="0" required>
-      </div>
-      <div class="mb-3">
-        <label for="category" class="form-label">Category:</label>
-        <select class="form-select" id="category" name="category" required>
-            <option value="">Select Category</option>
-            <option value="65d8c77e3b4f0440c58043ef">Men</option>
-            <option value="65d8c75e3b4f0440c58043eb">Women</option>
-        </select>
-      </div>
-       <div class="mb-3">
-        <label for="productType" class="form-label">Product Type:</label>
-        <select class="form-select" id="productType" name="productType" required>
-            <option value="">Select Product Type</option>
-            <option value="65d8c77e3b4f0440c58043ef">Clothings</option>
-            <option value="65d8c75e3b4f0440c58043eb">Foot wears</option>
-            <option value="65d8c75e3b4f0440c58043eb">Accessories</option>
-        </select>
-      </div>
-      <div class="mb-3">
-        <label for="quantity" class="form-label">Quantity:</label>
-        <input type="number" class="form-control" id="quantity" name="quantity" min="0" required>
-      </div>
-      <div class="mb-3">
-        <label for="images" class="form-label">Images:</label>
-        <input type="text" class="form-control" id="images" name="images" required>
-      </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-  </div>
-</div>
+                <div class="card-body">
+                    <h5 class="card-title text-center fw-bold">Add Product</h5>
+                    
+                    <form action="/api/product/" method="POST">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name:</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description:</label>
+                            <textarea class="form-control" id="description" name="description" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Price:</label>
+                            <input type="number" class="form-control" id="price" name="price" min="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category:</label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="">Select Category</option>
+                                <option value="65d8c77e3b4f0440c58043ef">Men</option>
+                                <option value="65d8c75e3b4f0440c58043eb">Women</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="productType" class="form-label">Product Type:</label>
+                            <select class="form-select" id="productType" name="productType" required>
+                                <option value="">Select Product Type</option>
+                                <option value="65d8c77e3b4f0440c58043ef">Clothings</option>
+                                <option value="65d8c75e3b4f0440c58043eb">Foot wears</option>
+                                <option value="65d8c75e3b4f0440c58043eb">Accessories</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Quantity:</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" min="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="images" class="form-label">Images:</label>
+                            <input type="text" class="form-control" id="images" name="images" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create New Product</button>
+                    </form>
+                </div>
+            </div>
         </div>
 
+        <!-- Update Product Form -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-center fw-bold">Update Product</h5>
+                    
+                    <form action="/api/product/update/{{prodId}}" method="POST">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name:</label>
+                            <input type="text" class="form-control" id="name" name="name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description:</label>
+                            <textarea class="form-control" id="description" name="description"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Price:</label>
+                            <input type="number" class="form-control" id="price" name="price" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category:</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="">Select Category</option>
+                                <option value="65d8c77e3b4f0440c58043ef">Men</option>
+                                <option value="65d8c75e3b4f0440c58043eb">Women</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="productType" class="form-label">Product Type:</label>
+                            <select class="form-select" id="productType" name="productType">
+                                <option value="">Select Product Type</option>
+                                <option value="65d8c77e3b4f0440c58043ef">Clothings</option>
+                                <option value="65d8c75e3b4f0440c58043eb">Foot wears</option>
+                                <option value="65d8c75e3b4f0440c58043eb">Accessories</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Quantity:</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label for="images" class="form-label">Images:</label>
+                            <input type="text" class="form-control" id="images" name="images">
+                        </div>
+                        <button type="submit" class="btn btn-success">Update Product</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-
 </div>

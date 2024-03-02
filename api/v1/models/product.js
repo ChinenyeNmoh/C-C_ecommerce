@@ -5,7 +5,6 @@ var productSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
       trim: true,
     },
     slug: {
@@ -16,11 +15,9 @@ var productSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: true,
     },
     price: {
       type: Number,
-      required: true,
     },
     discountedPrice: {
       type: Number,
@@ -28,15 +25,14 @@ var productSchema = new mongoose.Schema(
     },
     category: {
       type: mongoose.Schema.Types.ObjectId, ref: 'Category',
-      required: true,
+      required: false
     },
     productType: {
       type: mongoose.Schema.Types.ObjectId, ref: 'ProductType',
-      required: true,
+      required: false
     },
     quantity: {
       type: Number,
-      required: true,
       min: 0
     },
     sold: {

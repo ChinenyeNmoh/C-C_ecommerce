@@ -161,11 +161,22 @@ if (currentPage < totalPages) {
 
   //update a product
 const updateProduct = async(req, res) => {
+  console.log("i was hit oh")  
   const {id} = req.params;
+  console.log(id)
   try{
     if (req.body.name) {
       req.body.slug = slugify(req.body.name);
     }
+    const findProduct = await Product.findById(id)
+    console.log(findProduct)
+    req.body.productType = req.body.productType? req.body.productType : findProduct.productType
+    req.body.category = req.body.category? req.body.category: findProduct.category
+    req.body.name = req.body.name? req.body.name: findProduct.name;
+    req.body.price = req.body.price? req.body.price: findProduct.price;
+    req.body.description = req.body.description? req.body.description: findProduct.description;
+    req.body.quantity = req.body.quantity? req.body.quantity: findProduct.quantity;
+    req.body.images = req.body.images? req.body.images: findProduct.images;
     const product = await Product.findByIdAndUpdate(id, req.body,{new: true})
     if (product) {
       req.flash('success', "Product updated successfully");
@@ -179,9 +190,23 @@ const updateProduct = async(req, res) => {
     }
   }catch(err){
     req.flash('error', err.message);
+    console.log(err.message)
     const previousUrl = req.headers.referer || '/';
       return res.redirect(previousUrl)
   }
+}
+
+//get update route
+ const getUpdate = async(req, res) => {
+  const prodId = req.params.id
+  res.render('admin/create_product', {
+    layout: 'main',
+    prodId,
+    title: "Create Product",
+    isAuthenticated: req.user,
+    admin: req.user?.role
+  })
+  
 }
 
 
@@ -416,7 +441,8 @@ module.exports = {
   applyAllDiscount, 
   removeAllDiscount, 
   removeProductDiscount, 
-  getProduct, 
+  getProduct,
+  getUpdate,
   getAllProduct, 
   updateProduct, 
   deleteProduct, 
