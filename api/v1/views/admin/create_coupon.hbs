@@ -1,0 +1,42 @@
+<div class="container-fluid mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-center fw-bold">Create Coupon</h5>
+                    <form action="/api/coupon/" method="POST">
+                            <div class="form-group">
+                                <label for="name"><strong>Name: </strong></label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="discount"><strong>Discount:</strong></label>
+                                <input type="number" class="form-control" id="discount" name="discount" min="1" max="100" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-2">Create Coupon</button>
+                        </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+<!-- Discount All Form -->
+<div class="container-fluid mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-center fw-bold">Discount All Products</h5>
+                    <form action="/api/product/discountallproducts" method="POST">
+                            <div class="form-group">
+                                <label for="discount"><strong>Discount:</strong></label>
+                                <input type="number" class="form-control" id="discount" name="discount" min="1" max="100" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-2">Discount All Produts</button>
+                        </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

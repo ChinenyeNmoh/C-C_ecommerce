@@ -1,0 +1,19 @@
+<!-- Apply discount Form -->
+ <div class="container-fluid mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-center fw-bold">Discount A Product</h5>
+                    <form action="/api/product/discountproduct/{{prodId}}" method="POST">
+                            <div class="form-group">
+                                <label for="discount"><strong>Discount: </strong></label>
+                                <input type="number" class="form-control" id="discount" name="discount" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-2">Discount Product</button>
+                        </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -4,7 +4,8 @@ const { createCoupon,
     updateCoupon,
     deleteCoupon,
     getCoupon,
-    getAllCoupon
+    getAllCoupon,
+    getCreate
 
 } =  require("../controllers/couponCtrl");
 
@@ -15,6 +16,7 @@ const { ensureAuth,
   validateLogin} = require('../middlewares/auth')
 
 router.post('/', ensureAuth, ensureAdmin, createCoupon)
+router.get('/getcreate', ensureAuth, ensureAdmin, getCreate)
 router.put('/:id', validateId, ensureAuth, ensureAdmin, updateCoupon)
 router.delete('/:id', validateId, ensureAuth, ensureAdmin, deleteCoupon)
 router.get("/:id", ensureAdmin, getCoupon);

@@ -2,7 +2,7 @@
     <div class="row">
         {{#each products}}
         <div class="col-md-3 mb-4">
-            <div class="card">
+            <div class="card" style="height: 100%;">
                 <!-- Wrap only the image with the link -->
                 <a href="/api/product/{{{this._id}}}" class="card-link dis">
                     <img src="{{this.images.[0].url}}" class="card-img-top" alt="{{this.name}}">
@@ -21,10 +21,10 @@
                             Add to Wishlist
                         </a>
                     </div>
-                    <h5 class="card-title">{{this.name}}</h5>
-                    <p class="card-text fw-bold">Price: N{{this.price}}</p>
-                    {{#if this.discountPrice}}
-                    <p class="card-text">Discounted Price: N{{this.discountedPrice}}</p>
+                    <p class="card-title"><strong>Name: </strong>{{this.name}}</p>
+                    <p class="card-text"><strong>Price: </strong>N{{this.price}}</p>
+                    {{#if this.discountedPrice}}
+                    <p class="card-text"><strong>Discounted Price: </strong>N{{this.discountedPrice}}</p>
                     {{/if}}
                 </div>
             </div>

@@ -24,6 +24,7 @@ const createProduct = async (req, res) => {
   }
 };
 
+//get create product view
 const getCreate = async(req, res) => {
   res.render('admin/create_product', {
     layout: 'main',
@@ -32,6 +33,8 @@ const getCreate = async(req, res) => {
     admin: req.user?.role
   })
 } 
+
+
 // get a product
 const getProduct = async (req, res) => {
   console.log('getProduct was hit')
@@ -52,6 +55,7 @@ const getProduct = async (req, res) => {
         return res.render('error', { layout: 'main', title: 'Products' });
       }
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         message: err.message,
       });
@@ -196,7 +200,7 @@ const updateProduct = async(req, res) => {
   }
 }
 
-//get update route
+//get update view
  const getUpdate = async(req, res) => {
   const prodId = req.params.id
   res.render('admin/create_product', {
@@ -304,23 +308,15 @@ const productRating = async (req, res) => {
 // apply discount
 const applyDiscount = async (req, res) => {
   const { id } = req.params;
-  const coupon = req.body.coupon;
+  const { discount } = req.body;
   try {
-    const validCoupon = await Coupon.findOne({ name: coupon });
-    if (!validCoupon) {
-      return res.status(400).json({
-        message: "Invalid coupon",
-      });
-    }
-
     const findProduct = await Product.findById(id);
     if (!findProduct) {
-      return res.status(400).json({
-        message: "Product not found",
-      });
+      req.flash('error', 'Product not Found');
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl)
     }
-
-    let discountedPrice = (findProduct.price * (100 - validCoupon.discount)) / 100;
+    let discountedPrice = (findProduct.price * (100 - discount)) / 100;
     discountedPrice = discountedPrice.toFixed(2);
 
     await Product.findByIdAndUpdate(
@@ -328,39 +324,42 @@ const applyDiscount = async (req, res) => {
       { discountedPrice },
       { new: true }
     );
-
-    res.status(200).json({
-      message: `${validCoupon.discount}% discount applied successfully`,
-      data: findProduct,
-    });
+      req.flash('success', `${discount}% discount applied successfully`)
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl)
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      message: "Internal server error",
-    });
+    req.flash('error', err.message);
+    console.log(err.message)
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl)
   }
 };
 
+//get the discount product view
+const getDiscount = (req, res)=> {
+  const prodId = req.params.id
+  res.render('admin/apply_discount', {
+    layout: 'main',
+    prodId,
+    title: "Create Discount",
+    isAuthenticated: req.user,
+    admin: req.user?.role
+  })
+}
+
 // apply discount
 const applyAllDiscount = async (req, res) => {
-  const coupon = req.body.coupon;
+  const { discount } = req.body;
   try {
-    const validCoupon = await Coupon.findOne({ name: coupon });
-    if (!validCoupon) {
-      return res.status(400).json({
-        message: "Invalid coupon",
-      });
-    }
-
     const findProducts = await Product.find({});
     if (!findProducts || findProducts.length === 0) {
-      return res.status(400).json({
-        message: "Products not found",
-      });
+      req.flash('error', 'Product not Found');
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl)
     }
 
     const updatedProducts = await Promise.all(findProducts.map(async (product) => {
-      let discountedPrice = (product.price * (100 - validCoupon.discount)) / 100;
+      let discountedPrice = (product.price * (100 - discount)) / 100;
       discountedPrice = discountedPrice.toFixed(2);
 
       const updatedProduct = await Product.findByIdAndUpdate(
@@ -371,16 +370,14 @@ const applyAllDiscount = async (req, res) => {
 
       return updatedProduct;
     }));
-
-    res.status(200).json({
-      message: `${validCoupon.discount}% discount applied successfully`,
-      data: updatedProducts,
-    });
+    req.flash('success', `${discount}% discount applied To All Products`)
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl)
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      message: err.message,
-    });
+    req.flash('error', err.message);
+    console.log(err)
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl)
   }
 };
 
@@ -399,16 +396,14 @@ const removeProductDiscount = async (req, res) => {
       { discountedPrice: 0 },
       { new: true }
     );
-
-    res.status(200).json({
-      message: "Discount removed from  product successfully",
-      data: updatedProduct,
-    });
+      req.flash('success', 'Discount removed');
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl)
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      message: err.message,
-    });
+    req.flash('error', err.message);
+    console.log(err)
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl)
   }
 };
 
@@ -418,19 +413,19 @@ const removeAllDiscount = async (req, res) => {
   try {
     const result = await Product.updateMany({}, { discountedPrice: 0 });
     if (result.nModified === 0) {
-      return res.status(400).json({
-        message: "No products found or discounts already removed",
-      });
+      req.flash('error', 'No Product with discount Found');
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl)
     }
 
-    res.status(200).json({
-      message: "Discount removed from all products successfully",
-    });
+    req.flash('success', 'Discount removed');
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl)
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      message: err.message,
-    });
+    req.flash('error', err.message);
+    console.log(err)
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl)
   }
 };
 
@@ -447,5 +442,6 @@ module.exports = {
   updateProduct, 
   deleteProduct, 
   productRating,
-  getCreate
+  getCreate,
+  getDiscount,
 }

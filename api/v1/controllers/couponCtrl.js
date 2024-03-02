@@ -4,24 +4,36 @@ const Coupon = require('../models/coupon');
 // create coupon
 const createCoupon = async (req, res) => {
   try {
-    const newCoup = await Coupon.findOne({ name: req.body.name });
-
+    let name = req.body.name;
+    name = name.toUpperCase(); 
+    const newCoup = await Coupon.findOne({ name: name }); 
     if (newCoup) {
-      return res.status(400).json({ message: "Coupon already exists!" });
+      req.flash('error', 'Coupon Already Exist')
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl)
+
     } else {
       const coup = await Coupon.create(req.body);
-      return res.status(200).json({
-        message: "Coupon created",
-        data: coup,
-      });
+      req.flash('success', 'Coupon Created')
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl)
     }
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      message: "Internal server error",
-    });
+    req.flash('error', err.message);
+    console.log(err.message)
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl)
   }
 };
+
+const getCreate = async(req, res) => { 
+  res.render('admin/create_coupon', {
+    layout: 'main',
+    title: "Create Discount",
+    isAuthenticated: req.user,
+    admin: req.user?.role
+  })
+}
 
 // update coupon
 const updateCoupon = async (req, res) => {
@@ -134,4 +146,5 @@ module.exports = {
   deleteCoupon,
   getCoupon,
   getAllCoupon,
+  getCreate
 };
