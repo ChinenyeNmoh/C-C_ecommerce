@@ -1,0 +1,107 @@
+<div class="container-fluid mt-5">
+  <div class="row justify-content-center">
+    <div class="col-6">
+      <div class="card">
+        <div class="card-header fw-bolder text-center">
+          {{counter}} users found
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <tbody>
+                {{#each users}}
+                <tr>
+                  <td>
+                    <div class="card mb-2">
+                      <div class="card-header">
+                        User {{@index}} Information
+                      </div>
+                      <div class="card-body">
+                        <table class="table table-sm mb-0">
+                          <tbody>
+                            <tr>
+                              <th scope="row">User Id</th>
+                              <td>{{this._id}}</td>
+                            </tr>
+                            <tr>
+                              {{#if this.local}}
+                              <th scope="row">First Name</th>
+                              <td>{{this.local.firstname}}</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">Last Name</th>
+                              <td>{{this.local.lastname}}</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">Email</th>
+                              <td>{{this.local.email}}</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">Mobile</th>
+                              <td>{{this.local.mobile}}</td>
+                            </tr>
+                            {{/if}}
+                            {{#if this.google}}
+                            <tr>
+                              <th scope="row"> Google First Name</th>
+                              <td>{{this.google.firstname}}</td>
+                            </tr>
+                            <tr>
+                              <th scope="row"> Google Last Name</th>
+                              <td>{{this.google.lastname}}</td>
+                            </tr>
+                            <tr>
+                              <th scope="row"> Google Email</th>
+                              <td>{{this.google.email}}</td>
+                            </tr>
+                            {{/if}}
+                            <tr>
+                              <th scope="row">Address</th>
+                              <td>{{this.address}}</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">Role</th>
+                              <td>{{this.role}}</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">Verified</th>
+                              <td>{{this.isVerified}}</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">Password Modified</th>
+                              <td>{{this.isPasswordModified}}</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">Blocked</th>
+                              <td>{{this.isBlocked}}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="adds d-flex justify-content-center mt-3 mb-3 fw-bold gap-5">
+                        <a class="delete-user" href="/api/user/delete/{{this._id}}" >
+                         <i class="fa-solid fa-trash"></i>
+                             Delete User
+                        </a>
+
+                        <a class="block-user" href="/api/user/blockuser/{{this._id}}">
+                            <i class="fa-solid fa-lock"></i>
+                           Block User
+                        </a>
+                        <a class="unblock-user" href="/api/user/unblockuser/{{this._id}}">
+                            <i class="fa-solid fa-unlock"></i>
+                           Unblock User
+                        </a>
+                  </div>
+                  {{/each}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

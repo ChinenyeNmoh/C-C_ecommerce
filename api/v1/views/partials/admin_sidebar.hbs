@@ -13,7 +13,6 @@
       </button>
       <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         <li><a class="dropdown-item" href="/api/product/getcreate">Create Products</a></li>
-        <li><a class="dropdown-item" href="/api/product/getdiscount/{{prodId}}">Discount product</a></li>
         <li><a class="dropdown-item" href="/api/coupon/getcreate">Discount All Products</a></li>
         <li><a class="dropdown-item" href="/api/product/removealldiscount">Remove All discount</a></li>
       </ul>
@@ -23,7 +22,7 @@
         Users
       </button>
       <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <li><a class="dropdown-item" href="/api/product/getdiscount/{{prodId}}">Discount a Product</a></li>
+        <li><a class="dropdown-item" href="/api/user/allusers">All Users</a></li>
       </ul>
     </div>
     <div class="dropdown">
@@ -31,9 +30,9 @@
         Orders
       </button>
       <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <li><a class="dropdown-item" href="/api/product/getcreate">Create Products</a></li>
-        <li><a class="dropdown-item" href="/api/product/">Update Products</a></li>
-        <li><a class="dropdown-item" href="/api/product/">Delete Products</a></li>
+        <li><a class="dropdown-item" href="/api/order/getallorders">All Orders</a></li>
+        <li><a class="dropdown-item" href="/api/order/pendingorders">Pending Orders</a></li>
+        <li><a class="dropdown-item" href="/api/order/deliveredorders">Delivered Orders</a></li>
       </ul>
     </div>
     <div class="dropdown">

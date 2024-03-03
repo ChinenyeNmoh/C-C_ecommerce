@@ -26,6 +26,9 @@ module.exports = function (passport) {
         try {
           let user = await User.findOne({ "google.googleId": email.id });
           let localUser = await User.findOne({ "local.email": email.emails[0].value });
+          if (localUser && localUser.isBlocked) {
+            return done(null, false, { message: 'Your account has been blocked. Make a complaint with the enquiry form below' });
+          }
 
           if (user) {
             console.log('User found with Google ID');
@@ -97,6 +100,11 @@ module.exports = function (passport) {
           }
           req.flash('warning', 'Check your Email for Account Verification Link')
           return done(null, false);
+        }
+        if(user.isBlocked){
+          req.flash("error", "Your account has been blocked. Make a complient with the enquiry form below")
+          const previousUrl = req.headers.referer || '/';
+          return res.redirect(previousUrl)
         }
         req.flash('success', "Login successful")
         console.log('Local authentication success:', `${user.firstname} has been logged in`);

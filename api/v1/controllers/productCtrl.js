@@ -26,11 +26,16 @@ const createProduct = async (req, res) => {
 
 //get create product view
 const getCreate = async(req, res) => {
+  let admin = false;
+  if (req.user && req.user.role === 'admin') {
+    admin = true;
+} 
+console.log(admin)
   res.render('admin/create_product', {
     layout: 'main',
     title: "Create Product",
     isAuthenticated: req.user,
-    admin: req.user?.role
+    admin
   })
 } 
 
@@ -40,6 +45,11 @@ const getProduct = async (req, res) => {
   console.log('getProduct was hit')
     const { id } = req.params;
     try {
+      let admin = false;
+      if (req.user && req.user.role === 'admin') {
+        admin = true;
+    } 
+    console.log(admin)
       const product = await Product.findById(id).populate([
         {path: "ratings.postedby", select: "local.firstname local.lastname"}
       ]).select("name price description discountedPrice ratings images"); 
@@ -49,7 +59,7 @@ const getProduct = async (req, res) => {
           title: "products",
            product,
            isAuthenticated: req.user,
-           admin: req.user?.role,
+           admin,
           })
       } else {
         return res.render('error', { layout: 'main', title: 'Products' });
@@ -65,6 +75,11 @@ const getProduct = async (req, res) => {
   // get all products
 const getAllProduct = async (req, res) => {
   try {
+    let admin = false;
+    if (req.user && req.user.role === 'admin') {
+      admin = true;
+  } 
+  console.log(admin)
     // Filtering
     const queryObj = { ...req.query };
     const excludeFields = ["page", "sort", "limit", "fields"];
@@ -144,7 +159,7 @@ if (currentPage < totalPages) {
         layout: 'main', 
         products, 
         isAuthenticated: req.user, 
-        admin: req.user?.role, 
+        admin, 
         title: 'Products', 
         currentPage, 
         nextPage, 
@@ -203,12 +218,17 @@ const updateProduct = async(req, res) => {
 //get update view
  const getUpdate = async(req, res) => {
   const prodId = req.params.id
+  let admin = false;
+  if (req.user && req.user.role === 'admin') {
+    admin = true;
+} 
+console.log(admin)
   res.render('admin/create_product', {
     layout: 'main',
     prodId,
     title: "Create Product",
     isAuthenticated: req.user,
-    admin: req.user?.role
+    admin
   })
   
 }
@@ -338,12 +358,17 @@ const applyDiscount = async (req, res) => {
 //get the discount product view
 const getDiscount = (req, res)=> {
   const prodId = req.params.id
+  let admin = false;
+  if (req.user && req.user.role === 'admin') {
+    admin = true;
+} 
+console.log(admin)
   res.render('admin/apply_discount', {
     layout: 'main',
     prodId,
     title: "Create Discount",
     isAuthenticated: req.user,
-    admin: req.user?.role
+    admin
   })
 }
 

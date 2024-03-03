@@ -210,12 +210,18 @@ const getCart = async (req, res) => {
       res.redirect(previousUrl);
     }
     const cartQty = userCart?.products.length;
+    let admin = false;
+    if (req.user && req.user.role === 'admin') {
+      admin = true;
+  } 
+  console.log(admin)
     res.render('shop/cart', { layout: 'main', 
     userCart, 
     title: 'Cart', 
     cartQty, 
     isAuthenticated: req.user, 
-    admin: req.user?.role,});
+    admin
+  });
   } catch (err) {
     console.error(err);
     req.flash('error', err.message);

@@ -127,19 +127,31 @@ const signUp = (req, res) => {
 };
 // get login page
 const signIn = (req, res) => {
+  let admin = false;
+  if (req.user && req.user.role === 'admin') {
+    admin = true;
+} 
+console.log(admin)
   res.render('user/login', { 
     layout: 'main', 
     title: 'User', 
     isAuthenticated: req.user, 
-    admin: req.user?.role, });
+    admin, 
+  });
 };
 
 const getForgotPassword = (req, res) => {
+  let admin = false;
+  if (req.user && req.user.role === 'admin') {
+    admin = true;
+} 
+console.log(admin)
   res.render('user/forgot_password', { 
     layout: 'main', 
     title: 'User', 
     isAuthenticated: req.user, 
-    admin: req.user?.role, });
+    admin
+   });
 };
 
 // request password reset
@@ -220,13 +232,19 @@ const resetPassword = async (req, res) => {
     // The TTL index will automatically remove expired tokens
    // await passwordResetToken.findByIdAndDelete(userToken._id);
     req.flash('success', "You are a verified User. Update your account now")
+    let admin = false;
+    if (req.user && req.user.role === 'admin') {
+      admin = true;
+  } 
+  console.log(admin)
     res.render('user/reset_password', {
       layout: 'main', 
       title: 'Reset Password', 
       id, 
       token, 
       isAuthenticated: req.user, 
-      admin: req.user?.role, })
+      admin
+    })
   } catch (err) {
     req.flash('error', err.message);
   }
@@ -296,6 +314,7 @@ const updatePassword = async (req, res) => {
     }
    
   } catch (err) {
+    console.log(err)
     req.flash('error', err.message);
   }
 };
@@ -303,18 +322,29 @@ const updatePassword = async (req, res) => {
 // get all users
 const getAllUsers = async (req, res) => {
   try {
-    const getUsers = await User.find({});
+    const users = await User.find({});
     const counter = await User.countDocuments();
-    res.status(200).json({
-      message: 'success',
-      count: counter,
-      data: getUsers,
+    let admin = false;
+    if (req.user && req.user.role === 'admin') {
+      admin = true;
+  } 
+  console.log(admin)
+    req.flash('success', 'Users found');
+    return res.render('admin/all_users.hbs', { 
+      layout: 'main', 
+      users, 
+      isAuthenticated: req.user, 
+      admin, 
+      title: 'All users', 
+      counter,
     });
   } catch (error) {
-    req.flash('error', err.message);
-    res.render('error', { layout: 'main', err, title: 'User' });
+    req.flash('error', error.message);
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl);
   }
 };
+
 
 // get a user function
 const getUser = async (req, res) => {
@@ -334,7 +364,8 @@ const getUser = async (req, res) => {
     } catch (error) {
     console.error(error);
     req.flash('error', err.message);
-    res.render('error', { layout: 'main', err, title: 'User' });
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl);
   }
 };
 
@@ -350,17 +381,25 @@ const getMyUser = async (req, res) => {
         message: 'User not found',
       });
     }else{
+      let admin = false;
+      if (req.user && req.user.role === 'admin') {
+        admin = true;
+    } 
+    console.log(admin)
       res.render('user/account', {
         layout: 'main', 
         title: "My Account", 
         user,
         googleuser,
         isAuthenticated: req.user,
-         admin: req.user?.role,})
+         admin
+        })
     }
     } catch (error) {
     console.error(err);
     req.flash('error', err.message);
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl);
   }
 };
 
@@ -372,17 +411,18 @@ const deleteUser = async(req, res) => {
   try {
     const user = await User.findByIdAndDelete(id);
     if (!user) {
-      return res.status(404).json({
-        message: 'User not found',
-      });
+      req.flash('error', "User not found");
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl);
     }
-    return res.status(200).json({
-      message: 'success',
-      message: 'User deleted'
-    });
-  } catch (error) {
+    req.flash('success', "User deleted");
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl);
+  } catch (err) {
+    console.log(err)
     req.flash('error', err.message);
-    res.render('error', { layout: 'main', err, title: 'User' });
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl);
   }
 };
 
@@ -448,17 +488,18 @@ const blockUser = async (req, res) => {
     );
 
     if (!user) {
-      return res.status(404).json({
-        message: 'User not found',
-      });
+      req.flash('error', "User not found");
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl);
     }
 
-    return res.status(200).json({
-      message: 'User blocked',
-    });
+    req.flash('success', "User is blocked");
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl);
   } catch (error) {
     req.flash('error', err.message);
-    res.render('error', { layout: 'main', err, title: 'User' });
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl);
   }
 };
 
@@ -468,21 +509,22 @@ const unBlockUser = async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(
       id,
-      { isBlocked: true },
+      { isBlocked: false },
       { new: true, runValidators: true }
     );
     if (!user) {
-      return res.status(404).json({
-        message: 'User not found',
-      });
+      req.flash('error', "User not found");
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl);
     }
-    return res.status(200).json({
-      message: 'User unblocked',
-    });
+    req.flash('success', "User Unblocked");
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl);
   } catch (error) {
     console.error(error);
     req.flash('error', err.message);
-    res.render('error', { layout: 'main', err, title: 'User' });
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl);
   }
 };
 
@@ -555,12 +597,18 @@ const getWishList = async(req, res) => {
       const previousUrl = req.headers.referer || '/';
       return res.redirect(previousUrl);
     }
+    let admin = false;
+    if (req.user && req.user.role === 'admin') {
+      admin = true;
+  } 
+  console.log(admin)
     return res.render('shop/show_wishlist', {
        layout: 'main', 
        title: "products", 
        product, 
        isAuthenticated: req.user, 
-       admin: req.user?.role,})
+       admin
+      })
 
   }catch(err) {
     req.flash('error', err.message);

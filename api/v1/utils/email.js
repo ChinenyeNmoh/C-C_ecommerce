@@ -73,164 +73,183 @@ const processOrderEmailTemplate = (myOrder, firstname, lastname, email, phoneNo)
 	<p>
 	Hi ${firstname}  ${lastname},</p>
 	<p>We have received  your order and its being processed .</p>
-	<h2>[Order ${myOrder._id}] (${myOrder.createdAt.toString().substring(0, 10)})</h2>
-	<table>
-	<thead>
-	<tr>
-	<td><strong>Product</strong></td>
-	<td><strong>Quantity</strong></td>
-	<td><strong align="right">Price</strong></td>
-	</thead>
-	<tbody>
-	${myOrder.products
-	  .map(
-	  (item) => `
-	  <tr>
-	  <td>${item.productId.name}</td>
-	  <td align="center">${item.quantity}</td>
-	  <td align="right"> $${item.price}</td>
-	  </tr>
-	`
-	  )
-	  .join('\n')}
-	</tbody>
-	<tfoot>
-	<tr>
-	<td colspan="2">SubTotal:</td>
-	<td align="right"> $${myOrder.subTotal}</td>
-	</tr>
-	<tr>
-	<td colspan="2">SubTotalAfterCoupon:</td>
-	<td align="right"> $${myOrder.subTotalAfterCoupon}</td>
-	</tr>
-	<tr>
-	<td colspan="2">Shipping Price:</td>
-	<td align="right"> $${myOrder.shippingFee}</td>
-	</tr>
-	<tr>
-	<td colspan="2"><strong>Total Price:</strong></td>
-	<td align="right"><strong> $${myOrder.totalPrice}</strong></td>
-	</tr>
-	<tr>
-	<td colspan="2">Payment Method:</td>
-	<td align="right">${myOrder.paymentMethod}</td>
-	</tr>
-	<tr>
-	  <td colspan="2">Payment Status:</td>
-	  <td align="right">${myOrder.paymentStatus}</td>
-	</tr>
-	<tr>
-	<td colspan="2">Order Status:</td>
-	<td align="right">${myOrder.orderStatus}</td>
-	</tr>
-	</table>
-	
-	<h2>Shipping address</h2>
-	<p>
-	${myOrder.address.firstname}   ${myOrder.address.lastname},<br/>
-	${myOrder.address.street},<br/>
-	${myOrder.address.city},<br/>
-	${myOrder.address.state},<br/>
-	${myOrder.address.landmark},<br/>
-	${myOrder.address.recipientPhoneNo}<br/>
-	</p>
-	<h2>Billing address</h2>
-	<p>
-	${firstname} ${lastname},<br/>
-	${phoneNo},<br/>
-	${email},<br/>
-	${myOrder.user.address},<br/>
-	</p>
-	<hr/>
-	<p>
-	Thanks for shopping with us.
-	</p>
-	`;
-};
+	<h4><strong>Order Id: </strong>${myOrder._id}</h4>
+    <p><strong>Delivered At: </strong>${myOrder.createdAt.toString().substring(0, 10)}</p>
+    <table>
+        <thead>
+            <tr>
+                <td><strong>Product</strong></td><span style="margin-left: 5px;">
+                <td><strong>Quantity</strong></td></span><span style="margin-left: 3px;">
+                <td><strong align="right">Price</strong></td></span>
+            </tr>
+        </thead>
+        <tbody>
+            ${myOrder.products
+                .map(
+                    (item) => `
+                        <tr>
+                            <td>${item.productId.name}</td><span style="margin-left: 2px;">
+                            <td align="center">${item.quantity}</td><span style="margin-left: 4px;">
+                            <td align="right">N${item.price}</td></span></span>
+                        </tr>
+                    `
+                )
+                .join('\n')}
+        </tbody>
+        <tfoot>
+		<br/>
+            <tr>
+                <td colspan="2"><strong> SubTotal:</strong></td>
+                <td align="right">N${myOrder.subTotal}</td>
+            </tr>
+            <tr>
+                <td colspan="2"><strong>SubTotalAfterCoupon:</strong></td>
+                <td align="right">N${myOrder.subTotalAfterCoupon}</td>
+            </tr>
+            <tr>
+                <td colspan="2"><strong>Shipping Price:</strong></td>
+                <td align="right">N${myOrder.shippingFee}</td>
+            </tr>
+			<br/>
+            <tr>
+                <td colspan="2"><strong>Total Price:</strong></td>
+                <td align="right"><strong>N${myOrder.totalPrice}</strong></td>
+            </tr>
+			<br/>
+            <tr>
+                <td colspan="2"><strong>Payment Method:</strong></td>
+                <td align="right">${myOrder.paymentMethod}</td>
+            </tr>
+            <tr>
+                <td colspan="2"><strong>Payment Status:</strong></td>
+                <td align="right">${myOrder.paymentStatus}</td>
+            </tr>
+            <tr>
+                <td colspan="2"><strong>Payment Time:</strong></td>
+                <td align="right">${myOrder.paidAt}</td>
+            </tr>
+            <tr>
+                <td colspan="2"><strong>Order Status:</strong></td>
+                <td align="right">${myOrder.orderStatus}</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <h2>Shipping address</h2>
+    <p>
+        <strong>Full Name: </strong>${myOrder.address.firstname} ${myOrder.address.lastname},<br/>
+        <strong>Street: </strong>${myOrder.address.street},<br/>
+        <strong>City: </strong>${myOrder.address.city},<br/>
+        <strong>State: </strong>${myOrder.address.state},<br/>
+        <strong>Landmark: </strong>${myOrder.address.landmark},<br/>
+        <strong>Recipient Phone No: </strong>${myOrder.address.recipientPhoneNo}<br/>
+    </p>
+
+    <h2>Billing address</h2>
+    <p>
+        <strong>Full Name: </strong>${firstname} ${lastname},<br/>
+        <strong>Phone Number: </strong>${phoneNo},<br/>
+        <strong>Email: </strong>${email},<br/>
+        <strong>Address: </strong>${myOrder.user.address},<br/>
+    </p>
+    <hr/>
+    <p>
+        Thank you for shopping with us.
+    </p>
+    `;
+};      
 
 const deliveredOrderEmailTemplate = (myOrder, firstname, lastname, email, phoneNo) => {
-	return `<h1>Thanks for shopping with us</h1>
-	<p>
-	Hi ${firstname}  ${lastname},</p>
-	<p>Your order has been delivered.</p>
-	<h2>[Order ${myOrder._id}] (${myOrder.createdAt.toString().substring(0, 10)})</h2>
-	<table>
-	<thead>
-	<tr>
-	<td><strong>Product</strong></td>
-	<td><strong>Quantity</strong></td>
-	<td><strong align="right">Price</strong></td>
-	</thead>
-	<tbody>
-	${myOrder.products
-		.map(
-		(item) => `
-		<tr>
-		<td>${item.productId.name}</td>
-		<td align="center">${item.quantity}</td>
-		<td align="right"> $${item.price}</td>
-		</tr>
-	`
-		)
-		.join('\n')}
-	</tbody>
-	<tfoot>
-	<tr>
-	<td colspan="2">SubTotal:</td>
-	<td align="right"> $${myOrder.subTotal}</td>
-	</tr>
-	<tr>
-	<td colspan="2">SubTotalAfterCoupon:</td>
-	<td align="right"> $${myOrder.subTotalAfterCoupon}</td>
-	</tr>
-	<tr>
-	<td colspan="2">Shipping Price:</td>
-	<td align="right"> $${myOrder.shippingFee}</td>
-	</tr>
-	<tr>
-	<td colspan="2"><strong>Total Price:</strong></td>
-	<td align="right"><strong> $${myOrder.totalPrice}</strong></td>
-	</tr>
-	<tr>
-	<td colspan="2">Payment Method:</td>
-	<td align="right">${myOrder.paymentMethod}</td>
-	</tr>
-	<tr>
-	<td colspan="2">Payment Status:</td>
-	<td align="right">${myOrder.paymentStatus}</td>
-	</tr>
-	<tr>
-	<td colspan="2">Payment Time:</td>
-	<td align="right">${myOrder.paidAt}</td>
-	</tr>
-	<tr>
-	<td colspan="2">Order Status:</td>
-	<td align="right">${myOrder.orderStatus}</td>
-	</tr>
-	</table>
-	
-	<h2>Shipping address</h2>
-	<p>
-	${myOrder.address.firstname}   ${myOrder.address.lastname},<br/>
-	${myOrder.address.street},<br/>
-	${myOrder.address.city},<br/>
-	${myOrder.address.state},<br/>
-	${myOrder.address.landmark},<br/>
-	${myOrder.address.recipientPhoneNo}<br/>
-	</p>
-	
-	<h2>Billing address</h2>
-	<p>
-	${firstname} ${lastname},<br/>
-	${phoneNo},<br/>
-	${email},<br/>
-	${myOrder.user.address},<br/>
-	</p>
-	<hr/>
-	<p>
-	Thank you for shopping with us.
-	</p>
-`;
-};        
-	
+    return `
+    <h1>Thanks for shopping with us</h1>
+    <p>
+        Hi ${firstname} ${lastname},
+    </p>
+    <p>Your order has been delivered.</p>
+    <h4><strong>Order Id: </strong>${myOrder._id}</h4>
+    <p><strong>Delivered At: </strong>${myOrder.createdAt.toString().substring(0, 10)}</p>
+    <table>
+        <thead>
+            <tr>
+                <td><strong>Product</strong></td><span style="margin-left: 5px;">
+                <td><strong>Quantity</strong></td></span><span style="margin-left: 3px;">
+                <td><strong align="right">Price</strong></td></span>
+            </tr>
+        </thead>
+        <tbody>
+            ${myOrder.products
+                .map(
+                    (item) => `
+                        <tr>
+                            <td>${item.productId.name}</td><span style="margin-left: 2px;">
+                            <td align="center">${item.quantity}</td><span style="margin-left: 4px;">
+                            <td align="right">N${item.price}</td></span></span>
+                        </tr>
+                    `
+                )
+                .join('\n')}
+        </tbody>
+        <tfoot>
+		<br/>
+            <tr>
+                <td colspan="2"><strong> SubTotal:</strong></td>
+                <td align="right">N${myOrder.subTotal}</td>
+            </tr>
+            <tr>
+                <td colspan="2"><strong>SubTotalAfterCoupon:</strong></td>
+                <td align="right">N${myOrder.subTotalAfterCoupon}</td>
+            </tr>
+            <tr>
+                <td colspan="2"><strong>Shipping Price:</strong></td>
+                <td align="right">N${myOrder.shippingFee}</td>
+            </tr>
+			<br/>
+            <tr>
+                <td colspan="2"><strong>Total Price:</strong></td>
+                <td align="right"><strong>N${myOrder.totalPrice}</strong></td>
+            </tr>
+			<br/>
+            <tr>
+                <td colspan="2"><strong>Payment Method:</strong></td>
+                <td align="right">${myOrder.paymentMethod}</td>
+            </tr>
+            <tr>
+                <td colspan="2"><strong>Payment Status:</strong></td>
+                <td align="right">${myOrder.paymentStatus}</td>
+            </tr>
+            <tr>
+                <td colspan="2"><strong>Payment Time:</strong></td>
+                <td align="right">${myOrder.paidAt}</td>
+            </tr>
+            <tr>
+                <td colspan="2"><strong>Order Status:</strong></td>
+                <td align="right">${myOrder.orderStatus}</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <h2>Shipping address</h2>
+    <p>
+        <strong>Full Name: </strong>${myOrder.address.firstname} ${myOrder.address.lastname},<br/>
+        <strong>Street: </strong>${myOrder.address.street},<br/>
+        <strong>City: </strong>${myOrder.address.city},<br/>
+        <strong>State: </strong>${myOrder.address.state},<br/>
+        <strong>Landmark: </strong>${myOrder.address.landmark},<br/>
+        <strong>Recipient Phone No: </strong>${myOrder.address.recipientPhoneNo}<br/>
+    </p>
+
+    <h2>Billing address</h2>
+    <p>
+        <strong>Full Name: </strong>${firstname} ${lastname},<br/>
+        <strong>Phone Number: </strong>${phoneNo},<br/>
+        <strong>Email: </strong>${email},<br/>
+        <strong>Address: </strong>${myOrder.user.address},<br/>
+    </p>
+    <hr/>
+    <p>
+        Thank you for shopping with us.
+    </p>
+    `;
+};      
+
 module.exports = {emailVerificationTemplate, passwordResetTemplate, processOrderEmailTemplate, sendEmail, deliveredOrderEmailTemplate}

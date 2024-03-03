@@ -26,12 +26,17 @@ const createCoupon = async (req, res) => {
   }
 };
 
-const getCreate = async(req, res) => { 
+const getCreate = async(req, res) => {
+  let admin = false;
+  if (req.user && req.user.role === 'admin') {
+    admin = true;
+} 
+console.log(admin)
   res.render('admin/create_coupon', {
     layout: 'main',
     title: "Create Discount",
     isAuthenticated: req.user,
-    admin: req.user?.role
+    admin
   })
 }
 

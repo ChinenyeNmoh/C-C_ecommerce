@@ -50,11 +50,16 @@ const uploadImages = async (req, res) => {
 
 // get image 
 const getImage = async (req, res) => {
+  let admin = false;
+  if (req.user && req.user.role === 'admin') {
+    admin = true;
+} 
+console.log(admin)
   res.render('admin/upload', {
     layout: 'main',
     title: "Upload images",
     isAuthenticated: req.user,
-    admin: req.user.role
+    admin
   })
 }
 // delete images

@@ -3,7 +3,6 @@ const Product = require("../models/product");
 const Address = require("../models/address");
 const Order = require("../models/order");
 const User = require("../models/user");
-const opn = require("opn")
 const Flutterwave = require('flutterwave-node-v3');
 const { sendEmail, processOrderEmailTemplate, deliveredOrderEmailTemplate } = require('../utils/email');
 const dotenv = require("dotenv")
@@ -148,6 +147,11 @@ const checkOut = async (req, res) => {
    if (delCart) {
     await Cart.findByIdAndDelete(delCart._id);
   }
+  let admin = false;
+  if (req.user && req.user.role === 'admin') {
+    admin = true;
+  } 
+  console.log(admin)
     req.flash('success', 'Order has been created')
     res.render('shop/order', {layout: "main", 
     title: 'Orders', 
@@ -157,7 +161,7 @@ const checkOut = async (req, res) => {
     email, 
     phoneNo,
     isAuthenticated: req.user,
-    admin: req.user?.role,
+    admin,
   })
   } catch (err) {
     console.error(err);
@@ -184,13 +188,17 @@ const getMyOrder = async (req, res) => {
       const previousUrl = req.headers.referer || '/';
       return res.redirect(previousUrl);
     }
-
+    let admin = false;
+    if (req.user && req.user.role === 'admin') {
+      admin = true;
+  } 
+  console.log(admin)
     res.render('shop/show_orders', {
       layout: "main", 
       title: 'Orders', 
-      myOrders, // Changed variable name to myOrders
+      myOrders, 
       isAuthenticated: req.user,
-      admin: req.user?.role,
+      admin
     });
   } catch (err) {
     console.error(err);
@@ -228,14 +236,95 @@ const getUserOrder = async (req, res) => {
   }
 }
 
+//get pending Orders
+const getPendingOrders = async (req, res) => {
+  try {
+    const allOrders = await Order.find({orderStatus: "ordered"});
+    if (allOrders.length === 0) {
+      req.flash('error', "No Pending Order found");
+      return res.redirect('/');
+    }
+    // Populate each order with address and product details
+    await Promise.all(allOrders.map(async (order) => {
+      await order.populate([
+        { path: 'address', select: 'firstname lastname street city state landmark recipientPhoneNo' },
+        { path: 'user', select: 'local google address' },
+        { path: 'products.productId', select: 'name price images', 
+        populate: [
+          { path: 'category', select: 'title' },
+          { path: 'productType', select: 'title' }
+        ] }
+      ]);
+    }));
+    const counter = allOrders.length;
+    let admin = false;
+    if (req.user && req.user.role === 'admin') {
+      admin = true;
+  } 
+  console.log(admin)
+    res.render('admin/all_orders', {
+      layout: "main", 
+      title: 'Orders', 
+      allOrders,
+      counter,
+      isAuthenticated: req.user,
+      admin
+    });
+  } catch (err) {
+    console.error(err);
+    console.error(err);
+    res.render('error', {layout: "main", title: 'Error', err})
+  }
+};
+
+//get Delivered Orders
+const getDeliveredOrders = async (req, res) => {
+  try {
+    const allOrders = await Order.find({orderStatus: "delivered"});
+    if (allOrders.length === 0) {
+      req.flash('error', "No Delivered Order found");
+      return res.redirect('/');
+    }
+    // Populate each order with address and product details
+    await Promise.all(allOrders.map(async (order) => {
+      await order.populate([
+        { path: 'address', select: 'firstname lastname street city state landmark recipientPhoneNo' },
+        { path: 'user', select: 'local google address' },
+        { path: 'products.productId', select: 'name price images', 
+        populate: [
+          { path: 'category', select: 'title' },
+          { path: 'productType', select: 'title' }
+        ] }
+      ]);
+    }));
+    const counter = allOrders.length;
+    let admin = false;
+    if (req.user && req.user.role === 'admin') {
+      admin = true;
+  } 
+  console.log(admin)
+    res.render('admin/all_orders', {
+      layout: "main", 
+      title: 'Orders', 
+      allOrders,
+      counter,
+      isAuthenticated: req.user,
+      admin
+    });
+  } catch (err) {
+    console.error(err);
+    console.error(err);
+    res.render('error', {layout: "main", title: 'Error', err})
+  }
+};
 // get all orders by admin
 const getAllOrders = async (req, res) => {
   try {
     const allOrders = await Order.find();
     if (allOrders.length === 0) {
-      return res.status(404).json({
-        message: "No orders found"
-      });
+      req.flash('error', "No Orders found");
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl);
     }
     // Populate each order with address and product details
     await Promise.all(allOrders.map(async (order) => {
@@ -250,13 +339,20 @@ const getAllOrders = async (req, res) => {
       ]);
     }));
     const counter = await Order.countDocuments();
-    res.status(200).json({
-      message: "Orders found",
-      count: counter,
-      data: allOrders
+    let admin = false;
+    if (req.user && req.user.role === 'admin') {
+      admin = true;
+  } 
+  console.log(admin)
+    res.render('admin/all_orders', {
+      layout: "main", 
+      title: 'Orders', 
+      allOrders,
+      counter,
+      isAuthenticated: req.user,
+      admin
     });
   } catch (err) {
-    console.error(err);
     console.error(err);
     res.render('error', {layout: "main", title: 'Error', err})
   }
@@ -267,9 +363,9 @@ const confirmDelivery = async (req, res) => {
   try {
     const myOrder = await Order.findById(id);
     if (!myOrder) {
-      return res.status(404).json({
-        message: "Order not found"
-      });
+      req.flash('error', "No Orders found");
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl);
     }
 
     myOrder.orderStatus = "delivered";
@@ -293,10 +389,9 @@ const confirmDelivery = async (req, res) => {
     const htmlContent = deliveredOrderEmailTemplate(myOrder, firstname, lastname, email, phoneNo);
     await sendEmail(email, 'Order delivery confirmation', htmlContent);
     // Send a success response with the updated order
-    return res.status(200).json({
-      message: "Order delivered successfully",
-      data: myOrder
-    });
+    req.flash('success', "Delivery Confirmed. Delivery Mail Sent");
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl);
   } catch (err) {
     console.error(err);
     res.render('error', {layout: "main", title: 'Error', err})
@@ -307,21 +402,28 @@ const confirmDelivery = async (req, res) => {
 const deleteOrder = async(req, res) => {
   const { id } = req.params;
     try{
-      const alreadyExistOrder = await Order.findOne({ user: id });
+      const alreadyExistOrder = await Order.findOne({ _id: id });
       if (alreadyExistOrder) {
         await Order.findByIdAndDelete(alreadyExistOrder._id)
-        return res.status(200).json({
-          message: "Order deleted successfully",
-        });
+        req.flash('success', "Order Deleted");
+        const previousUrl = req.headers.referer || '/';
+        return res.redirect(previousUrl);
       }else{
-        res.status(404).json({
-          message: "User has not Order",
-        });
+        req.flash('error', "Order not found");
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl);
       }
     }catch (err) {
       console.error(err);
-      console.error(err);
-      res.render('error', {layout: "main", title: 'Error', err})
     }
 }
-module.exports = { getMyOrder, checkOut, getUserOrder, getAllOrders, confirmDelivery, deleteOrder }
+module.exports = {
+  getMyOrder,
+  checkOut,
+  getUserOrder,
+  getAllOrders,
+  confirmDelivery,
+  deleteOrder,
+  getDeliveredOrders,
+  getPendingOrders
+ }

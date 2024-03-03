@@ -40,7 +40,10 @@ router.post('/login', (req, res, next) => {
 router.get('/googlelogin', passport.authenticate('google', { scope: ['profile', 'email'] }))
 router.get(
   '/google/callback',
-  passport.authenticate('google', { failureRedirect: '/api/user/register' }),
+  passport.authenticate('google', { 
+    failureRedirect: '/api/user/register',
+    failureFlash: true
+   }),
   (req, res) => {
     res.redirect('/')
   }
@@ -57,10 +60,10 @@ router.get('/myuser', ensureAuth, getMyUser)
 router.get("/wishlist/:id", ensureAuth, wishList)
 router.get("/getwishlist", ensureAuth, getWishList)
 router.get("/:id", validateId, ensureAdmin, getUser);
-router.delete("/:id", validateId, deleteUser);
+router.get("/delete/:id", validateId, deleteUser);
 router.post('/update', ensureAuth, updateUser)
-router.put('/blockuser/:id', ensureAuth, ensureAdmin, blockUser)
-router.put('/unblockuser/:id', ensureAuth, ensureAdmin, unBlockUser)
+router.get('/blockuser/:id', ensureAuth, ensureAdmin, blockUser)
+router.get('/unblockuser/:id', ensureAuth, ensureAdmin, unBlockUser)
 
 
 

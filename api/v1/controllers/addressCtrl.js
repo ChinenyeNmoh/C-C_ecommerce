@@ -49,13 +49,18 @@ const addAddress = async (req, res) => {
                 updatedAddress,
                 { new: true }
             );
+            let admin = false;
+            if (req.user && req.user.role === 'admin') {
+              admin = true;
+          } 
+          console.log(admin)
 
             req.flash('success', 'Address created')
             res.render('shop/address', {
                 layout: "main",
                 title: "Address",
                 isAuthenticated: req.user,
-                admin: req.user?.role,
+                admin,
                 address
             })
         }
@@ -70,7 +75,11 @@ const addAddress = async (req, res) => {
 const getAddress = async (req, res) => {
     try {
         const address = await Address.findOne({ user: req.user._id });
-        console.log(address)
+        let admin = false;
+        if (req.user && req.user.role === 'admin') {
+          admin = true;
+      } 
+      console.log(admin)
 
         if (address) {
             res.render('shop/address', {
@@ -78,7 +87,7 @@ const getAddress = async (req, res) => {
                 title: 'Address', 
                 address,
                 isAuthenticated: req.user, 
-                admin: req.user?.role
+                admin
             })
         } else {
             res.render('shop/address', {
@@ -86,7 +95,7 @@ const getAddress = async (req, res) => {
                 title: 'Address', 
                 address,
                 isAuthenticated: req.user, 
-                admin: req.user?.role
+                admin
             })
         }
     } catch (err) {
