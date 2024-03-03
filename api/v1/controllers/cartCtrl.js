@@ -22,7 +22,9 @@ const createCart = async (req, res) => {
     const quantity = await Product.findById(cartItemId).select("quantity").exec();
     const prodName = await Product.findById(cartItemId).select("name").exec();
     if(quantity.quantity === 0){
-      req.flash('warning',`Sorry ${prodName.name} is out of stuck`)
+      req.flash('error',`Sorry ${prodName.name} is out of stuck`)
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl);
      
     }
     // Check if there is already a cart associated with the user
@@ -53,7 +55,7 @@ const createCart = async (req, res) => {
         req.flash('warning', 'Product has already been added to the cart');
          // Redirect to the previous URL after adding the product to the cart
         const previousUrl = req.headers.referer || '/';
-        res.redirect(previousUrl);
+        return res.redirect(previousUrl);
       } else {
         // Add the product to the existing cart
         alreadyExistCart.products.push({
@@ -103,9 +105,7 @@ const increaseQuantity = async (req, res) => {
         );
 
         req.flash('error', "Quantity cannot be increased further, maximum quantity reached")
-         // Redirect to the previous URL after adding the product to the cart
-        const previousUrl = req.headers.referer || '/';
-        res.redirect(previousUrl);
+        return res.redirect('/api/cart/getcart');
         
       }
 

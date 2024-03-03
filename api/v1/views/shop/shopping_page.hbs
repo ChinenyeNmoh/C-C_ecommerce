@@ -21,8 +21,14 @@
                             Add to Wishlist
                         </a>
                     </div>
+                    {{#if this.quantity}}
                     <p class="card-title"><strong>Name: </strong>{{this.name}}</p>
                     <p class="card-text"><strong>Price: </strong>N{{this.price}}</p>
+                    {{else}}
+                    <p class="card-title"><strong>Name: </strong>{{this.name}}</p>
+                    <p class="card-text text-decoration-line-through"><strong>Price: </strong>N{{this.price}}</p>
+                    <p class="card-title text-danger"><strong>Sold Out</strong></p>
+                    {{/if}}
                     {{#if this.discountedPrice}}
                     <p class="card-text"><strong>Discounted Price: </strong>N{{this.discountedPrice}}</p>
                     {{/if}}

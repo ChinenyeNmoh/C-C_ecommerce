@@ -107,7 +107,12 @@
         </div>
     </div>
     <div class="adds d-flex justify-content-center mt-3 mb-3 fw-bold gap-5">
-        <a class="block-user" href="/api/order/confirmdelivery/{{_id}}">
+        <a class="delete-user" href="/api/order/delete/{{this._id}}" >
+            <i class="fa-solid fa-trash"></i>
+                Delete Order
+        </a>
+        
+        <a class="block-user" href="/api/order/confirmdelivery/{{this._id}}">
             <i class="fa-solid fa-check"></i>
             Confirm Delivery
         </a>

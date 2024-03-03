@@ -49,10 +49,9 @@ const getProduct = async (req, res) => {
       if (req.user && req.user.role === 'admin') {
         admin = true;
     } 
-    console.log(admin)
       const product = await Product.findById(id).populate([
         {path: "ratings.postedby", select: "local.firstname local.lastname"}
-      ]).select("name price description discountedPrice ratings images"); 
+      ]).select("name price description discountedPrice ratings images");
       if (product) {
         return res.render('shop/show_product', { 
           layout: 'main', 
@@ -159,7 +158,7 @@ if (currentPage < totalPages) {
         layout: 'main', 
         products, 
         isAuthenticated: req.user, 
-        admin, 
+        admin,
         title: 'Products', 
         currentPage, 
         nextPage, 
@@ -199,8 +198,7 @@ const updateProduct = async(req, res) => {
     const product = await Product.findByIdAndUpdate(id, req.body,{new: true})
     if (product) {
       req.flash('success', "Product updated successfully");
-      const previousUrl = req.headers.referer || '/';
-      return res.redirect(previousUrl)
+      return res.redirect(`/api/product/${id}`)
      
     } else {
       req.flash('error', "Product not found");

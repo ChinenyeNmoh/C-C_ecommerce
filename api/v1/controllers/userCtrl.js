@@ -11,6 +11,7 @@ const createUser = async (req, res) => {
   try {
     const email = req.body.email;
     const findUser = await User.findOne({ "local.email": email });
+    console.log(findUser)
     const findPhoneNo = await User.findOne({ "local.mobile": req.body.mobile });
     const find_google_user = await User.findOne({ "google.email": email });
     if (findUser) {
@@ -329,7 +330,6 @@ const getAllUsers = async (req, res) => {
       admin = true;
   } 
   console.log(admin)
-    req.flash('success', 'Users found');
     return res.render('admin/all_users.hbs', { 
       layout: 'main', 
       users, 

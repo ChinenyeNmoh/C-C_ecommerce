@@ -188,6 +188,7 @@ const getMyOrder = async (req, res) => {
       const previousUrl = req.headers.referer || '/';
       return res.redirect(previousUrl);
     }
+    req.flash('success', "Orders found");
     let admin = false;
     if (req.user && req.user.role === 'admin') {
       admin = true;
@@ -210,31 +211,42 @@ const getMyOrder = async (req, res) => {
 const getUserOrder = async (req, res) => {
   const { id } = req.params;
   try {
-    const userOrder = await Order.findOne({ user: id })
-    if (!userOrder) {
-      return res.status(404).json({
-        message: "Order not found"
-      })
-    }
-    await userOrder.populate([
+    const allOrders = await Order.find({ user: id }).populate([
       { path: 'address', select: 'firstname lastname street city state landmark' },
       { path: 'user', select: 'local google address' },
-      { path: 'products.productId', select: 'name price images', 
-      populate: [
-        { path: 'category', select: 'title' },
-        { path: 'productType', select: 'title' }
-      ] }
+      { path: 'products.productId', select: 'name price images' }
+    ]).populate([
+      { path: 'products.productId.category', select: 'title' },
+      { path: 'products.productId.productType', select: 'title' }
     ]);
-    res.status(200).json({
-      message: "Order found",
-      data: userOrder
-    })
+    
+    if (!allOrders || allOrders.length === 0) {
+      req.flash('error', "No Orders found for User");
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl);
+    }
+    const count = allOrders.length;
+    console.log(count)
+    req.flash('success', "Orders found");
+    let admin = false;
+    if (req.user && req.user.role === 'admin') {
+      admin = true;
+    } 
+    res.render('admin/user_order', {
+      layout: "main", 
+      title: 'User Orders', 
+      allOrders, 
+      isAuthenticated: req.user,
+      admin,
+      count
+    });
   } catch (err) {
-    console.log(err)
     console.error(err);
-    res.flash('error', err.message)
+    req.flash('error', err.message);
+    res.redirect('/');
   }
 }
+
 
 //get pending Orders
 const getPendingOrders = async (req, res) => {
@@ -256,7 +268,7 @@ const getPendingOrders = async (req, res) => {
         ] }
       ]);
     }));
-    const counter = allOrders.length;
+    const count = allOrders.length;
     let admin = false;
     if (req.user && req.user.role === 'admin') {
       admin = true;
@@ -266,7 +278,7 @@ const getPendingOrders = async (req, res) => {
       layout: "main", 
       title: 'Orders', 
       allOrders,
-      counter,
+      count,
       isAuthenticated: req.user,
       admin
     });
@@ -297,7 +309,7 @@ const getDeliveredOrders = async (req, res) => {
         ] }
       ]);
     }));
-    const counter = allOrders.length;
+    const count = allOrders.length;
     let admin = false;
     if (req.user && req.user.role === 'admin') {
       admin = true;
@@ -307,7 +319,7 @@ const getDeliveredOrders = async (req, res) => {
       layout: "main", 
       title: 'Orders', 
       allOrders,
-      counter,
+      count,
       isAuthenticated: req.user,
       admin
     });
@@ -338,7 +350,7 @@ const getAllOrders = async (req, res) => {
         ] }
       ]);
     }));
-    const counter = await Order.countDocuments();
+    const count = await Order.countDocuments();
     let admin = false;
     if (req.user && req.user.role === 'admin') {
       admin = true;
@@ -348,7 +360,7 @@ const getAllOrders = async (req, res) => {
       layout: "main", 
       title: 'Orders', 
       allOrders,
-      counter,
+      count,
       isAuthenticated: req.user,
       admin
     });
@@ -369,7 +381,7 @@ const confirmDelivery = async (req, res) => {
     }
 
     myOrder.orderStatus = "delivered";
-    myOrder.deliveredAt = Date.now();
+    myOrder.deliveredAt = new Date(Date.now());
     myOrder.paymentStatus = "paid"
     await myOrder.save();
     await myOrder.populate([
@@ -398,25 +410,26 @@ const confirmDelivery = async (req, res) => {
   }
 };
 
-// delete order
-const deleteOrder = async(req, res) => {
+const deleteOrder = async (req, res) => {
+  console.log('delete was hit')
   const { id } = req.params;
-    try{
-      const alreadyExistOrder = await Order.findOne({ _id: id });
-      if (alreadyExistOrder) {
-        await Order.findByIdAndDelete(alreadyExistOrder._id)
-        req.flash('success', "Order Deleted");
-        const previousUrl = req.headers.referer || '/';
-        return res.redirect(previousUrl);
-      }else{
-        req.flash('error', "Order not found");
-      const previousUrl = req.headers.referer || '/';
-      return res.redirect(previousUrl);
-      }
-    }catch (err) {
-      console.error(err);
+  console.log(id);
+  try {
+    const order = await Order.findOneAndDelete({_id:id});
+    console.log(order)
+    if (order) {
+      req.flash('success', "Order Deleted");
+    } else {
+      req.flash('error', "Order not found");
     }
-}
+  } catch (err) {
+    console.error(err);
+    req.flash('error', "An error occurred while deleting the order");
+  }
+  const previousUrl = req.headers.referer || '/';
+  return res.redirect(previousUrl);
+};
+
 module.exports = {
   getMyOrder,
   checkOut,

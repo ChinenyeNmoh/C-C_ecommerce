@@ -57,8 +57,8 @@ router.get("/:id/resetpassword/:token", ensureGuest, validateId, resetPassword);
 router.post("/:id/resetpassword/:token", ensureGuest, validateId, updatePassword);
 router.get('/logout', ensureAuth, logOut)
 router.get('/myuser', ensureAuth, getMyUser)
-router.get("/wishlist/:id", ensureAuth, wishList)
 router.get("/getwishlist", ensureAuth, getWishList)
+router.get("/wishlist/:id", ensureAuth, wishList)
 router.get("/:id", validateId, ensureAdmin, getUser);
 router.get("/delete/:id", validateId, deleteUser);
 router.post('/update', ensureAuth, updateUser)

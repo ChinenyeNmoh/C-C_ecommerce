@@ -41,9 +41,18 @@
             <!-- Content column -->
                 <div class="card">
                     <div class="card-body">
-                        <p class="card-text"><strong>Name :</strong>{{product.name}}</p>
-                        <p class="card-text"><strong>Price: N</strong>{{product.price}}</p>
+                        {{#if product.quantity}}
+                       <p class="card-title"><strong>Name: </strong>{{product.name}}</p>
+                      <p class="card-text"><strong>Price: </strong>N{{product.price}}</p>
+                    {{else}}
+                    <p class="card-title"><strong>Name: </strong>{{product.name}}</p>
+                    <p class="card-text text-decoration-line-through"><strong>Price: </strong>N{{product.price}}</p>
+                    <p class="card-title text-danger"><strong>Sold Out</strong></p>
+                    {{/if}}
                         <p class="card-text"><strong>Description: </strong>{{product.description}}</p>
+                        {{#if sold}}
+                         <p class="card-text text-red"><strong>Sold Out</strong></p>
+                        {{/if}}
                         {{#if product.discountedPrice}}
                         <p class="card-text"><strong>Discounted Price: N</strong>{{product.discountedPrice}}</p>
                         {{/if}}
@@ -51,7 +60,11 @@
                             {{#each product.ratings}}
                                 <p class="card-text"><strong>Star: </strong>{{this.star}}</p>
                                 <p class="card-text"><strong>Comment: </strong>{{this.comment}}</p>
+                                {{#if this.postedby.local}}
                                 <p class="card-text"><strong>Customer: </strong>{{this.postedby.local.firstname}} {{this.postedby.local.lastname}}</p>
+                                {{else}}
+                                <p class="card-text"><strong>Customer: </strong>{{this.postedby.google.firstname}} {{this.postedby.google.lastname}}</p>
+                                {{/if}}
                             {{/each}}
                             {{#if product.totalrating}}
                                 <p class="card-text"><strong>TotalRating: </strong>: {{product.totalrating}}</p>

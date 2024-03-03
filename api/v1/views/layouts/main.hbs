@@ -15,21 +15,22 @@
 
 </head>
 <body>
-   <div class="container-fluid " style="width: 100%">
+   <div class="container-fluid " style="width: 100%;">
    <div class="flash-messages">
    {{#if messages.error}}
-      <div id="error-message" class="alert alert-danger mt-3 text-center" role="alert" style="height: 40px width: 50%;">
+      <div id="error-message" class="alert alert-danger mt-3 text-center mx-auto" role="alert" style="height: 40px; width: 50%;">
       {{messages.error}}
       </div>
    {{/if}}
 
    {{#if messages.success}}
-      <div id="success-message" class="alert alert-success mt-3" role="alert" style="height: 40px;">
-         {{messages.success}}
-      </div>
+<div id="success-message" class="alert alert-success mt-3 text-center mx-auto" role="alert" style="height: 40px; width: 50%;">
+    {{messages.success}}
+</div>
+
    {{/if}}
    {{#if messages.warning}}
-   <div id="warning-message" class="alert alert-warning mt-3" role="alert" style="height: 40px;">
+   <div id="warning-message" class="alert alert-warning mt-3 text-center mx-auto" role="alert" style="height: 40px;  width: 50%;">
       {{messages.warning}}
    </div>
 {{/if}}
