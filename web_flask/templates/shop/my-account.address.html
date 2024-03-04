@@ -1,0 +1,90 @@
+{% extends 'shop/my-account.html' %}
+
+{% block account_sidebar %}hidden md:block{% endblock %}
+{% block link_address %}bg-stone-100 border-l-2 border-blue-600{% endblock %}
+
+{% block account_content %}
+<div class="w-full">
+    <div class="bg-white py-3 px-4 relative">
+        <div class="md:hidden absolute left-2 text-lg">
+            <a href="{{ url_for('app_views.my_account') }}">
+                <i class="fa-solid fa-angle-left"></i>
+                <i class="fa-solid fa-user"></i>
+            </a>
+        </div>
+        <div class="flex items-center gap-3 text-xl justify-center md:justify-start">
+            <p>Add New Address</p>
+        </div>
+    </div>
+
+    <div id="empty-orders" class="bg-white mt-1 py-4 px-4">
+        <div class="font-light flex gap-2 items-center">
+            <i class="fa-solid fa-circle-info"></i>
+            <p class="text-sm">
+            You currently do not have any saved address. 
+            Get started by adding a new address.
+            </p>
+        </div>
+        <form method="post" id="address-form" 
+            class="w-full sm:w-2/3 lg:w-1/2">
+            <div class="flex flex-col gap-2 mt-6">
+                <label for="address-firstName" class="text-gray-600">
+                    First Name
+                </label>
+                <input id="address-firstName" class="border p-2 border-gray-600" 
+                type="text">
+                <div id="address-firstName-error" 
+                    class="text-red-500 text-sm hidden error">
+                    Please enter a valid first name.
+                    First name should be minimum of 2 letters.
+                </div>
+            </div>
+            <div class="flex flex-col gap-2 mt-6">
+                <label for="address-lastName" class="text-gray-600">
+                    Last Name
+                </label>
+                <input id="address-LastName" class="border p-2 border-gray-600" 
+                type="text">
+                <div id="address-lastName-error" 
+                    class="text-red-500 text-sm hidden error">
+                    Please enter a valid last name.
+                    Last name should be minimum of 2 letters.
+                </div>
+            </div>
+            <div class="flex flex-col gap-2 mt-6">
+                <label for="address-mobile" class="text-gray-600">
+                    Mobile
+                </label>
+                <input id="address-mobile" class="border p-2 border-gray-600" type="mobile">
+                <div id="address-mobile-error" 
+                    class="text-red-500 text-sm hidden error">
+                    Please enter a valid mobile number.
+                    Mobile number should be 11 digits long.
+                </div>
+            </div>
+            <div class="flex flex-col gap-2 mt-6">
+                <label for="add-address" class="text-gray-600">
+                    Address
+                </label>
+                <textarea id="add-address" 
+                    class="border p-2 border-gray-600" 
+                    type="text">
+                </textarea> 
+                <div id="add-address-error" 
+                    class="text-red-500 text-sm hidden error">
+                    Address should not be empty.
+                </div>
+            </div>
+            <button id="save-address-changes" type="submit" 
+                class="my-6 p-2 text-center text-white bg-black w-full
+                cursor-pointer">
+                Save Address
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='javascripts/shop.my-account.js') }}">
+    </script>
+{% endblock %}

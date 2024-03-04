@@ -1,0 +1,28 @@
+{% extends 'shop/my-account.html' %}
+
+{% block account_sidebar %}hidden md:block{% endblock %}
+{% block link_orders %}bg-stone-100 border-l-2 border-blue-600{% endblock %}
+
+{% block account_content %}
+<div class="w-full">
+    <div class="bg-white py-3 px-4 relative">
+        <div class="md:hidden absolute left- text-lg">
+            <a href="{{ url_for('app_views.my_account') }}">
+                <i class="fa-solid fa-angle-left"></i>
+                <i class="fa-solid fa-user"></i>
+            </a>
+        </div>
+        <div class="flex items-center gap-3 text-xl justify-center md:justify-start">
+            <i class="fa-solid fa-box"></i>
+            <p>My orders</p>
+        </div>
+    </div>
+
+    <div id="empty-orders" class="bg-white mt-1 py-8 px-28 text-center">
+        <h1 class="text-lg">You currently have no orders</h1>
+        <div class="bg-slate-900 hover:bg-slate-700 text-white text-center p-2 mt-8">
+            <a href="#" class="block w-full">start shopping</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}C&C Apparels</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/tailwind/output.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/font-awesome/css/all.min.css') }}">
+    {% block styles %}{% endblock %}
+</head>
+<body class="bg-slate-200">
+    <header>
+        {% block header %}{% endblock %}
+    </header>
+
+    <main>
+        <div id="success-message" 
+            class="fixed top-0 left-0 right-0 bg-green-200 z-50 hidden
+            text-center inline max-w-xl mx-auto p-4 text-green-900">
+        </div>
+        <div id="failure-message" 
+            class="fixed top-0 left-0 right-0 bg-red-200 z-50 hidden
+            text-center inline max-w-xl mx-auto p-4 text-red-900">
+        </div>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        {% block footer %}
+            <div class="container mx-auto max-w-6xl text-center p-2 
+                bg-stone-400 fixed bottom-0 right-0 left-0">
+                    <p class="text-sm">&copy; 2024 C&C Apparels</p>
+            </div>
+        {% endblock %}
+    </footer> 
+
+    <script src="{{ url_for('static', filename='javascripts/jquery-3.7.1.min.js') }}">
+    </script>
+    <script src="{{ url_for('static', filename='javascripts/main.js') }}">
+    </script>
+    {% block scripts %}{% endblock %} 
+</body>
+</html>

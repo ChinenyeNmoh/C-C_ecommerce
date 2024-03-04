@@ -1,0 +1,20 @@
+{% extends 'base.shop.html' %}
+
+{% block extend_content %}
+    <div class="hero flex justify-center items-center h-[680px] text-white text-3xl">
+        <div class="overlay"></div>
+        <div class="w-full text-center md:p-20 lg:p-32 z-30">
+                <P class="font-semibold mb-2">
+                    Discover the latest trends, and effortless shopping — 
+                </P>
+                <P class="font-semibold mb-6">
+                    all at your fingertips.
+                </P>
+                <a href="{{ url_for('app_views.products') }}" 
+                    class="border border-white rounded px-4 py-2 transition 
+                    duration-100 ease-out hover:ease-in hover:bg-stone-700">
+                    shop now
+                </a>
+        </div>
+    </div>
+{% endblock %}

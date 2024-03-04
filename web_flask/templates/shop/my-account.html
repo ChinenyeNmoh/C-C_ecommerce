@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mx-auto max-w-6xl p-4 flex flex-col 
+        justify-center items-center">
+        <div class="w-full">
+            <div class="flex justify-between items-center w-full">
+                <div class="logo text-3xl font-semibold">
+                    <a href="{{ url_for('app_views.shop_index') }}">C&C</a>
+                </div>
+                <div class="text-2xl font-medium">My Account</div>
+            </div>
+            <div class="mt-20">
+                <div class="flex w-full gap-4">
+                    <div class="left w-full md:w-80 {% block account_sidebar %}{% endblock %}">
+                        <div class="bg-white relative p-4">
+                            <div class="p-6 inline rounded-full 
+                                bg-slate-800 absolute top-0 left-1/2 
+                                transform -translate-x-1/2 -translate-y-1/2
+                                text-white text-3xl font-semibold">
+                                CN
+                            </div>
+                            <p class="text-center mt-12">Hi, 
+                            <span class="font-semibold">
+                                {{ user.firstName }} {{ user.lastName }}
+                            </span>
+                            </p>
+                        </div>
+                        <div class="bg-white mt-1 {% block link_orders %}
+                            font-light{% endblock %}">
+                            <div class="flex items-center space-x-4 px-4 py-2">
+                                <i class="fa-solid fa-box text-lg"></i>
+                                <a href="{{ url_for('app_views.my_orders') }}" 
+                                    class="cursor-pointer transition 
+                                    duration-200 ease-out hover:ease-in 
+                                    hover:underline ">
+                                    My orders
+                                </a>
+                            </div>
+                        </div>
+                        <div class="bg-white mt-1">
+                            <div class="flex items-center space-x-4 px-4 py-2
+                                {% block link_details %}font-light{% endblock %}">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <a href="{{ url_for('app_views.my_details') }}" 
+                                    class="cursor-pointer transition 
+                                    duration-100 ease-out hover:ease-in 
+                                    hover:underline">
+                                    My details
+                                </a>
+                            </div>
+                            <div class="flex items-center space-x-4 px-4 py-2
+                                {% block link_address %}font-light{% endblock %}">
+                                <i class="fa-solid fa-address-card"></i>
+                                <a href="{{ url_for('app_views.address') }}" 
+                                    class="cursor-pointer transition 
+                                    duration-100 ease-out hover:ease-in 
+                                    hover:underline">
+                                    Address book
+                                </a>
+                            </div>
+                        </div>
+                        <div class="bg-white mt-1 py-3 px-4">
+                            <div class="flex items-center space-x-4 font-light">
+                                <i class="fa-solid fa-right-to-bracket rotate-180"></i>
+                                <a href="#" class="cursor-pointer transition 
+                                    duration-100 ease-out hover:ease-in 
+                                    hover:underline">
+                                    Sign out
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% block account_content %}
+                    <div class="right hidden md:flex items-center justify-center 
+                        bg-white w-full">
+                        <div class="bg-slate-800 text-white py-2 px-2 text-2xl">
+                            Welcome to Your Account
+                        </div>
+                    </div>
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='javascripts/shop.my-account.js') }}">
+    </script>
+{% endblock %}

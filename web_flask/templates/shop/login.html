@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mx-auto max-w-6xl py-12 flex flex-col 
+        justify-center items-center">
+        <div class="logo text-3xl font-semibold">
+            <a href="{{ url_for('app_views.shop_index') }}">C&C</a>
+        </div>
+        <div class="max-w-xl bg-white p-4 mt-6 rounded p-4 w-full">
+            <div class="flex justify-between w-full">
+                <div class="w-full p-4 border-b-2 border-r-2 border-gray-300 
+                    text-center text-gray-400">
+                    <a href="{{ url_for('app_views.register') }}">Register</a>
+                </div>
+                <div class="w-full p-4 border-b-2 border-blue-500 
+                    text-center">
+                    <a href="#">Sign In</a>
+                </div>
+            </div>
+            <div class="max-w-sm mx-auto">
+                <form method="post" id="login-form" class="mt-8 w-full">
+                    <div class="flex flex-col gap-2">
+                        <label for="login-email" class="text-gray-600">Email Address</label>
+                        <input id="login-email" class="border p-2 border-gray-600" type="email">
+                        <div id="email-error" class="text-red-500 text-sm hidden">
+                            Please enter a valid email address.
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2 mt-6">
+                        <label for="login-password" class="text-gray-600">Password</label>
+                        <input id="login-password" class="border p-2 border-gray-600" 
+                        type="password">
+                        <div id="password-error" class="text-red-500 text-sm hidden">
+                            Password must be at least 8 characters long and contain at least 
+                            one uppercase letter, one lowercase letter, one number, and one 
+                            special character.
+                        </div>
+                    </div>
+                    <button class="mt-6 p-2 text-center text-white bg-black w-full">
+                        Sign In
+                    </button>
+                </form>
+                <div class="text-center mt-10">
+                    <a href="{{ url_for('app_views.forgot_password') }}" class="text-sm">
+                        Forgot Password?
+                    </a>
+                </div>
+                <div class="my-12 text-center">
+                    <h1 class="font-semibold">Or Sign In With...</h1>
+                    <div id="google-login" 
+                        class="flex mt-10 justify-center items-center gap-4 cursor-pointer
+                        border-2 border-gray-400 p-2">
+                        <i class="fa-brands fa-google"></i>
+                        <p>Google</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='javascripts/shop.login.js') }}">
+    </script>
+    <script src="{{ url_for('static', filename='javascripts/shop.google.auth.js') }}" type="module">
+    </script>
+{% endblock %}
