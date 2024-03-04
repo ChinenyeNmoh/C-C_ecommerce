@@ -4,6 +4,7 @@ const redisClient = require('../utils/redis');
 const User = require('../models/User');
 const generateOTP = require('../utils/otp');
 const sendOtpEmail = require('../utils/email');
+const Address = require('../models/Address');
 
 const UsersController = {
   async postNew (req, res) {
@@ -43,16 +44,41 @@ const UsersController = {
     return res.status(200).json({ user });
   },
 
+  async addAddress (req, res) {
+    try {
+      const userId = req.user.id;
+
+      const { firstName, lastName, mobile, address } = req.body;
+
+      const newAddress = await Address.create({ firstName, lastName, mobile, address });
+
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { $push: { addresses: newAddress._id } },
+        { new: true }
+      );
+
+      res.status(201).json({
+        status: 'success',
+        data: {
+          user
+        }
+      });
+    } catch (error) {
+      res.status(400).json({
+        status: 'error',
+        message: error.message
+      });
+    }
+  },
+
   async verifyOtp (req, res) {
-    console.log('in here');
+    console.log(' in here now');
     const { email, otp } = req.body;
     const key = `otp_${email}`;
 
-    console.log(otp);
-
     const storedOtp = await redisClient.get(key);
 
-    console.log(storedOtp);
     if (storedOtp !== String(otp)) {
       return res.status(401).json({ error: 'Invalid OTP' });
     }
@@ -61,7 +87,7 @@ const UsersController = {
 
     await User.updateOne({ email }, { $set: { isVerified: true } });
 
-    return res.status(200).json({ status: 'success', message: 'OTP verified successfully' });
+    return res.status(200).json({ status: 'success' });
   },
 
   async resendOtp (req, res) {
@@ -81,6 +107,22 @@ const UsersController = {
     sendOtpEmail(email, `${user.firstName} ${user.lastName}`, otp);
 
     return res.status(200).json({ status: 'success', message: 'OTP resent' });
+  },
+
+  async resetPassword (req, res) {
+    const { email, password, otp } = req.body;
+
+    const storedOtp = await redisClient.get(`reset_password_otp_${email}`);
+
+    if (storedOtp !== String(otp)) {
+      return res.status(401).json({ error: 'Invalid OTP' });
+    }
+
+    await User.updateOne({ email }, { $set: { password } });
+
+    await redisClient.del(`reset_password_otp_${email}`);
+
+    return res.status(200).json({ status: 'success' });
   }
 
 };

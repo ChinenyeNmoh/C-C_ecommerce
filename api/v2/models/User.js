@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt');
+const Address = require('./Address');
 
 const userSchema = new mongoose.Schema(
   {
@@ -11,7 +12,7 @@ const userSchema = new mongoose.Schema(
     mobile: { type: String, unique: false },
     password: { type: String, required: true },
     role: { type: String, default: 'user' },
-    address: { type: String },
+    addresses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Address' }],
     isVerified: { type: Boolean, default: false },
     isBlocked: { type: Boolean, default: false },
     wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true }]
@@ -30,6 +31,22 @@ userSchema.pre('save', async function (next) {
     }
     if (typeof this.dateOfBirth === 'string') {
       this.dateOfBirth = new Date(this.dateOfBirth);
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+userSchema.pre(['findOneAndUpdate', 'updateOne'], async function (next) {
+  try {
+    console.log('updating password');
+    const update = this.getUpdate();
+    const password = update.$set && update.$set.password;
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      update.$set.password = hashedPassword;
     }
     next();
   } catch (error) {

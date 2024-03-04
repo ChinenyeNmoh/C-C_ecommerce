@@ -2,6 +2,8 @@ const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const redisClient = require('../utils/redis');
 const User = require('../models/User');
+const generateOTP = require('../utils/otp');
+const sendOtpEmail = require('../utils/email');
 
 const AuthController = {
   async getConnect (req, res) {
@@ -49,7 +51,26 @@ const AuthController = {
       console.error(error);
       return res.status(500).json({ error: 'Internal server error' });
     }
+  },
+
+  async forgotPassword (req, res) {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const otp = generateOTP();
+    const key = `reset_password_otp_${email}`;
+    const expirationTimeInSeconds = 300;
+
+    await redisClient.set(key, otp, expirationTimeInSeconds);
+    sendOtpEmail(email, `${user.firstName} ${user.lastName}`, otp);
+
+    return res.status(200).json({ status: 'success' });
   }
+
 };
 
 module.exports = AuthController;

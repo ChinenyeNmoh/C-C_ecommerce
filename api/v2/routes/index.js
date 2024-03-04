@@ -1,7 +1,7 @@
 const express = require('express');
 const passport = require('../passport');
-const { getConnect, getDisconnect } = require('../controllers/AuthController');
-const { postNew, getMe, verifyOtp, resendOtp } = require('../controllers/UsersController');
+const { getConnect, getDisconnect, forgotPassword } = require('../controllers/AuthController');
+const { postNew, getMe, verifyOtp, resendOtp, resetPassword } = require('../controllers/UsersController');
 
 const router = express.Router();
 
@@ -11,8 +11,10 @@ router.post('/users', postNew);
 router.get('/users/me', getMe);
 router.post('/users/verify', verifyOtp);
 router.post('/users/resend-otp', resendOtp);
+router.post('/users/reset-password', resetPassword);
 router.get('/connect', getConnect);
 router.get('/disconnect', getDisconnect);
+router.post('/forgot-password', forgotPassword);
 // router.post('/files', postUpload);
 // router.get('/files', getIndex);
 // router.get('/files/:id', getShow);
