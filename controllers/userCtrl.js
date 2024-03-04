@@ -532,46 +532,49 @@ const unBlockUser = async (req, res) => {
 const wishList = async (req, res) => {
   const { _id } = req.user;
   const prodId = req.params.id;
-  
+
   try {
     const user = await User.findById(_id);
-    if(user){
-      const added = user.wishlist.find((id) => id.toString() === prodId.toString());
-      if (added) {
-        let user = await User.findByIdAndUpdate(
-          _id,
-          {
-            $pull: { wishlist: prodId.toString() },
-          },
-          {
-            new: true,
-          }
-        );
-        req.flash('success', 'Product removed successfully ');
-        const previousUrl = req.headers.referer || '/';
-        res.redirect(previousUrl);
-      } else {
-        let updated_user = await User.findByIdAndUpdate(
-          _id,
-          {
-            $push: { wishlist: prodId },
-          },
-          {
-            new: true,
-          }
-        );
-        await updated_user.populate([
-          { path: 'wishlist', select: 'name description price discountedPrice images.url' },
-        ]);
-        req.flash('success', 'Product added to wishlist');
-        // Redirect to the previous URL
-        const previousUrl = req.headers.referer || '/';
-        res.redirect(previousUrl);
-      }   
-    }else{
+    if (!user) {
       req.flash('error', 'User not found');
+      return res.redirect('/');
+    }
+
+    const added = user.wishlist.find((id) => id.toString() === prodId.toString());
+    if (added) {
+      let user = await User.findByIdAndUpdate(
+        _id,
+        { $pull: { wishlist: prodId.toString() } },
+        { new: true }
+      );
+      req.flash('success', 'Product removed successfully');
+      console.log(user.wishlist.length);
+
+      if (user.wishlist.length === 1) {
+        console.log('Redirecting to /api/product/');
+        return res.redirect('/api/product/');
+      }else{
+        const previousUrl = req.headers.referer || '/';
+      console.log('Redirecting to previous URL:', previousUrl);
+      return res.redirect(previousUrl);
+      }
+      
+    } else {
+      let updated_user = await User.findByIdAndUpdate(
+        _id,
+        { $push: { wishlist: prodId } },
+        { new: true }
+      );
+      await updated_user.populate([
+        { path: 'wishlist', select: 'name description price discountedPrice images.url' },
+      ]);
+      req.flash('success', 'Product added to wishlist');
+      const previousUrl = req.headers.referer || '/';
+      console.log('Redirecting to previous URL:', previousUrl);
+      return res.redirect(previousUrl);
     }
   } catch (err) {
+    console.error(err);
     req.flash('error', err.message);
     res.render('error', { layout: 'main', err, title: 'User' });
   }
@@ -586,7 +589,7 @@ const getWishList = async(req, res) => {
     if(!findUser){
       req.flash('error', "User not found");
       const previousUrl = req.headers.referer || '/';
-      res.redirect(previousUrl);
+      return res.redirect(previousUrl);
     }
     const wish = await findUser.populate([
       { path: 'wishlist' },

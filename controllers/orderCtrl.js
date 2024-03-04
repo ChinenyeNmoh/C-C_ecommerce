@@ -254,7 +254,8 @@ const getPendingOrders = async (req, res) => {
     const allOrders = await Order.find({orderStatus: "ordered"});
     if (allOrders.length === 0) {
       req.flash('error', "No Pending Order found");
-      return res.redirect('/');
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl);
     }
     // Populate each order with address and product details
     await Promise.all(allOrders.map(async (order) => {
@@ -295,7 +296,8 @@ const getDeliveredOrders = async (req, res) => {
     const allOrders = await Order.find({orderStatus: "delivered"});
     if (allOrders.length === 0) {
       req.flash('error', "No Delivered Order found");
-      return res.redirect('/');
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl);
     }
     // Populate each order with address and product details
     await Promise.all(allOrders.map(async (order) => {
@@ -416,18 +418,25 @@ const deleteOrder = async (req, res) => {
   console.log(id);
   try {
     const order = await Order.findOneAndDelete({_id:id});
-    console.log(order)
+    const remOrders = await Order.find()
+    console.log(remOrders)
     if (order) {
       req.flash('success', "Order Deleted");
+      if(remOrders.length === 0){
+        req.flash('success', "No Order To Display");
+        return res.redirect("/api/product/");
+      }
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl);
     } else {
-      req.flash('error', "Order not found");
+      req.flash('error', "something went wrong")
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl);
     }
   } catch (err) {
     console.error(err);
     req.flash('error', "An error occurred while deleting the order");
   }
-  const previousUrl = req.headers.referer || '/';
-  return res.redirect(previousUrl);
 };
 
 module.exports = {
