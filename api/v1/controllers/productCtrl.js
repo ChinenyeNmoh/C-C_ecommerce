@@ -51,7 +51,7 @@ const getProduct = async (req, res) => {
     } 
       const product = await Product.findById(id).populate([
         {path: "ratings.postedby", select: "local.firstname local.lastname"}
-      ]).select("name price description discountedPrice ratings images");
+      ]).select("name price description discountedPrice ratings images quantity");
       if (product) {
         return res.render('shop/show_product', { 
           layout: 'main', 

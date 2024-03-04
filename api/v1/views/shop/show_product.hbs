@@ -41,18 +41,15 @@
             <!-- Content column -->
                 <div class="card">
                     <div class="card-body">
-                        {{#if product.quantity}}
+                    {{#if product.quantity}}
                        <p class="card-title"><strong>Name: </strong>{{product.name}}</p>
-                      <p class="card-text"><strong>Price: </strong>N{{product.price}}</p>
+                       <p class="card-text"><strong>Price: </strong>N{{product.price}}</p>
                     {{else}}
                     <p class="card-title"><strong>Name: </strong>{{product.name}}</p>
                     <p class="card-text text-decoration-line-through"><strong>Price: </strong>N{{product.price}}</p>
                     <p class="card-title text-danger"><strong>Sold Out</strong></p>
                     {{/if}}
                         <p class="card-text"><strong>Description: </strong>{{product.description}}</p>
-                        {{#if sold}}
-                         <p class="card-text text-red"><strong>Sold Out</strong></p>
-                        {{/if}}
                         {{#if product.discountedPrice}}
                         <p class="card-text"><strong>Discounted Price: N</strong>{{product.discountedPrice}}</p>
                         {{/if}}
