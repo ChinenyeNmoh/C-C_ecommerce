@@ -5,74 +5,76 @@
 
 {% block account_content %}
 <div class="w-full">
-    <div class="bg-white py-3 px-4 relative">
+    <div class="bg-white py-3 px-8 relative">
         <div class="md:hidden absolute left-2 text-lg">
             <a href="{{ url_for('app_views.my_account') }}">
                 <i class="fa-solid fa-angle-left"></i>
                 <i class="fa-solid fa-user"></i>
             </a>
         </div>
-        <div class="flex items-center gap-3 text-xl justify-center md:justify-start">
+        <div class="flex items-center gap-3 text-xl 
+            justify-center md:justify-start">
             <i class="fa-solid fa-box"></i>
             <p>My Details</p>
         </div>
     </div>
 
-    <div id="empty-orders" class="bg-white mt-1 py-4 px-4">
-        <form method="post" id="login-form" class="w-full sm:w-2/3 lg:w-1/2">
+    <div id="empty-orders" class="bg-white mt-1 py-4 px-8">
+        <form method="post" id="login-form" 
+            class="w-full sm:w-2/3 lg:w-1/2">
             <div class="flex flex-col gap-2 mt-6">
-                <label for="register-firstName" class="text-gray-600">
-                    First Name <span class="text-red-700">*</span>
+                <label for="deatils-firstName" class="text-gray-600">
+                    First Name
                 </label>
-                <input id="register-firstName" class="border p-2 border-gray-600" 
-                type="email">
+                <input id="details-firstName" class="border p-2 border-gray-600" 
+                type="text" value="{{ user.firstName }}" disabled>
                 <div id="email-error" class="text-red-500 text-sm hidden">
                     Please enter a valid First Name.
                 </div>
             </div>
             <div class="flex flex-col gap-2 mt-6">
-                <label for="register-lastName" class="text-gray-600">
-                    Last Name <span class="text-red-700">*</span>
+                <label for="details-lastName" class="text-gray-600">
+                    Last Name
                 </label>
-                <input id="register-LastName" class="border p-2 border-gray-600" 
-                type="email">
-                <div id="email-error" class="text-red-500 text-sm hidden">
-                    Please enter a valid Last Name.
-                </div>
+                <input id="details-lastName" class="border p-2 border-gray-600" 
+                type="text" value="{{ user.lastName }}" disabled>
             </div>
             <div class="flex flex-col gap-2 mt-6">
                 <label for="register-email" class="text-gray-600">
-                    Email Address <span class="text-red-700">*</span>
+                    Email Address
                 </label>
-                <input id="register-email" class="border p-2 border-gray-600" type="email">
-                <div id="email-error" class="text-red-500 text-sm hidden">
-                    Please enter a valid email address.
-                </div>
+                <input id="deatils-email" class="border p-2 border-gray-600" 
+                type="email" value="{{ user.email }}" disabled>
             </div>
             <div class="flex flex-col gap-2 mt-6">
                 <label for="register-dob" class="text-gray-600">
-                    Date of Birth <span class="text-red-700">*</span>
+                    Date of Birth
                 </label>
 
                 <div class="flex gap-4">
-                    <label for="register-day" class="hidden"></label>
-                    <select id="register-day" name="day" 
-                        class="border border-black p-3 bg-transparent
-                        w-3/12">
-                        <option value="" disabled selected>Day</option>
-                    </select>
-                    <label for="register-month" class="hidden"></label>
-                    <select id="register-month" name="month"
-                        class="bg-transparent border border-black p-3
-                        w-6/12">
-                        <option value="1" disabled selected>Month</option>
-                        <option value="1">January</option>
-                        <option value="2">February</option>
-                    </select>
-                    <label for="register-year" class="hidden"></label>
-                    <select id="register-year" name="year"
+                    <label for="details-year" class="hidden"></label>
+                    <select id="details-year" name="year"
                         class="border border-black p-3 bg-transparent
                         w-4/12">
+                        <option value="" disabled selected>
+                        {{ year }}
+                        </option>
+                    </select>
+                    <label for="details-month" class="hidden"></label>
+                    <select id="details-month" name="month"
+                        class="bg-transparent border border-black p-3
+                        w-6/12">
+                        <option value="" disabled selected>
+                        {{ month }}
+                        </option>
+                    </select>
+                    <label for="details-day" class="hidden"></label>
+                    <select id="details-day" name="day" 
+                        class="border border-black p-3 bg-transparent
+                        w-3/12">
+                        <option value="" disabled selected>
+                        {{ day }}
+                        </option>
                     </select>
                 </div>
 
@@ -88,4 +90,8 @@
         </form>
     </div>
 </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='javascripts/shop.my-account.js') }}">
+    </script>
 {% endblock %}

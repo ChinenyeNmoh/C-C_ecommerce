@@ -23,7 +23,7 @@ $(() => {
     $.ajax({
       type: 'POST',
       url: 'http://localhost:5000/verify-email',
-      data: otp,
+      data: JSON.stringify({ otp }),
       contentType: 'application/json',
       success: function (response) {
         $('#success-message')

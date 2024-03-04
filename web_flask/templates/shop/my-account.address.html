@@ -13,7 +13,7 @@
             </a>
         </div>
         <div class="flex items-center gap-3 text-xl justify-center md:justify-start">
-            <p>Edit New Address</p>
+            <p>Add New Address</p>
         </div>
     </div>
 
@@ -22,48 +22,69 @@
             <i class="fa-solid fa-circle-info"></i>
             <p class="text-sm">
             You currently do not have any saved address. 
-            Get started by adding ne.
+            Get started by adding a new address.
             </p>
         </div>
-        <form method="post" id="login-form" class="w-full sm:w-2/3 lg:w-1/2">
+        <form method="post" id="address-form" 
+            class="w-full sm:w-2/3 lg:w-1/2">
             <div class="flex flex-col gap-2 mt-6">
-                <label for="register-firstName" class="text-gray-600">
+                <label for="address-firstName" class="text-gray-600">
                     First Name
                 </label>
-                <input id="register-firstName" class="border p-2 border-gray-600" 
-                type="email">
-            </div>
-            <div class="flex flex-col gap-2 mt-6">
-                <label for="register-lastName" class="text-gray-600">
-                    Last Name
-                </label>
-                <input id="register-LastName" class="border p-2 border-gray-600" 
-                type="email">
-            </div>
-            <div class="flex flex-col gap-2 mt-6">
-                <label for="register-email" class="text-gray-600">
-                    Mobile
-                </label>
-                <input id="register-email" class="border p-2 border-gray-600" type="email">
-                <div id="email-error" class="text-red-500 text-sm hidden">
-                    Please enter a valid email address.
+                <input id="address-firstName" class="border p-2 border-gray-600" 
+                type="text">
+                <div id="address-firstName-error" 
+                    class="text-red-500 text-sm hidden error">
+                    Please enter a valid first name.
+                    First name should be minimum of 2 letters.
                 </div>
             </div>
             <div class="flex flex-col gap-2 mt-6">
-                <label for="edit-address" class="text-gray-600">
+                <label for="address-lastName" class="text-gray-600">
+                    Last Name
+                </label>
+                <input id="address-LastName" class="border p-2 border-gray-600" 
+                type="text">
+                <div id="address-lastName-error" 
+                    class="text-red-500 text-sm hidden error">
+                    Please enter a valid last name.
+                    Last name should be minimum of 2 letters.
+                </div>
+            </div>
+            <div class="flex flex-col gap-2 mt-6">
+                <label for="address-mobile" class="text-gray-600">
+                    Mobile
+                </label>
+                <input id="address-mobile" class="border p-2 border-gray-600" type="mobile">
+                <div id="address-mobile-error" 
+                    class="text-red-500 text-sm hidden error">
+                    Please enter a valid mobile number.
+                    Mobile number should be 11 digits long.
+                </div>
+            </div>
+            <div class="flex flex-col gap-2 mt-6">
+                <label for="add-address" class="text-gray-600">
                     Address
                 </label>
-                <textarea id="edit-address" 
+                <textarea id="add-address" 
                     class="border p-2 border-gray-600" 
                     type="text">
                 </textarea> 
+                <div id="add-address-error" 
+                    class="text-red-500 text-sm hidden error">
+                    Address should not be empty.
+                </div>
             </div>
-            <button id="save-address-changes" disabled 
-                class="my-6 p-2 text-center text-white bg-gray-300 w-full
-                cursor-not-allowed">
-                Save Changes
+            <button id="save-address-changes" type="submit" 
+                class="my-6 p-2 text-center text-white bg-black w-full
+                cursor-pointer">
+                Save Address
             </button>
         </form>
     </div>
 </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='javascripts/shop.my-account.js') }}">
+    </script>
 {% endblock %}

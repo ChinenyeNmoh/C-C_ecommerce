@@ -2,6 +2,7 @@
 """
 shop views
 """
+from datetime import datetime
 from flask import (
         render_template,
         request, session,
@@ -10,6 +11,7 @@ from flask import (
         )
 import requests
 from . import app_views
+from utils import login_required
 
 
 @app_views.route('/register', strict_slashes=False, methods=['GET', 'POST'])
@@ -33,6 +35,7 @@ def register():
 
     return render_template('shop/register.html')
 
+
 @app_views.route('/verify-email', strict_slashes=False, methods=['GET', 'POST'])
 def verify_email():
     """ verify email """
@@ -42,8 +45,10 @@ def verify_email():
             return jsonify({ 'error': 'User ID not found in session' }), 400
 
         url = 'http://localhost:5001/api/v2/users/verify'
-        otp = request.get_json()
-        data = {'email': email, 'otp': otp}
+        data = request.get_json()
+        print(data)
+        data['email'] = email
+        print(data)
         headers = {'Content-Type': 'application/json'}
         response = requests.post(url, headers=headers, json=data)
 
@@ -52,6 +57,7 @@ def verify_email():
         return jsonify({ 'error': 'Invalid OTP' }), response.status_code
 
     return render_template('shop/verify-email.html', email=email)
+
 
 @app_views.route('/verify-email/resend', methods=['POST'])
 def resend_otp():
@@ -72,32 +78,69 @@ def resend_otp():
 
     return render_template('shop/verify-email.html')
 
-@app_views.route('/reset-password', strict_slashes=False)
+
+@app_views.route('/reset-password', strict_slashes=False, methods=['GET', 'POST'])
 def reset_password():
-    """ admin """
+    """ reset password """
+    if request.method == 'POST':
+
+        url = 'http://localhost:5001/api/v2/users/reset-password'
+        data = request.get_json()
+        data['email'] = session.get('reset_password_email')
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(url, headers=headers, json=data)
+        print(data)
+        if response.status_code == 200:
+            session.clear()
+            return jsonify({ 'status': 'success' }), 200
+        return jsonify({ 'error': 'Password reset failed' }), response.status_code
     return render_template('shop/reset-password.html')
 
+
 @app_views.route('/my-account', strict_slashes=False)
+@login_required
 def my_account():
-    """ admin """
-    return render_template('shop/my-account.html')
+    """ my account routes """
+    user = session.get('user').get('user')
+
+    return render_template('shop/my-account.html', user=user)
+
 
 @app_views.route('/my-account/orders', strict_slashes=False)
+@login_required
 def my_orders():
     """ admin """
     return render_template('shop/my-account.orders.html')
 
+
 @app_views.route('/my-account/details', strict_slashes=False)
+@login_required
 def my_details():
-    """ admin """
-    return render_template('shop/my-account.details.html')
+    """ account details """
+    user = session.get('user').get('user')
+    dob = user.get('dateOfBirth')
+
+    d = datetime.strptime(dob, '%Y-%m-%dT%H:%M:%S.%fZ')
+    day, month, year = d.day, d.strftime('%B'), d.year
+
+    return render_template(
+            'shop/my-account.details.html',
+            user=user, day=day,
+            month=month, year=year
+            )
+
 
 @app_views.route('/my-account/address', strict_slashes=False)
+@login_required
 def address():
-    """ admin """
-    return render_template('shop/my-account.address.html')
+    """ address """
+    user = session.get('user').get('user')
+
+    return render_template('shop/my-account.address.html', user=user)
+
 
 @app_views.route('/my-account/payment-methods', strict_slashes=False)
+@login_required
 def payment_methods():
     """ admin """
     return render_template('shop/my-account.payment.html')

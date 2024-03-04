@@ -52,3 +52,20 @@ def logout():
         print('sucess')
     session.clear()
     return redirect(url_for('app_views.shop_index'))
+
+@app_views.route('/forgot-password', strict_slashes=False, methods=['GET', 'POST'])
+def forgot_password():
+    """ forgot password """
+    if request.method == 'POST':
+        url = 'http://localhost:5001/api/v2/forgot-password'
+        data = request.get_json()
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(url, headers=headers, json=data)
+
+        print('status_code: ', response.status_code)
+        if response.status_code == 200:
+            email = data.get('email')
+            session['reset_password_email'] = email
+            return jsonify({ 'status': 'success' }), 200
+        return jsonify({ 'error': 'failed' }), response.status_code
+    return render_template('shop/forgot-password.html')

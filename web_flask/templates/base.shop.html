@@ -23,11 +23,11 @@
                 </div>
                 <div class="hidden md:flex border-r border-stone-500 h-14
                     flex items-center px-6 hover:bg-stone-500 cursor-pointer">
-                    men
+                    Men
                 </div>
                 <div class="hidden md:flex border-r border-stone-500 h-14 
                     items-center px-4 hover:bg-stone-500 cursor-pointer">
-                    women
+                    Women
                 </div>
                 <div class="hidden h-14 md:flex items-center px-4 w-1/2 lg:w-2/3 relative">
                     <label for="d-search"></label>
@@ -41,7 +41,12 @@
                     <a href="#" class="md:hidden hover:text-stone-400">
                         <i id="m-search-btn" class="fa-solid fa-magnifying-glass text-xl"></i>
                     </a>
-                    <a id="nav-profile-btn" href="{{ url_for('app_views.login') }}" 
+                    <a id="nav-profile-btn"
+                        {% if user %}
+                        href="{{ url_for('app_views.my_account') }}" 
+                        {% else %}
+                        href="{{ url_for('app_views.login') }}" 
+                        {% endif %}
                         class="hover:text-stone-400">
                         <i class="fa-regular fa-user text-xl"></i>
                     </a>
@@ -84,13 +89,19 @@
                 <div class="bg-stone-200 p-4">
                     <div class="flex items-center space-x-4">
                         <i class="fa-regular fa-user"></i>
-                        <a href="#" class="cursor-pointer transition duration-100 
-                        ease-out hover:ease-in hover:scale-105 text-sm">my account</a>
+                        <a href="{{ url_for('app_views.my_account') }}" 
+                            class="cursor-pointer transition duration-100 
+                            ease-out hover:ease-in hover:scale-105 text-sm">
+                            My Account
+                        </a>
                     </div>
                     <div class="flex items-center space-x-2 mt-4">
                         <i class="fa-solid fa-box-open"></i>
-                        <a href="#" class="cursor-pointer transition duration-100 
-                        ease-out hover:ease-in hover:scale-105 text-sm">orders</a>
+                        <a href="{{ url_for('app_views.my_orders') }}" 
+                            class="cursor-pointer transition duration-100 
+                            ease-out hover:ease-in hover:scale-105 text-sm">
+                            Orders
+                        </a>
                     </div>
                     {% if user %}
                     <div class="mt-2 flex items-center space-x-2 border-t 
@@ -99,7 +110,9 @@
                             <i class="fa-solid fa-arrow-right-from-bracket"></i>
                             <a href="{{ url_for('app_views.logout') }}" 
                                 class="cursor-pointer transition duration-100 
-                            ease-out hover:ease-in hover:scale-105 text-sm">logout</a>
+                                ease-out hover:ease-in hover:scale-105 text-sm">
+                                Sign Out
+                            </a>
                         </div>
                     </div>
                     {% endif %}
@@ -111,15 +124,15 @@
                 items-center max-w-6xl">
                 <div class="flex h-10 items-center px-6 hover:bg-white 
                     hover:text-stone-900 cursor-pointer">
-                    clothings
+                    Clothings
                 </div>
                 <div class="flex h-10 items-center px-6 hover:bg-white 
                     hover:text-stone-900 cursor-pointer">
-                    foot wears
+                    Foot Wears
                 </div>
                 <div class="flex h-10 items-center px-6 hover:bg-white 
                     hover:text-stone-900 cursor-pointer">
-                    accessories
+                    Accessories
                 </div>
             </div>
         </div>
@@ -127,49 +140,77 @@
             <div class="flex w-full justify-between border-b border-gray-300">
                 <div class="w-full text-center p-2 border-r border-gray-200 
                     cursor-pointer hover:bg-stone-600">
-                    men
+                    Men
                 </div>
                 <div class="w-full text-center p-2 cursor-pointer hover:bg-stone-600">
-                    women
+                    Women
                 </div>
             </div>
             <div class="w-full mt-1 bg-stone-200 hover:bg-stone-300 
                 flex items-center p-4 cursor-pointer">
-                clothings
+                Clothings
             </div>
             <div class="w-full mt-1 bg-stone-200 hover:bg-stone-300 
                 flex items-center p-4 cursor-pointer">
-                foot wears
+                Foot Wears
             </div>
             <div class="w-full mt-1 bg-stone-200 hover:bg-stone-300 
                 flex items-center p-4 cursor-pointer">
-                accessories
+                Accessories
             </div>
-            <div class="px-4 mt-12 flex items-center space-x-4">
-                <i class="fa-regular fa-user text-lg"></i>
-                <a href="#" class="cursor-pointer transition duration-100 
-                ease-out hover:ease-in hover:scale-105">my account</a>
-            </div>
-            <div class="px-4 mt-4 flex items-center space-x-2">
-                <i class="fa-solid fa-box-open text-lg"></i>
-                <a href="#" class="cursor-pointer transition duration-100 
-                ease-out hover:ease-in hover:scale-105">orders</a>
-            </div>
-            <div class="px-4 mt-4 flex items-center space-x-2">
-                <i class="fa-regular fa-heart text-xl"></i>
-                <a href="#" class="cursor-pointer transition duration-100 
-                ease-out hover:ease-in hover:scale-105">saved items</a>
-            </div>
-            <div class="px-4 mt-4 flex items-center space-x-2">
-                <i class="fa-solid fa-bag-shopping text-xl"></i>
-                <a href="#" class="cursor-pointer transition duration-100 
-                ease-out hover:ease-in hover:scale-105">cart</a>
+            <div class="mt-12">
+                {% if user %}
+                <h1 class="px-4">
+                    Welcome, 
+                    <span class="font-semibold">
+                        {{ user.firstName }} {{ user.lastName }}
+                    </span>
+                </h1>
+                {% endif %}
+                <div class="px-4 mt-4 flex items-center space-x-4">
+                    <i class="fa-regular fa-user text-lg"></i>
+                    <a href="{{ url_for('app_views.my_account') }}" 
+                        class="cursor-pointer transition duration-100 
+                        ease-out hover:ease-in hover:scale-105">
+                        My Account
+                    </a>
+                </div>
+                <div class="px-4 mt-4 flex items-center space-x-2">
+                    <i class="fa-solid fa-box-open text-lg"></i>
+                    <a href="{{ url_for('app_views.my_orders') }}" 
+                        class="cursor-pointer transition duration-100 
+                        ease-out hover:ease-in hover:scale-105">
+                        Orders
+                    </a>
+                </div>
+                <div class="px-4 mt-4 flex items-center space-x-2">
+                    <i class="fa-regular fa-heart text-xl"></i>
+                    <a href="#" class="cursor-pointer transition duration-100 
+                    ease-out hover:ease-in hover:scale-105">Saved Items</a>
+                </div>
+                <div class="px-4 mt-4 flex items-center space-x-2">
+                    <i class="fa-solid fa-bag-shopping text-xl"></i>
+                    <a href="#" class="cursor-pointer transition duration-100 
+                    ease-out hover:ease-in hover:scale-105">Cart</a>
+                </div>
             </div>
             <div class="p-4 mt-4 flex items-center space-x-3 border-t 
                 border-gray-200 ">
+                {% if user %}
+                <i class="fa-solid fa-arrow-right-from-bracket rotate-180"></i>
+                <a href="{{ url_for('app_views.logout') }}" 
+                    class="cursor-pointer transition duration-100 
+                    ease-out hover:ease-in hover:scale-105">
+                    Sign Out
+                </a>
+                {% else %}
                 <i class="fa-solid fa-arrow-right-from-bracket "></i>
-                <a href="#" class="cursor-pointer transition duration-100 
-                ease-out hover:ease-in hover:scale-105">logout</a>
+                <a href="{{ url_for('app_views.login') }}" 
+                    class="cursor-pointer transition duration-100 
+                    ease-out hover:ease-in hover:scale-105">
+                    Sign In
+                </a>
+                {% endif %}
             </div>
         </div>
         <div id="m-search-div" class="bg-stone-500 p-4">
