@@ -73,8 +73,10 @@ const createCart = async (req, res) => {
     }
 
   } catch (err) {
-    console.error(err);
+    console.log(err)
     req.flash('error', err.message);
+    const previousUrl = req.headers.referer || '/';
+    res.redirect(previousUrl);
   }
 };
 
@@ -128,8 +130,10 @@ const increaseQuantity = async (req, res) => {
     res.redirect(previousUrl);
     }
   } catch (err) {
-    console.error(err);
-    res.render('error', { title: "Error"})
+    console.log(err)
+    req.flash('error', err.message);
+    const previousUrl = req.headers.referer || '/';
+    res.redirect(previousUrl);
   }
 };
 
@@ -187,9 +191,10 @@ const decreaseQuantity = async (req, res) => {
       req.flash('error', "Cart not found")
     }
   } catch (err) {
-    console.error(err);
-    console.error(err);
-    res.render('error', { title: "Error"})
+    console.log(err)
+    req.flash('error', err.message);
+    const previousUrl = req.headers.referer || '/';
+    res.redirect(previousUrl);
   }
 };
 
@@ -269,8 +274,10 @@ try {
       res.redirect(previousUrl);
     }
 } catch (err) {
-    console.log(err);
-    res.render('error', { title: "Error"})
+  console.log(err)
+  req.flash('error', err.message);
+  const previousUrl = req.headers.referer || '/';
+  res.redirect(previousUrl);
 }
 };
  
@@ -289,8 +296,10 @@ try{
     req.flash('error', 'Cart not found')
   }
 }catch (err) {
-  console.error(err);
-  res.render('error', { title: "Error"})
+  console.log(err)
+    req.flash('error', err.message);
+    const previousUrl = req.headers.referer || '/';
+    res.redirect(previousUrl);
 }
 }
 
@@ -324,7 +333,9 @@ const applyCoupon = async(req, res) => {
     }
   }catch(err){
     console.log(err)
-    res.render('error', { layout: 'main', title: "Error"})
+    req.flash('error', err.message);
+    const previousUrl = req.headers.referer || '/';
+    res.redirect(previousUrl);
   }
 }
 

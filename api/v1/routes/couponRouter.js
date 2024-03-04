@@ -16,10 +16,11 @@ const { ensureAuth,
   validateLogin} = require('../middlewares/auth')
 
 router.post('/', ensureAuth, ensureAdmin, createCoupon)
+router.get("/getall", ensureAdmin, getAllCoupon);
 router.get('/getcreate', ensureAuth, ensureAdmin, getCreate)
 router.put('/:id', validateId, ensureAuth, ensureAdmin, updateCoupon)
-router.delete('/:id', validateId, ensureAuth, ensureAdmin, deleteCoupon)
+router.get('/delete/:id', validateId, ensureAuth, ensureAdmin, deleteCoupon)
 router.get("/:id", ensureAdmin, getCoupon);
-router.get("/", ensureAdmin, getAllCoupon);
+
 
 module.exports = router

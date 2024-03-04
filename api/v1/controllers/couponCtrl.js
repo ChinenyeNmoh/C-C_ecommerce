@@ -77,21 +77,20 @@ const deleteCoupon = async (req, res) => {
     const coup = await Coupon.findById(id);
 
     if (!coup) {
-      return res.status(404).json({
-        message: "Coupon not found",
-      });
+      req.flash('error', 'Coupon Not Found')
+        const previousUrl = req.headers.referer || '/';
+        return res.redirect(previousUrl);
     } else {
       await Coupon.findByIdAndDelete(id);
-
-      return res.status(200).json({
-        message: "Coupon deleted successfully",
-      });
+      req.flash('success', 'Enquiry Deleted')
+        const previousUrl = req.headers.referer || '/';
+        return res.redirect(previousUrl);
     }
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      message: "Internal server error",
-    });
+    console.log(err)
+      req.flash('error', err.message);
+      const previousUrl = req.headers.referer || '/';
+      res.redirect(previousUrl);
   }
 };
 
@@ -126,22 +125,27 @@ const getAllCoupon = async (req, res) => {
     const all = await Coupon.find();
 
     if (!all || all.length === 0) {
-      return res.status(404).json({
-        message: "No Coupon found",
-      });
+      req.flash('error', "No Coupon found");
+      return res.redirect('/');
     } else {
-      const counter = await Coupon.countDocuments();
-      return res.status(200).json({
-        message: "Success",
-        count: counter,
-        data: all,
-      });
+      let admin = false;
+        if (req.user && req.user.role === 'admin') {
+          admin = true;
+        } 
+      const counter = all.length;
+      res.render('admin/all_coupons', {layout: "main", 
+        title: 'Coupons', 
+        all,
+        counter,
+        isAuthenticated: req.user,
+        admin,
+      })
     }
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      message: "Internal server error",
-    });
+    console.log(err)
+      req.flash('error', err.message);
+      const previousUrl = req.headers.referer || '/';
+      res.redirect(previousUrl);
   }
 };
 

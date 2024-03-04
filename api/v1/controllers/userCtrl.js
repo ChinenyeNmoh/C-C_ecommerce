@@ -75,6 +75,7 @@ const createUser = async (req, res) => {
    
     }
   } catch (err) {
+    console.log(err)
     req.flash('error', err.message);
     const previousUrl = req.headers.referer || '/';
     res.redirect(previousUrl);

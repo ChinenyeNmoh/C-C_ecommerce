@@ -12,12 +12,13 @@ const { ensureAuth,
     ensureGuest,
     ensureAdmin,
     validateId,
-  validateLogin} = require('../middlewares/auth')
+  } = require('../middlewares/auth')
 
-router.post('/', ensureAuth, createEnquiry)
-router.put('/:id', validateId, ensureAuth,  updateEnquiry)
-router.delete('/:id', validateId, ensureAuth, ensureAdmin, deleteEnquiry)
+router.post('/', createEnquiry)
+router.get("/getall", ensureAdmin, getAllEnquiry);
+router.get('/update/:id', validateId, ensureAuth,  updateEnquiry)
+router.get('/delete/:id', validateId, ensureAuth, ensureAdmin, deleteEnquiry)
 router.get("/:id", ensureAdmin, getEnquiry);
-router.get("/", ensureAdmin, getAllEnquiry);
+
 
 module.exports = router

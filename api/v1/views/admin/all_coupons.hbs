@@ -1,0 +1,32 @@
+<div class="container-fluid mb-3 mt-3">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card">
+                <div class="card-header text-center fw-bold">
+                   {{counter}} Coupon(s) Found
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            {{#each all}}
+                            <div class="card-text">
+                                <strong>Name:</strong> {{this.name}}<br>
+                                <strong>Expires:</strong> {{this.expireAt}}<br>
+                                <strong>Discount:</strong> {{this.discount}}%<br>
+                            </div>
+                            <div class="adds d-flex justify-content-center mt-3 mb-3 fw-bold gap-5">
+                                <a class="delete-enquiry" href="/api/coupon/delete/{{this._id}}">
+                                    <i class="fa-solid fa-trash"></i>
+                                    Delete
+                                </a>
+                                
+                            </div>
+                            <hr>
+                            {{/each}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

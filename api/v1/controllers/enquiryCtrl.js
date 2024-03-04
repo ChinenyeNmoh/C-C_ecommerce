@@ -6,10 +6,12 @@ const createEnquiry = async(req, res) => {
     const newEnquiry = await Enquiry.create(req.body);
     req.flash('success', 'Enquiry created')
     const previousUrl = req.headers.referer || '/';
-    res.redirect(previousUrl);
+    return res.redirect(previousUrl);
   }catch(err){
-    console.error(err);
-    res.render("error");
+    console.log(err)
+    req.flash('error', err.message);
+    const previousUrl = req.headers.referer || '/';
+    res.redirect(previousUrl);
 }
 }
 
@@ -18,18 +20,15 @@ const updateEnquiry = async(req, res) => {
   try{
     const findEnquiry = await Enquiry.findById(id);
     if(!findEnquiry){
-        return res.status(404).json({
-            message: "Enquiry not found"
-        })
+      req.flash('error', 'Enquiry not found')
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl)
     }
-    const updatedEnquiry = await Enquiry.findByIdAndUpdate(
-        id,
-        req.body,
-        {new: true}
-        );
-    return res.status(200).json({
-        message: "Enquiry updated successfully",
-        data: updatedEnquiry});
+    findEnquiry.status = "resolved";
+    await findEnquiry.save()
+    req.flash('success', 'Enquiry Updated')
+    const previousUrl = req.headers.referer || '/';
+    return res.redirect(previousUrl);
   }catch(err){
     console.error(err);
     return res.status(500).json({
@@ -46,21 +45,21 @@ const deleteEnquiry = async (req, res) => {
       const findEnquiry = await Enquiry.findById(id);
   
       if (!findEnquiry) {
-        return res.status(404).json({
-          message: "Enquiry not found",
-        });
+        req.flash('error', 'Enquiry Not Found')
+        const previousUrl = req.headers.referer || '/';
+        return res.redirect(previousUrl);
       } else {
         await Enquiry.findByIdAndDelete(id);
   
-        return res.status(200).json({
-          message: "Enquiry deleted successfully",
-        });
+        req.flash('success', 'Enquiry Deleted')
+        const previousUrl = req.headers.referer || '/';
+        return res.redirect(previousUrl);
       }
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({
-        message: err.message,
-      });
+      console.log(err)
+      req.flash('error', err.message);
+      const previousUrl = req.headers.referer || '/';
+      res.redirect(previousUrl);
     }
   };
   
@@ -95,22 +94,28 @@ const deleteEnquiry = async (req, res) => {
       const all = await Enquiry.find();
   
       if (!all || all.length === 0) {
-        return res.status(404).json({
-          message: "No Enquiry found",
-        });
+        req.flash('error', "No Enquiry found");
+      const previousUrl = req.headers.referer || '/';
+      return res.redirect(previousUrl);
       } else {
-        const counter = await Enquiry.countDocuments();
-        return res.status(200).json({
-          message: "Success",
-          count: counter,
-          data: all,
-        });
-      }
+        let admin = false;
+        if (req.user && req.user.role === 'admin') {
+          admin = true;
+        } 
+        const counter = all.length;
+        res.render('admin/all_enquires', {layout: "main", 
+        title: 'Enquires', 
+        all,
+        counter,
+        isAuthenticated: req.user,
+        admin,
+      })
+    }
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({
-        message: err.message
-      });
+      console.log(err)
+      req.flash('error', err.message);
+      const previousUrl = req.headers.referer || '/';
+      res.redirect(previousUrl);
     }
   };
 
