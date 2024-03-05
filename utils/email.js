@@ -164,14 +164,6 @@ const processOrderEmailTemplate = (myOrder, firstname, lastname, email, phoneNo)
 
 const deliveredOrderEmailTemplate = (myOrder, firstname, lastname, email, phoneNo) => {
     return `
-    table {
-        border-collapse: collapse;
-    }
-    th, td {
-        border: 1px solid black;
-        padding: 8px;
-    }
-    <h1>Thanks for shopping with us</h1>
     <p>
         Hi ${firstname} ${lastname},
     </p>
