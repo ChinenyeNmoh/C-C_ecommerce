@@ -41,23 +41,23 @@
    </div>
    <div class="footer_section layout_padding ">
     <div class="container-fluid">
-        <h2 class="enquiry pt-3">Enquiry Form</h2>
+        <h2 class="pt-3 text-white fw-bold mb-1 fs-5 text-center">Enquiry Form</h2>
         <form id="enquiryForm" action="/api/enquiry/" method="POST">
             <div class="form-group">
-                <label for="name">Name</label>
+                <label for="name" class="text-white fw-bold mb-1 fs-6">Name</label>
                 <input type="text" placeholder="Osinachi Nmoh" class="form-control" id="name" name="name" required>
             </div>
             <div class="form-group">
-                <label for="email">Email</label>
+                <label for="email" class="text-white fw-bold mb-1 fs-6">Email</label>
                 <input type="email" class="form-control" placeholder="Chinedu@gmail.com" id="email" name="email" required>
             </div>
             <div class="form-group">
-                <label for="phoneNo">Phone Number</label>
+                <label for="phoneNo" class="text-white fw-bold mb-1 fs-6">Phone Number</label>
                 <input type="tel" class="form-control" id="phoneNo" name="phoneNo" placeholder="07067245637" pattern="\d{11}">
                 <small class="form-text text-muted">Please enter a valid 11-digit mobile number.</small>
             </div>
             <div class="form-group">
-                <label for="comment">Comment</label>
+                <label for="comment" class="text-white fw-bold mb-1 fs-6">Comment</label>
                 <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
             </div>
             <button type="submit" class="btn btn-primary enq-btn">Submit</button>

@@ -3,10 +3,12 @@ const Product = require("../models/product");
 const Address = require("../models/address");
 const Order = require("../models/order");
 const User = require("../models/user");
+const { v4 } = require('uuid');
 const Flutterwave = require('flutterwave-node-v3');
 const { sendEmail, processOrderEmailTemplate, deliveredOrderEmailTemplate } = require('../utils/email');
 const dotenv = require("dotenv")
 dotenv.config({ path: './config/config.env' });
+
 
 const flw = new Flutterwave(process.env.PUBLIC_KEY, process.env.SECRET_KEY);
 
@@ -14,6 +16,7 @@ const checkOut = async (req, res) => {
   const { _id } = req.user;
   const paymentMethod = req.body.paymentMethod;
   const payload = {}
+  let callValidate = {};
   try {
     const userCart = await Cart.findOne({ orderedby: _id });
     if (!userCart) {
@@ -64,7 +67,7 @@ const checkOut = async (req, res) => {
       payload.email = req.user.google.email || req.user.local.email;
       payload.phone_number = req.user.local?.mobile;
       payload.enckey = process.env.ENCRYPTION_KEY;
-      payload.tx_ref = 'MC-32444ee--4eerye4euee3rerds4423e43e'
+      payload.tx_ref = v4();
       const response = await flw.Charge.card(payload);
       console.log(response);
 
@@ -151,11 +154,13 @@ const checkOut = async (req, res) => {
   if (req.user && req.user.role === 'admin') {
     admin = true;
   } 
-  console.log(admin)
+  if(myOrder.paymentMethod === 'card'){
+    req.flash("success", "Payment Successful")
+  }
     req.flash('success', 'Order has been created')
     res.render('shop/order', {layout: "main", 
     title: 'Orders', 
-    myOrder, 
+    myOrder,
     firstname, 
     lastname, 
     email, 
@@ -235,7 +240,7 @@ const getUserOrder = async (req, res) => {
     res.render('admin/user_order', {
       layout: "main", 
       title: 'User Orders', 
-      allOrders, 
+      allOrders,
       isAuthenticated: req.user,
       admin,
       count
@@ -383,8 +388,11 @@ const confirmDelivery = async (req, res) => {
     }
 
     myOrder.orderStatus = "delivered";
-    myOrder.deliveredAt = new Date(Date.now());
-    myOrder.paymentStatus = "paid"
+    if(myOrder.paymentMethod === 'cash on delivery'){
+      myOrder.paymentStatus = "paid"
+      myOrder.paidAt = Date.now();
+    }
+    myOrder.deliveredAt = Date.now();
     await myOrder.save();
     await myOrder.populate([
       { path: 'address', select: 'firstname lastname street city state landmark' },

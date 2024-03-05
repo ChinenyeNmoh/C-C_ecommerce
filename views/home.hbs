@@ -1,7 +1,7 @@
 <main class="container-fluid">
     <!-- Banner section -->
     <section class="banner">
-        <h1 class="title">C&C ecommerce</h1>
+        <h1 class="title mt-3">C&C ecommerce</h1>
     </section>
 
     <!-- Carousel section -->
@@ -49,57 +49,61 @@
         </div>
     </div>
    
-    <div class="container-fluid">
+    <div class="container-fluid mt-5 mb-5 ml-0px br-5">
         <div class="row">
-            <div class=" col-mb-12 coupon">
-    <h2>Special Offer!</h2>
-    <p>Get <strong>{{discount}}% off</strong> on your first purchase! <br>Apply this coupon to your cart total to get a discount</p>
-    <input type="text" placeholder="copy coupon code" value="{{couponName}}">
-</div>
-        </div>
-    </div>
-    <!-- Featured products section -->
-     <section class="featured-products" style="margin-top: 20px;">
-       <div class="container-fluid">
-        <h1 class="text-center">Featured Products </h1>
-    <div class="row">
-        {{#each products}}
-        <div class="col-md-3 mb-4">
-            <div class="card">
-                <!-- Wrap only the image with the link -->
-                <a href="/api/product/{{{this._id}}}" class="card-link dis">
-                    <img src="{{this.images.[0].url}}" class="card-img-top" alt="{{this.name}}">
-                </a>
-                <div class="card-body">
-                    <div class="adds2 d-flex justify-content-center">
-                        <!-- Modify the link to call JavaScript function when clicked -->
-                        <!-- Modify the link to call JavaScript function when clicked -->
-                    <a class="add-to-cart" href="/api/cart/{{this._id}}" >
-                        <i class="fa fa-shopping-cart" aria-hidden="true"></i>
-                             Add to Cart
-                        </a>
-
-                        <a class="add-to-wishlist" href="/api/user/wishlist/{{this._id}}">
-                            <i class="fa-regular fa-heart" aria-hidden="true"></i>
-                            Add to Wishlist
-                        </a>
+            <div class="col-md-12 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body bg-success">
+                        <h2 class="card-title text-white">Special Offer!</h2>
+                        <p class="card-text text-white">
+                            Get <strong>{{discount}}% off</strong> on your first purchase! <br>
+                            Apply this coupon to your cart total to get a discount
+                        </p>
+                        <input type="text" class="form-control w-50" placeholder="Copy coupon code"  value="{{couponName}}">
                     </div>
-                    {{#if this.quantity}}
-                       <p class="card-title"><strong>Name: </strong>{{this.name}}</p>
-                       <p class="card-text"><strong>Price: </strong>N{{this.price}}</p>
-                    {{else}}
-                    <p class="card-title"><strong>Name: </strong>{{this.name}}</p>
-                    <p class="card-text text-decoration-line-through"><strong>Price: </strong>N{{this.price}}</p>
-                    <p class="card-title text-danger"><strong>Sold Out</strong></p>
-                    {{/if}}
-                    {{#if this.discountPrice}}
-                    <p class="card-text">Discounted Price: N{{this.discountedPrice}}</p>
-                    {{/if}}
                 </div>
             </div>
         </div>
-        {{/each}}
     </div>
-</div>
+
+    <!-- Featured products section -->
+    <section class="featured-products" style="margin-top: 20px;">
+        <div class="container-fluid">
+            <h1 class="text-center">Featured Products </h1>
+            <div class="row">
+                {{#each products}}
+                <div class="col-md-3 mb-4">
+                    <div class="card">
+                        <a href="/api/product/{{{this._id}}}" class="card-link dis">
+                            <img src="{{this.images.[0].url}}" class="card-img-top" alt="{{this.name}}">
+                        </a>
+                        <div class="card-body">
+                            <div class="adds2 d-flex justify-content-center">
+                                <a class="add-to-cart" href="/api/cart/{{this._id}}">
+                                    <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                                    Add to Cart
+                                </a>
+                                <a class="add-to-wishlist" href="/api/user/wishlist/{{this._id}}">
+                                    <i class="fa-regular fa-heart" aria-hidden="true"></i>
+                                    Add to Wishlist
+                                </a>
+                            </div>
+                            {{#if this.quantity}}
+                               <p class="card-title"><strong>Name: </strong>{{this.name}}</p>
+                               <p class="card-text"><strong>Price: </strong>N{{this.price}}</p>
+                            {{else}}
+                                <p class="card-title"><strong>Name: </strong>{{this.name}}</p>
+                                <p class="card-text text-decoration-line-through"><strong>Price: </strong>N{{this.price}}</p>
+                                <p class="card-title text-danger"><strong>Sold Out</strong></p>
+                            {{/if}}
+                            {{#if this.discountPrice}}
+                                <p class="card-text">Discounted Price: N{{this.discountedPrice}}</p>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
     </section>
 </main>

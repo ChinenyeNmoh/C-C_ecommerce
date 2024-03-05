@@ -4,7 +4,7 @@
             <div class="row">
                 {{#each userCart.products}}
                 <div class="col-md-3 mb-4">
-                    <div class="card">
+                    <div class="card h-100">
                         {{#each this.productId.images}}
                         <img src="{{this.url}}" class="card-img-top" alt="{{this.name}}">
                         {{/each}}
@@ -35,8 +35,8 @@
                     {{#if userCart.totalAfterDiscount}}
                     <h3 class="card-title fw-bold">Discounted Total: N{{userCart.totalAfterDiscount}}</h3>
                     {{/if}}
-                    <div class="check-btn">
-                       <a href="/api/cart/emptycart" class="btn btn-danger">Empty Cart</a>
+                    <div class="check-btn d-flex justify-content-between gap-5 mb-5">
+                       <a href="/api/cart/emptycart" class="btn btn-danger ">Empty Cart</a>
                        <a href="/api/address/getaddress" class="btn btn-success">Checkout</a>
                     </div>
                 </div>

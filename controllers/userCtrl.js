@@ -181,6 +181,9 @@ const forgotPassword = async (req, res) => {
 
     if (user.isVerified === false) {
       req.flash('error', "Check your email for verification link")
+      const previousUrl = req.headers.referer || '/';
+      res.redirect(previousUrl);
+
     } else {
       // Generate a token
       const token = await new passwordResetToken({

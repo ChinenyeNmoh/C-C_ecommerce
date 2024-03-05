@@ -2,6 +2,7 @@ const nodemailer = require("nodemailer");
 
 const sendEmail = async (email, subject, html) => {
 	try {
+        
 		const transporter = nodemailer.createTransport({
 			host: process.env.HOST,
 			service: process.env.SERVICE,
@@ -77,11 +78,12 @@ const processOrderEmailTemplate = (myOrder, firstname, lastname, email, phoneNo)
     <p><strong>Delivered At: </strong>${myOrder.createdAt.toString().substring(0, 10)}</p>
     <table>
         <thead>
-            <tr>
-                <td><strong>Product</strong></td><span style="margin-left: 5px;">
-                <td><strong>Quantity</strong></td></span><span style="margin-left: 3px;">
-                <td><strong align="right">Price</strong></td></span>
-            </tr>
+        <tr>
+        <td><span style="margin-right: 5px;"><strong>Product</strong></span></td>
+        <td><span style="margin-right: 10px;"><strong>Quantity</strong></span></td>
+        <td><span style="margin-left: 5px;"><strong align="right">Price</strong></span></td>
+    </tr>
+    
         </thead>
         <tbody>
             ${myOrder.products
@@ -125,9 +127,10 @@ const processOrderEmailTemplate = (myOrder, firstname, lastname, email, phoneNo)
                 <td align="right">${myOrder.paymentStatus}</td>
             </tr>
             <tr>
-                <td colspan="2"><strong>Payment Time:</strong></td>
-                <td align="right">${myOrder.paidAt}</td>
-            </tr>
+    <td colspan="2"><strong>Payment Time:</strong></td>
+    <td align="right">${myOrder.paidAt ? myOrder.paidAt.toString().substring(0, 25) : ''}</td>
+    </tr>
+
             <tr>
                 <td colspan="2"><strong>Order Status:</strong></td>
                 <td align="right">${myOrder.orderStatus}</td>
@@ -161,6 +164,13 @@ const processOrderEmailTemplate = (myOrder, firstname, lastname, email, phoneNo)
 
 const deliveredOrderEmailTemplate = (myOrder, firstname, lastname, email, phoneNo) => {
     return `
+    table {
+        border-collapse: collapse;
+    }
+    th, td {
+        border: 1px solid black;
+        padding: 8px;
+    }
     <h1>Thanks for shopping with us</h1>
     <p>
         Hi ${firstname} ${lastname},
@@ -170,20 +180,20 @@ const deliveredOrderEmailTemplate = (myOrder, firstname, lastname, email, phoneN
     <p><strong>Delivered At: </strong>${myOrder.createdAt.toString().substring(0, 10)}</p>
     <table>
         <thead>
-            <tr>
-                <td><strong>Product</strong></td><span style="margin-left: 5px;">
-                <td><strong>Quantity</strong></td></span><span style="margin-left: 3px;">
-                <td><strong align="right">Price</strong></td></span>
-            </tr>
+        <tr>
+        <td><span style="margin-right: 5px;"><strong>Product</strong></span></td>
+        <td><span style="margin-right: 10px;"><strong>Quantity</strong></span></td>
+        <td><span style="margin-left: 10px;"><strong align="right">Price</strong></span></td>
+    </tr>
         </thead>
         <tbody>
             ${myOrder.products
                 .map(
                     (item) => `
                         <tr>
-                            <td>${item.productId.name}</td><span style="margin-left: 2px;">
-                            <td align="center">${item.quantity}</td><span style="margin-left: 4px;">
-                            <td align="right">N${item.price}</td></span></span>
+                            <td>${item.productId.name}</td>
+                            <td align="center">${item.quantity}</td>
+                            <td align="right">N${item.price}</td>
                         </tr>
                     `
                 )
@@ -219,7 +229,11 @@ const deliveredOrderEmailTemplate = (myOrder, firstname, lastname, email, phoneN
             </tr>
             <tr>
                 <td colspan="2"><strong>Payment Time:</strong></td>
-                <td align="right">${myOrder.paidAt}</td>
+                <td align="right">${myOrder.paidAt ? myOrder.paidAt.toString().substring(0, 25) : ''}</td>
+            </tr>
+            <tr>
+                <td colspan="2"><strong>Delivered Time:</strong></td>
+                <td align="right">${myOrder.deliveredAt ? myOrder.deliveredAt.toString().substring(0, 25) : ''}</td>
             </tr>
             <tr>
                 <td colspan="2"><strong>Order Status:</strong></td>
