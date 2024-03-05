@@ -379,7 +379,16 @@ const getMyUser = async (req, res) => {
   console.log(id)
   try {
     const user = await User.findById(id);
-    const googleuser = user.google
+    let firstname = user.local.firstname || user.google.firstname;
+    console.log(firstname)
+    let lastname = user.local.lastname || user.google.lastname;
+    console.log(lastname)
+    let email = user.local.email || user.google.email;
+    console.log(email)
+    let mobile = user.local.mobile || "";
+    console.log(mobile)
+    let address = user.address || "";
+    console.log(address)
     if(!user){
       return res.status(404).json({
         message: 'User not found',
@@ -394,7 +403,11 @@ const getMyUser = async (req, res) => {
         layout: 'main', 
         title: "My Account", 
         user,
-        googleuser,
+        firstname,
+        lastname,
+        mobile,
+        email,
+        address,
         isAuthenticated: req.user,
          admin
         })

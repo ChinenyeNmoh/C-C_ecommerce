@@ -4,32 +4,20 @@
             <div class="card existed">
                 <div class="card-body">
                     <h3 class="card-title fw-bold text-centre">My Information</h3>
-                    {{#if user.local}}
                     <div class="mb-3">
-                        <p class="fw-bold"><span class="fw-bolder">First Name:</span> {{user.local.firstname}}</p>
+                        <p class="fw-bold"><span class="fw-bolder">First Name:</span> {{firstname}}</p>
                     </div>
                     <div class="mb-3">
-                        <p class="fw-bold"><span class="fw-bolder">Last Name:</span> {{user.local.lastname}}</p>
+                        <p class="fw-bold"><span class="fw-bolder">Last Name:</span> {{lastname}}</p>
                     </div>
                     <div class="mb-3">
-                        <p class="fw-bold"><span class="fw-bolder">Email:</span> {{user.local.email}}</p>
+                        <p class="fw-bold"><span class="fw-bolder">Email:</span> {{email}}</p>
                     </div>
                     <div class="mb-3">
-                        <p class="fw-bold"><span class="fw-bolder">Phone No:</span> {{user.local.mobile}}</p>
-                    </div>
-                    {{else}}
-                    <div class="mb-3">
-                        <p class="fw-bold"><span class="fw-bolder">First Name:</span> {{user.google.firstname}}</p>
+                        <p class="fw-bold"><span class="fw-bolder">Phone No:</span> {{mobile}}</p>
                     </div>
                     <div class="mb-3">
-                        <p class="fw-bold"><span class="fw-bolder">Last Name:</span> {{user.google.lastname}}</p>
-                    </div>
-                    <div class="mb-3">
-                        <p class="fw-bold"><span class="fw-bolder">Email:</span> {{user.google.email}}</p>
-                    </div>
-                    {{/if}}
-                    <div class="mb-3">
-                        <p class="fw-bold"><span class="fw-bolder">Address:</span> {{user.address}}</p>
+                        <p class="fw-bold"><span class="fw-bolder">Address:</span> {{address}}</p>
                     </div>
                 </div>
             </div>
