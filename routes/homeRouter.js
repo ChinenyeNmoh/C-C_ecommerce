@@ -25,18 +25,7 @@ router.get('/', async (req, res) => {
             couponName = validCoupon.name;
             discount = validCoupon.discount;
         }
-       const userCart = await Cart.find({ orderedby: req.user._id }).populate([
-            {
-                path: "products",
-                select: "productId",
-                populate: [{ path: 'productId', select: "name images" }]
-            }
-        ]);
-        
-        let cartQty = 0;
-userCart.forEach(cartItem => {
-    cartQty += cartItem.products.length;
-});
+
 
         res.render('home', {
             layout: 'main',
@@ -46,7 +35,6 @@ userCart.forEach(cartItem => {
             discount,
             isAuthenticated,
             admin,
-            cartQty
         });
     } catch (error) {
         console.error('Error rendering home page:', error);

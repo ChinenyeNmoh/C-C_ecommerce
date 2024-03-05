@@ -45,7 +45,7 @@ const createUser = async (req, res) => {
       );
       req.flash('success', 'User created successfully')
       console.log('Google user updated with Local info');
-      res.redirect('user/login')
+      res.redirect('api/user/login')
     }else {
       const user = {
         "local.firstname": req.body.firstname,
