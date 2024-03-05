@@ -25,11 +25,19 @@ router.get('/', async (req, res) => {
             couponName = validCoupon.name;
             discount = validCoupon.discount;
         }
+       const userCart = await Cart.find({ orderedby: req.user._id }).populate([
+            {
+                path: "products",
+                select: "productId",
+                populate: [{ path: 'productId', select: "name images" }]
+            }
+        ]);
         
-        // Count the number of documents in the Cart collection
-        const userCart = await Cart.findOne({ orderedby: req.user_id })
-        const cartQty = userCart?.products.length;
-  
+        let cartQty = 0;
+userCart.forEach(cartItem => {
+    cartQty += cartItem.products.length;
+});
+
         res.render('home', {
             layout: 'main',
             title: 'HomePage',
