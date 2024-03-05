@@ -1,6 +1,6 @@
 # C&C Ecommerce
 
-![Homepage](public\images\products\tempsnip.png)
+![Homepage](tempsnip.png)
 
 ## Project Overview
 
