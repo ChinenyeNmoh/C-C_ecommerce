@@ -26,10 +26,6 @@ module.exports = function (passport) {
         try {
           let user = await User.findOne({ "google.googleId": email.id });
           let localUser = await User.findOne({ "local.email": email.emails[0].value });
-          if (localUser && localUser.isBlocked) {
-            return done(null, false, { message: 'Your account has been blocked. Make a complaint with the enquiry form below' });
-          }
-
           if (user) {
             console.log('User found with Google ID');
             done(null, user);

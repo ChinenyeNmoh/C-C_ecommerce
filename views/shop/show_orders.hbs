@@ -76,6 +76,7 @@
             <div class="card existed" style="width: 100%; height: 100%">
                 <div class="card-body">
                     <h3 class="card-title ">Billing Address</h3>
+                    {{#if user.local}}
                     <div class="mb-3">
                         <p class="fw-bold"><span class="fw-bolder">First Name:</span> {{user.local.firstname}} {{user.local.lastname}}</p>
                     </div>
@@ -88,6 +89,20 @@
                     <div class="mb-3">
                         <p class="fw-bold"><span class="fw-bolder">Phone no:</span> {{user.local.mobile}}</p>
                     </div>
+                    {{else}}
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">First Name:</span> {{user.google.firstname}} {{user.google.lastname}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">Address:</span> {{user.address}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">Email:</span> {{user.google.email}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="fw-bold"><span class="fw-bolder">Phone no:</span> {{user.google.mobile}}</p>
+                    </div>
+                    {{/if}}
                 </div>
             </div>
         </div>

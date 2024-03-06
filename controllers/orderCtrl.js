@@ -83,15 +83,24 @@ const checkOut = async (req, res) => {
           return res.redirect(url);
       }
         
-        const reCallCharge = await flw.Charge.card(payload2);
+        const reCallCharge = await new Promise((resolve, reject) => {
+          flw.Charge.card(payload2)
+            .then(response => {
+              resolve(response);
+            })
+            .catch(error => {
+              reject(error);
+            });
+        });
+        console.log("recharge", reCallCharge)
         const callValidate = await flw.Charge.validate({
           "otp": "12345",
           "flw_ref": reCallCharge.data.flw_ref
-        });
+      })
+      console.log("callVal", callValidate)
 
-        console.log(callValidate);
 
-        if (callValidate.status === 'success') {
+        if (response.status === 'success') {
           const address = await Address.findOne({ user: _id });
 
           if (!address) {
